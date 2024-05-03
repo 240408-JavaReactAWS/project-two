@@ -32,3 +32,5 @@ If I would like to begin selling Items, I can:
 # Contributions
 
 See the project's Wiki [here](https://github.com/240408-JavaReactAWS/project-two/wiki) for contribution instructions
+
+Small change!
