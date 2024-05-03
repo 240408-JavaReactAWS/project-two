@@ -2,7 +2,6 @@ package com.revature.nile.models;
 
 import jakarta.persistence.*;
 import org.springframework.data.annotation.Id;
-
 import java.util.List;
 
 @Entity
