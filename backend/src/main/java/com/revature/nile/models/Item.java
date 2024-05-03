@@ -21,6 +21,7 @@ public class Item {
     @Column(nullable = false)
     private String description;
 
+    @Column(nullable = false)
     private Double price;
 
     private int quantity;
@@ -31,7 +32,7 @@ public class Item {
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime datePosted;
-    
+
     private Double rating;
     
     public Item(){
