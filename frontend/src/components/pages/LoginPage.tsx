@@ -3,7 +3,7 @@ import { UserContext } from '../../App';
 
 function LoginPage() {
     
-    const {user, setUser} = useContext(UserContext)
+    const {username, setUsername} = useContext(UserContext)
 
 
   
