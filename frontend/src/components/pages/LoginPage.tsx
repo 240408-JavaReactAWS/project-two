@@ -12,6 +12,7 @@ function LoginPage() {
 
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
+  const [showError, setShowError] = useState(false)
 
   let changeEmail = (e: SyntheticEvent) => {
     setEmail((e.target as HTMLInputElement).value)
@@ -25,7 +26,7 @@ function LoginPage() {
     let logout = async() => {
       try {
         let res = await axios.get('http://localhost:8080/users/logout', {
-            withCredentials: true
+            withCredentials: true, headers: { 'Content-Type': 'application/json', 'username': username}
         })
         if (res.status === 200) {
             console.log("Logout Successful")
@@ -49,7 +50,7 @@ function LoginPage() {
           email: email,
           password: password
       }, {
-          withCredentials: true
+          withCredentials: true, headers: { 'Content-Type': 'application/json', 'username': username}
       })
       if (res.status === 200) {
           console.log("Login Successful")
@@ -57,8 +58,7 @@ function LoginPage() {
           navigate('/')
       }
     } catch (error) {
-      alert("There was an error logging in")
-      console.log(error)
+      setShowError(true)
     }
 
     setEmail('')
@@ -69,6 +69,8 @@ function LoginPage() {
     <div className="loginPage">
       <h1>Login Page</h1>
       <div className="loginBody">
+        showError ? <p className="errorMessage">Email or Password Incorrect!</p> : null
+
         <input type="text" value={email} placeholder="Email Address" onChange={changeEmail} />
         <input type="password" value={password} placeholder="Password" onChange={changePassword} />
 
