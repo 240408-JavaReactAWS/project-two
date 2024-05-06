@@ -6,7 +6,7 @@ const Nav: React.FC = () => {
 
   return (
     <>
-    <nav className="navbar"></nav>
+    <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid">
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav">
@@ -22,6 +22,7 @@ const Nav: React.FC = () => {
           </ul>
         </div>
       </div>
+      </nav>
     </>
   )
 }
