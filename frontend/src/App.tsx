@@ -4,6 +4,7 @@ import './App.css';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import LoginPage from './components/pages/LoginPage';
 import { IUser } from './interfaces/IUser';
+import Nav from './components/common/Nav';
 
 interface contextInterface {
   user: IUser,
@@ -21,6 +22,7 @@ function App() {
       <header className="header"></header>
       <UserContext.Provider value={{user, setUser}}>
         <BrowserRouter>
+        <Nav/>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
           </Routes>
