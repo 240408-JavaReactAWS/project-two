@@ -1,12 +1,29 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import 'bootstrap/dist/js/bootstrap.bundle.min'; // Import Bootstrap JS
 import "./Nav.css"; // Import custom CSS
+import axios from 'axios';
+import { UserContext } from '../../App';
 
 const Nav: React.FC = () => {
 
-  const [loggedIn, setLoggedIn] = useState<boolean>(true)
+  const {username, setUsername} = useContext<any>(UserContext)
+
+  let logout = async() => {
+    try {
+      let res = await axios.get('http://localhost:8080/users/logout', {
+          withCredentials: true, headers: { 'Content-Type': 'application/json', 'username': username}
+      })
+      if (res.status === 200) {
+          console.log("Logout Successful")
+          setUsername('')
+      }
+    } catch (error) {
+      alert("There was an error logging out")
+      console.log(error)
+    }
+  }
 
   return (
     <>
@@ -23,16 +40,16 @@ const Nav: React.FC = () => {
             <li className="nav-item p-2">
               <Link to="/products" className="nav-link">Browse Products</Link>
             </li>
-          {!loggedIn &&
+          {!username &&
             <li className="nav-item p-2">
               <Link to="/login" className="nav-link">Login</Link>
             </li>
           }
-            {loggedIn && <><li className="nav-item p-2"><Link to="#" className="nav-link">My Listings</Link></li>
+            {username && <><li className="nav-item p-2"><Link to="#" className="nav-link">My Listings</Link></li>
             <li className="nav-item p-2"><Link to="#" className="nav-link">My Orders</Link></li>
             <li className="nav-item p-2"><Link to="#" className="nav-link">Cart</Link></li>
             <li className="nav-item p-2"><Link to="#" className="nav-link">Checkout</Link></li>
-            <li className="nav-item p-2"><Link to="#" className="nav-link">Logout</Link></li>
+            <li className="nav-item p-2"><button onClick={logout} className="nav-link">Logout</button></li>
             </>}
           </ul>
         </div>
