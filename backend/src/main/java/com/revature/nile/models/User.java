@@ -1,7 +1,8 @@
 package com.revature.nile.models;
 
+
 import jakarta.persistence.*;
-import org.springframework.data.annotation.Id;
+
 import java.util.List;
 
 @Entity
@@ -31,14 +32,14 @@ public class User {
     @Column(nullable = false)
     private String lastName;
 
-    @OneToMany(mappedBy = "user")
-    private List<Object> Orders; // TODO replace with proper objects later
-
-    @OneToMany(mappedBy = "user")
-    private List<Object> Reviews; // TODO replace with proper objects later
-
-    @OneToMany(mappedBy = "user")
-    private List<Object> Items; // TODO replace with proper objects later
+//    @OneToMany(mappedBy = "user")
+//    private List<Object> Orders; // TODO replace with proper objects later
+//
+//    @OneToMany(mappedBy = "user")
+//    private List<Object> Reviews; // TODO replace with proper objects later
+//
+//    @OneToMany(mappedBy = "user")
+//    private List<Object> Items; // TODO replace with proper objects later
 
     public User() {
 
@@ -114,30 +115,30 @@ public class User {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-
-    public List<Object> getOrders() {
-        return Orders;
-    }
-
-    public void setOrders(List<Object> Orders) {
-        this.Orders = Orders;
-    }
-
-    public List<Object> getReviews() {
-        return Reviews;
-    }
-
-    public void setReviews(List<Object> Reviews) {
-        this.Reviews = Reviews;
-    }
-
-    public List<Object> getItems() {
-        return Items;
-    }
-
-    public void setItems(List<Object> Items) {
-        this.Items = Items;
-    }
+//
+//    public List<Object> getOrders() {
+//        return Orders;
+//    }
+//
+//    public void setOrders(List<Object> Orders) {
+//        this.Orders = Orders;
+//    }
+//
+//    public List<Object> getReviews() {
+//        return Reviews;
+//    }
+//
+//    public void setReviews(List<Object> Reviews) {
+//        this.Reviews = Reviews;
+//    }
+//
+//    public List<Object> getItems() {
+//        return Items;
+//    }
+//
+//    public void setItems(List<Object> Items) {
+//        this.Items = Items;
+//    }
 
     @Override
     public String toString() {
