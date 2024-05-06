@@ -31,7 +31,7 @@ public class Order {
         private String shipToAddress;
         private String billAddress;
 
-//        @Temporal(TemporalType.TIMESTAMP)
+        @Temporal(TemporalType.TIMESTAMP)
         @CreationTimestamp
         private String dateOrdered;
 
