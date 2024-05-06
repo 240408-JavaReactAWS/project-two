@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.naming.AuthenticationException;
-import javax.security.auth.login.FailedLoginException;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -26,12 +25,11 @@ public class UserController  {
         this.us = us;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<User> registerNewUserHandler(@RequestBody User credentials, HttpSession session){
+   @PostMapping("/register")
+    public ResponseEntity<User> registerNewUserHandler(@RequestBody User user){
         User newUser;
         try{
-            newUser = us.registerUser(credentials);
-            session.setAttribute("user", newUser); // Store the user in the session
+            newUser = us.registerUser(user);
         } catch (EntityExistsException e){
             return new ResponseEntity<>(BAD_REQUEST);
         }

@@ -5,6 +5,7 @@ import com.revature.nile.repositories.UserRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import javax.naming.AuthenticationException;
 import java.util.Optional;
@@ -13,10 +14,12 @@ import java.util.Optional;
 public class UserService {
 
     private UserRepository ur;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository ur) {
+    public UserService(UserRepository ur, PasswordEncoder passwordEncoder) {
         this.ur = ur;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User registerUser(User user) {
@@ -24,6 +27,8 @@ public class UserService {
         if(optionalUser.isPresent()) {
             throw new EntityExistsException(user.getUsername()+" already exists");
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         return ur.save(user);
     }
 
