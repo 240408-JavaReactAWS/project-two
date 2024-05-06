@@ -38,4 +38,12 @@ public class UserService {
         }
         throw new EntityNotFoundException(user.getEmail()+" doesn't exist");
     }
+
+    public void logoutUser(User logoutAttempt) {
+        Optional<User> optionalUser = ur.findByEmail(logoutAttempt.getEmail());
+        if(optionalUser.isPresent()) {
+            return;
+        }
+        throw new EntityNotFoundException(logoutAttempt.getEmail()+ " doesn't exist");
+    }
 }
