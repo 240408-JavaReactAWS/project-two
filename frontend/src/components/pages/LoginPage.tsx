@@ -69,7 +69,8 @@ function LoginPage() {
     <div className="loginPage">
       <h1>Login Page</h1>
       <div className="loginBody">
-        showError ? <p className="errorMessage">Email or Password Incorrect!</p> : null
+        
+        {showError ? <p className="errorMessage">Email or Password Incorrect!</p> : null}
 
         <input type="text" value={email} placeholder="Email Address" onChange={changeEmail} />
         <input type="password" value={password} placeholder="Password" onChange={changePassword} />
