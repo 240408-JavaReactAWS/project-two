@@ -71,7 +71,7 @@ public class Item {
     @Override
     public String toString() {
         return "Item{" +
-                "ItemId=" + itemId +
+                "itemId=" + itemId +
                 ", sellerId=" + sellerId +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
