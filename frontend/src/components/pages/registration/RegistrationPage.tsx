@@ -22,6 +22,7 @@ function RegistrationPage() {
     const [state, setState] = useState('');
     const [zipCode, setZipCode] = useState('');
     const [country, setCountry] = useState('');
+    const [message, setMessage] = useState('');
 
     const handleUserInfo = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -53,14 +54,14 @@ function RegistrationPage() {
                 email, username, password, firstName, lastName,
                 address, city, state, zipCode, country
             }, {
-                headers: { 'Content-Type': 'application/json', 'username': localStorage.getItem('username') }
+                withCredentials: true, headers: { 'Content-Type': 'application/json', 'username': username}
             });
-            console.log(response);
             if (response.status === 201) {
-                localStorage.setItem('username', response.data.username);
+                setMessage('User registered successfully');
+
             }
-        } catch (error) {
-            console.error(error);
+        } catch (error: any) {
+            setMessage('Registration failed: ' + error.response.data.message);
         }
     };
 
@@ -107,9 +108,7 @@ function RegistrationPage() {
                                         <MDBCol md='5'>
                                             <MDBInput wrapperClass='mb-4' labelClass='text-white' label='State' size='lg' name='state' onChange={handleAddressInfo}/>
                                         </MDBCol>
-                                        <MDBCol md='7'>
-                                            <MDBInput wrapperClass='mb-4' labelClass='text-white' label='Phone Number' size='lg' type='text'/>
-                                        </MDBCol>
+                                    
                                     </MDBRow>
                                     <MDBBtn color='light' size='lg' onClick={handleRegister}>Register</MDBBtn>
                                 </MDBCol>

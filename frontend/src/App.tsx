@@ -4,6 +4,7 @@ import './App.css';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import LoginPage from './components/pages/LoginPage';
 import { IUser } from './interfaces/IUser';
+import RegistrationPage from './components/pages/registration/RegistrationPage';
 
 interface contextInterface {
   username: string,
@@ -26,7 +27,7 @@ function App() {
           <Routes>
             {/* <Route path="/" element={<BrowsingPage />} /> */}
             <Route path="/login" element={<LoginPage />} />
-            {/* <Route path="/register" element={<RegistrationPage />} /> */}
+            <Route path="/register" element={<RegistrationPage />} />
             {/* <Route path="/item/:id" element={<ItemPage />} /> */}
             {/* <Route path="/listings" element={<SellerItemsPage />} /> */}
             {/* <Route path="/orders" element={<OrderHistoryPage />} /> */}
