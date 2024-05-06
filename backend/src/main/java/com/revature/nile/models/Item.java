@@ -15,10 +15,10 @@ public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int ItemId;
+    private int itemId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seller_id", referencedColumnName = "userId")
+    @JoinColumn(name = "sellerId", referencedColumnName = "userId")
     private User sellerId;
 
     @Column(nullable = false)
@@ -43,7 +43,7 @@ public class Item {
     @Column
     private Double rating;
 
-    public Item(Double rating, LocalDateTime datePosted, String image, int quantity, Double price, String description, String name, User sellerId, int ItemId) {
+    public Item(Double rating, LocalDateTime datePosted, String image, int quantity, Double price, String description, String name, User sellerId, int itemId) {
         this.rating = rating;
         this.datePosted = datePosted;
         this.image = image;
@@ -52,7 +52,7 @@ public class Item {
         this.description = description;
         this.name = name;
         this.sellerId = sellerId;
-        this.ItemId = ItemId;
+        this.itemId = itemId;
     }
 
     @Override
@@ -60,18 +60,18 @@ public class Item {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Item items = (Item) o;
-        return ItemId == items.ItemId && sellerId == items.sellerId && quantity == items.quantity && Objects.equals(name, items.name) && Objects.equals(description, items.description) && Objects.equals(price, items.price) && Objects.equals(image, items.image) && Objects.equals(datePosted, items.datePosted) && Objects.equals(rating, items.rating);
+        return itemId == items.itemId && sellerId == items.sellerId && quantity == items.quantity && Objects.equals(name, items.name) && Objects.equals(description, items.description) && Objects.equals(price, items.price) && Objects.equals(image, items.image) && Objects.equals(datePosted, items.datePosted) && Objects.equals(rating, items.rating);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ItemId, sellerId, name, description, price, quantity, image, datePosted, rating);
+        return Objects.hash(itemId, sellerId, name, description, price, quantity, image, datePosted, rating);
     }
 
     @Override
     public String toString() {
         return "Item{" +
-                "ItemId=" + ItemId +
+                "ItemId=" + itemId +
                 ", sellerId=" + sellerId +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
