@@ -5,6 +5,10 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.jpa.repository.Temporal;
 
+import java.util.Date;
+
+import static jakarta.persistence.TemporalType.DATE;
+
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -31,16 +35,17 @@ public class Order {
         private String shipToAddress;
         private String billAddress;
 
-        @Temporal(TemporalType.TIMESTAMP)
         @CreationTimestamp
-        private String dateOrdered;
+        private Date dateOrdered;
+
+
 
     // Constructors
 
     // no-args constructor
     public Order() {}
     // all-args constructor
-    public Order(int orderId, User user, StatusEnum status, String shipToAddress, String billAddress, String dateOrdered) {
+    public Order(int orderId, User user, StatusEnum status, String shipToAddress, String billAddress, Date dateOrdered) {
         this.orderId = orderId;
         this.user = user;
         this.status = status;
@@ -92,11 +97,11 @@ public class Order {
         this.billAddress = billAddress;
     }
 
-    public String getDateOrdered() {
+    public Date getDateOrdered() {
         return dateOrdered;
     }
 
-    public void setDateOrdered(String dateOrdered) {
+    public void setDateOrdered(Date dateOrdered) {
         this.dateOrdered = dateOrdered;
     }
 
