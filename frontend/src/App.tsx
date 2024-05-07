@@ -6,7 +6,6 @@ import LoginPage from './components/pages/LoginPage';
 import { IUser } from './interfaces/IUser';
 import Nav from './components/common/Nav';
 import RegistrationPage from './components/pages/registration/RegistrationPage';
-import ViewReview from './components/pages/ViewReview/ViewReview';
 
 interface contextInterface {
   userId: any,
@@ -37,10 +36,8 @@ function App() {
             {/* <Route path="/cart" element={<CartPage />} /> */}
             {/* <Route path="/checkout" element={<CheckoutPage />} /> */}
             {/* <Route path="/order-review" element={<AfterOrderPage />} /> */}
-
           </Routes>
         </BrowserRouter>
-
       </UserContext.Provider>
     </div>
   );
