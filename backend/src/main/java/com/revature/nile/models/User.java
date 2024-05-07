@@ -44,14 +44,17 @@ public class User {
     @Column(nullable = false)
     private String lastName;
 
-    // @OneToMany(mappedBy = "user")
-    // private List<Order> Orders;
+    //A user can have multiple orders (but only one pending at a given time!)
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders;
 
-    // @OneToMany(mappedBy = "user")
-    // private List<Review> Reviews;
+    //A user can have multiple reviews
+    @OneToMany(mappedBy = "user")
+    private List<Review> reviews;
 
-    // @OneToMany(mappedBy = "user")
-    // private List<Item> Items;
+    //A user can have multiple items for sale
+    @OneToMany(mappedBy = "user")
+    private List<Item> items;
 
     public User(String email, String userName, String password, String address, String firstName, String lastName) {
         this.email = email;
