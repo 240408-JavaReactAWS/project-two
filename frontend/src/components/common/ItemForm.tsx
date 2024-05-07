@@ -12,11 +12,13 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
+  const [stock, setStock] = useState(0);
   const [image, setImage] = useState('');
   const [errors, setErrors] = useState({
     name: false,
     description: false,
     price: false,
+    stock: false,
     image: false
   });
 
@@ -29,6 +31,7 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
           setName(name);
           setDescription(description);
           setPrice(parseFloat(price).toFixed(2));
+          setStock(0);
           setImage(image);
         })
         .catch(error => {
@@ -43,6 +46,7 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
       description: !description,
       // ADJUST MAX PRICE
       price: parseFloat(price) <= 0 || parseFloat(price) >= 50000,
+      stock: stock < 0,
       image: !image
     };
 
@@ -66,6 +70,7 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
         name,
         description,
         price: parseFloat(price.replace(/,/g, '')),
+        stock,
         image,
         sellerId
       };
@@ -87,10 +92,13 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
   return (
     <div id="formContainer">
       <h1>Add more details</h1>
-      <p>Add a photo and some details about your item. You will be able to edit this later.</p>
+      <h6>Add a photo and some details about your item. You will be able to edit this later.</h6>
+      <br/>
+      <br/>
+      <br/>
       <Form onSubmit={handleSubmit}>
         <FormGroup>
-          <FormLabel>Item Name</FormLabel>
+          <FormLabel><h2>Item Name</h2></FormLabel>
           <FormText className="text-muted">
             Include keywords that buyers would use to search for this item.
           </FormText>
@@ -103,15 +111,14 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
               setErrors(prev => ({ ...prev, name: false }));
             }}
             maxLength={140}
-            placeholder="Enter item name"
           />
           <FormText>{name.length}/140</FormText>
         </FormGroup>
-
+        <br/>
         <FormGroup>
-          <FormLabel>Description</FormLabel>
+          <FormLabel><h2>Description</h2></FormLabel>
           <FormText className="text-muted">
-            Buyers will only see the first few lines unless they expand the description.
+            What makes your item special? Buyers will only see the first few lines unless they expand the description.
           </FormText>
           <FormControl
             className={`form-control ${errors.description ? 'is-invalid' : ''}`}
@@ -122,12 +129,11 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
               setErrors(prev => ({ ...prev, description: false }));
             }}
             style={{ resize: 'vertical' }}
-            placeholder="What makes your item special?"
           />
         </FormGroup>
-
+        <br/>
         <FormGroup>
-          <FormLabel>Price</FormLabel>
+          <FormLabel><h2>Price</h2></FormLabel>
           <InputGroup>
             <InputGroup.Text>$</InputGroup.Text>
             <FormControl
@@ -142,9 +148,26 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
             </FormText>}
           </InputGroup>
         </FormGroup>
-
+        <br/>
         <FormGroup>
-          <FormLabel>Image URL</FormLabel>
+          <FormLabel><h2>Stock</h2></FormLabel>
+          <FormControl
+            className={`form-control ${errors.image ? 'is-invalid' : ''}`}
+            type="number"
+            value={stock}
+            onChange={e => {
+              setStock(parseInt(e.target.value));
+              setErrors(prev => ({ ...prev, stock: false }));
+            }}
+            placeholder="0"
+          />
+        </FormGroup>
+        <br/>
+        <FormGroup>
+          <FormLabel><h2>Image URL</h2></FormLabel>
+          <FormText className="text-muted">
+            Provide a link to a photo of your product for buyers to see
+          </FormText>
           <FormControl
             className={`form-control ${errors.image ? 'is-invalid' : ''}`}
             type="text"
@@ -156,7 +179,9 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
             placeholder="http://example.com/image.jpg"
           />
         </FormGroup>
-
+        <br/>
+        <br/>
+        <br/>
         <Button type="submit" className="custom-button">Sell Item</Button>
       </Form>
     </div>
