@@ -6,6 +6,7 @@ import LoginPage from './components/pages/LoginPage';
 import { IUser } from './interfaces/IUser';
 import Nav from './components/common/Nav';
 import RegistrationPage from './components/pages/registration/RegistrationPage';
+import ViewReview from './components/pages/ViewReview/ViewReview';
 
 interface contextInterface {
   userId: any,
@@ -19,6 +20,15 @@ export const UserContext = createContext<contextInterface>(
 function App() {
 
   const [userId, setUserId] = useState<any>(null)
+  //below is test code for ViewReview
+  // let review = {
+  //   id: 1,
+  //   userId: 2,
+  //   itemId: 3,
+  //   rating: 4,
+  //   reviewText: "string1",
+  //   reviewDate: "string2"
+  //   }
 
   return (
     <div className="content">
@@ -36,8 +46,12 @@ function App() {
             {/* <Route path="/cart" element={<CartPage />} /> */}
             {/* <Route path="/checkout" element={<CheckoutPage />} /> */}
             {/* <Route path="/order-review" element={<AfterOrderPage />} /> */}
+
           </Routes>
         </BrowserRouter>
+
+        {/* below is test code for ViewReview */}
+        {/* <ViewReview {...review}> </ViewReview> */}
       </UserContext.Provider>
     </div>
   );
