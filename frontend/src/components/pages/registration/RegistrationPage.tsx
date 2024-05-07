@@ -9,6 +9,7 @@ import {
   MDBCardBody,
   MDBInput
 } from 'mdb-react-ui-kit';
+import './Registration.css';
 
 
 function RegistrationPage() {
@@ -44,7 +45,7 @@ function RegistrationPage() {
 
     const handleRegister = async () => {
         try {
-            let response = await axios.post('http://localhost:8080/users/register', {
+            let response = await axios.post('http://localhost:8080/users', {
                 email: formData.email,
                 username: formData.username,
                 password: formData.password,
@@ -97,7 +98,7 @@ function RegistrationPage() {
                                 </MDBCol>
                                 <MDBCol md='6' className='bg-indigo p-5'>
                                     <h3 className="fw-normal mb-5 text-white">Contact Details</h3>
-                                    <MDBInput wrapperClass='mb-4' labelClass='text-white' label='Street + Number' size='lg' name='address' onChange={handleAddressInfo}/>
+                                    <MDBInput wrapperClass='mb-4' labelClass='text-white' label='Street Address / PO Box ' size='lg' name='address' onChange={handleAddressInfo}/>
                                     <MDBRow>
                                         <MDBCol md='5'>
                                             <MDBInput wrapperClass='mb-4' labelClass='text-white' label='Zip Code' size='lg' name='zipCode' onChange={handleAddressInfo}/>
