@@ -5,10 +5,9 @@ import './ItemForm.css';
 
 interface IItemFormProps {
   itemId?: number;
-  sellerId: number;
 }
 
-const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
+const ItemForm: React.FC<IItemFormProps> = ({ itemId }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
@@ -26,7 +25,6 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
   // Check if item already exists
   useEffect(() => {
     if (itemId) {
-      // FIX ME: Add correct URL
       axios.get(`${process.env.BACKEND_URL}/items/${itemId}`)
         .then(response => {
           const { name, description, price, stock, datePosted, image } = response.data;
@@ -79,11 +77,9 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
         stock,
         image,
         datePosted,
-        sellerId
       };
       const axiosMethod = itemId ? axios.patch : axios.post;
-      // FIX ME: Add correct URLs
-      const url = itemId ? `${process.env.BACKEND_URL}/items/store/${itemId}` : `${process.env.BACKEND_URL}/items/store`;
+      const url = itemId ? `${process.env.BACKEND_URL}/items/${itemId}` : `${process.env.BACKEND_URL}/items`;
 
       axiosMethod(url, itemData)
         .then(response => console.log(response))
