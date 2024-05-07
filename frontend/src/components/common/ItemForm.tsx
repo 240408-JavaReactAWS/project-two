@@ -14,6 +14,7 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
   const [price, setPrice] = useState('');
   const [stock, setStock] = useState(0);
   const [image, setImage] = useState('');
+  const [datePosted, setDatePosted] = useState(new Date());
   const [errors, setErrors] = useState({
     name: false,
     description: false,
@@ -22,16 +23,18 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
     image: false
   });
 
+  // Check if item already exists
   useEffect(() => {
     if (itemId) {
       // FIX ME: Add correct URL
       axios.get(`${process.env.BACKEND_URL}/items/${itemId}`)
         .then(response => {
-          const { name, description, price, stock, image } = response.data;
+          const { name, description, price, stock, datePosted, image } = response.data;
           setName(name);
           setDescription(description);
           setPrice(parseFloat(price).toFixed(2));
           setStock(stock);
+          setDatePosted(datePosted);
           setImage(image);
         })
         .catch(error => {
@@ -40,6 +43,7 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
     }
   }, [itemId]);
 
+  // Validate each input
   const validateForm = () => {
     const newErrors = {
       name: !name,
@@ -54,6 +58,7 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
     return Object.values(newErrors).every(v => !v);
   };
 
+  // Coerce price to be in dollar format
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
     let numericInput = input.replace(/\D/g, '');
@@ -63,6 +68,7 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
     setPrice(dollarAmountWithoutLeadingZeros);
   };
 
+  // Decide between PATCH and POST request
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (validateForm()) {
@@ -72,6 +78,7 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
         price: parseFloat(price.replace(/,/g, '')),
         stock,
         image,
+        datePosted,
         sellerId
       };
       const axiosMethod = itemId ? axios.patch : axios.post;
