@@ -1,3 +1,4 @@
+// Do we want this form to be a new page, or a modal that pops up when the user clicks "Sell Item"?
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button, InputGroup, Form, FormControl, FormGroup, FormLabel, FormText } from 'react-bootstrap';
