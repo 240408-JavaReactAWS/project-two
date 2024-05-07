@@ -121,15 +121,21 @@ function BrowsingPage() {
         getItems();
     }, []);
   return (
+    <>
+    <header style={{paddingBottom:"40px", backgroundColor:"aliceblue"}}>
+      <h1 style={{fontSize:"5rem", textAlign:"center" }}>Items</h1>
+    </header>
     <div className="w-80 h-100 d-flex align-items-center justify-content-center" style={{backgroundColor: "#fcead6"}}>
-    <div  className="row row-cols-1 row-cols-md-3 g-4" style={{ width: '80%', backgroundColor: "aliceblue"}}>
-        <h1 style={{color: "blue"}}>Items</h1>
+      
+    <div  className="row row-cols-1 row-cols-md-3 g-4 d-flex align-items-center justify-content-center" style={{ width: '80%', backgroundColor: "aliceblue"}}>
+        
         {items.sort(compare).map((itemMap) => (
             //<ItemCard key={`item${itemMap.id}`} item={itemMap}></ItemCard>
             <ItemCard key={`item${itemMap.id}`} item={itemMap} type={DisplayType.NONOWNED}></ItemCard>
         ))}
     </div>
     </div>
+    </>
   )
 }
 
