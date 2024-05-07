@@ -6,23 +6,24 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Data
 @ToString
 @EqualsAndHashCode
 @Table(name = "reviews")
 public class Review {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "review_id")
-    private long id;
+    @Column(name = "reviewId")
+    private int reviewId;
+
     @Column(name = "rating")
     private int rating;
-    @Column(name = "review_text")
-    private String reviewText;
-    @Column(name = "review_date")
-    private LocalDateTime reviewDate;
+
+    @Column(name = "text")
+    private String text;
+
+    @Column(name = "datePosted")
+    private LocalDateTime datePosted;
 
     @JoinColumn(name = "fk_user_id")
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -31,5 +32,4 @@ public class Review {
     @JoinColumn(name = "fk_item_id")
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Item item;
-
 }

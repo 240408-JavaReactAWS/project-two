@@ -2,17 +2,15 @@ package com.revature.nile.controllers;
 
 import com.revature.nile.models.Review;
 import com.revature.nile.services.ReviewService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import static org.springframework.http.HttpStatus.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/reviews")
+@RequestMapping("reviews")
 public class ReviewController {
-
     private final ReviewService reviewService;
 
     @Autowired
@@ -20,24 +18,17 @@ public class ReviewController {
         this.reviewService = reviewService;
     }
 
-    @GetMapping("/{itemId}")
-    public ResponseEntity<List<Review>> getAllReviews(@PathVariable int itemId) {
-        try{
-            return ResponseEntity.ok(reviewService.getAllReviews(itemId));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-
+    @GetMapping
+    public ResponseEntity<List<Review>> getAllReviews() {
+        return ResponseEntity.ok(reviewService.getAllReviews());
     }
 
-    @PostMapping("/add")
+    @PostMapping
     public ResponseEntity<Review> addReview(@RequestBody Review review) {
         try {
             return ResponseEntity.ok(reviewService.addReview(review));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return new ResponseEntity<>(BAD_REQUEST);
         }
     }
-
-
 }
