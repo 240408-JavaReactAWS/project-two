@@ -12,22 +12,22 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private UserRepository ur;
+    private final UserRepository ur;
 
     @Autowired
     public UserService(UserRepository ur) {
         this.ur = ur;
     }
 
-    public User registerUser(User user) {
-        Optional<User> optionalUser = ur.findByUsername(user.getUsername());
+    public User registerUser(User user) throws EntityExistsException {
+        Optional<User> optionalUser = ur.findByUsername(user.getUserName());
         if(optionalUser.isPresent()) {
-            throw new EntityExistsException(user.getUsername()+" already exists");
+            throw new EntityExistsException(user.getUserName()+" already exists");
         }
         return ur.save(user);
     }
 
-    public User loginUser(User user) throws AuthenticationException {
+    public User loginUser(User user) throws AuthenticationException, EntityNotFoundException {
         Optional<User> optionalUser = ur.findByEmail(user.getEmail());
         if(optionalUser.isPresent()) {
             User u = optionalUser.get();
