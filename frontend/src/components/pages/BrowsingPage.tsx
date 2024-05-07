@@ -121,8 +121,8 @@ function BrowsingPage() {
         getItems();
     }, []);
   return (
-    <div style={{backgroundColor: "#f4dca4"}}>
-    <div  className="container row row-cols-1 row-cols-md-3 g-4" style={{ width: '60%', backgroundColor: "aliceblue"}}>
+    <div className="w-80 h-100 d-flex align-items-center justify-content-center" style={{backgroundColor: "#fcead6"}}>
+    <div  className="row row-cols-1 row-cols-md-3 g-4" style={{ width: '80%', backgroundColor: "aliceblue"}}>
         <h1 style={{color: "blue"}}>Items</h1>
         {items.sort(compare).map((itemMap) => (
             //<ItemCard key={`item${itemMap.id}`} item={itemMap}></ItemCard>
