@@ -43,7 +43,7 @@ public class Item {
     private Double price;
 
     @Column(nullable = false)
-    private int quantity;
+    private int stock;
 
     @Column(nullable = false)
     private String image;
@@ -55,11 +55,11 @@ public class Item {
     @Column
     private Double rating;
 
-    public Item(Double rating, LocalDateTime datePosted, String image, int quantity, Double price, String description, String name, User sellerId, int itemId) {
+    public Item(Double rating, LocalDateTime datePosted, String image, int stock, Double price, String description, String name, User sellerId, int itemId) {
         this.rating = rating;
         this.datePosted = datePosted;
         this.image = image;
-        this.quantity = quantity;
+        this.stock = stock;
         this.price = price;
         this.description = description;
         this.name = name;
