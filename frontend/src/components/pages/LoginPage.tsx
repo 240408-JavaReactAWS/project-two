@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 function LoginPage() {
     
-  const {username, setUsername} = useContext(UserContext)
+  const {userId, setUserId} = useContext(UserContext)
 
   const navigate = useNavigate()
 
@@ -25,36 +25,37 @@ function LoginPage() {
   useEffect(() => { 
     let logout = async() => {
       try {
-        let res = await axios.get('http://localhost:8080/users/logout', {
-            withCredentials: true, headers: { 'Content-Type': 'application/json', 'username': username}
+        let res = await axios.get(process.env.REACT_APP_API_URL + '/users/logout', {
+            withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': userId}
         })
         if (res.status === 200) {
             console.log("Logout Successful")
-            setUsername('')
+            setUserId(-1)
         }
       } catch (error) {
         alert("There was an error logging out")
         console.log(error)
-      }
+      }     
     }
 
-    if (username !== '') {
-      logout()
+    if (userId !== null) {
+      //logout()
+      setUserId(null);
     }
 
   }, [])
   
   let login = async() => {
     try {
-      let res = await axios.post('http://localhost:8080/users/login', {
+      let res = await axios.post(process.env.REACT_APP_API_URL + '/users/login', {
           email: email,
           password: password
       }, {
-          withCredentials: true, headers: { 'Content-Type': 'application/json', 'username': username}
+          withCredentials: true, headers: { 'Content-Type': 'application/json' }
       })
       if (res.status === 200) {
           console.log("Login Successful")
-          setUsername(res.data.username)
+          setUserId(res.data.userId)
           navigate('/')
       }
     } catch (error) {
@@ -69,7 +70,8 @@ function LoginPage() {
     <div className="loginPage">
       <h1>Login Page</h1>
       <div className="loginBody">
-        showError ? <p className="errorMessage">Email or Password Incorrect!</p> : null
+        
+        {showError ? <p className="errorMessage">Email or Password Incorrect!</p> : null}
 
         <input type="text" value={email} placeholder="Email Address" onChange={changeEmail} />
         <input type="password" value={password} placeholder="Password" onChange={changePassword} />

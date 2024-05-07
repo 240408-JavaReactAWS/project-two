@@ -1,25 +1,37 @@
 package com.revature.nile.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Table;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
-@Table(name = "items")
-@Data
 @NoArgsConstructor
+@Data
+@EqualsAndHashCode
+@ToString
+@Table(name = "items")
 public class Item {
 
     @Id
+    @Column(name ="itemId")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int itemId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sellerId", referencedColumnName = "userId")
-    private User sellerId;
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "sellerId", referencedColumnName = "userId")
+    // private User sellerId;
 
     @Column(nullable = false)
     private String name;
@@ -31,7 +43,7 @@ public class Item {
     private Double price;
 
     @Column(nullable = false)
-    private int quantity;
+    private int stock;
 
     @Column(nullable = false)
     private String image;
@@ -43,43 +55,15 @@ public class Item {
     @Column
     private Double rating;
 
-    public Item(Double rating, LocalDateTime datePosted, String image, int quantity, Double price, String description, String name, User sellerId, int itemId) {
+    public Item(Double rating, LocalDateTime datePosted, String image, int stock, Double price, String description, String name, User sellerId, int itemId) {
         this.rating = rating;
         this.datePosted = datePosted;
         this.image = image;
-        this.quantity = quantity;
+        this.stock = stock;
         this.price = price;
         this.description = description;
         this.name = name;
-        this.sellerId = sellerId;
+        // this.sellerId = sellerId;
         this.itemId = itemId;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Item items = (Item) o;
-        return itemId == items.itemId && sellerId == items.sellerId && quantity == items.quantity && Objects.equals(name, items.name) && Objects.equals(description, items.description) && Objects.equals(price, items.price) && Objects.equals(image, items.image) && Objects.equals(datePosted, items.datePosted) && Objects.equals(rating, items.rating);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(itemId, sellerId, name, description, price, quantity, image, datePosted, rating);
-    }
-
-    @Override
-    public String toString() {
-        return "Item{" +
-                "itemId=" + itemId +
-                ", sellerId=" + sellerId +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", price=" + price +
-                ", quantity=" + quantity +
-                ", image='" + image + '\'' +
-                ", datePosted=" + datePosted +
-                ", rating=" + rating +
-                '}';
     }
 }

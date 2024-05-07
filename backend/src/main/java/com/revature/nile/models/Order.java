@@ -1,104 +1,62 @@
 package com.revature.nile.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.jpa.repository.Temporal;
+import java.util.Date;
 
 @Entity
+@NoArgsConstructor
+@Data
+@EqualsAndHashCode
+@ToString
 @Table(name = "orders")
 public class Order {
 
-        public enum StatusEnum {
-            PENDING,
-            APPROVED,
-            COMPLETED
-        }
+    @Id
+    @Column(name ="orderId")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int orderId;
 
-        // Data Fields
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private int orderId;
+    // @ManyToOne
+    // @JoinColumn(nullable = false, name = "userId")
+    // private int userId;
 
-        // Foreign
-        @ManyToOne
-        @JoinColumn(nullable = false, name = "user_id")
-        @JsonBackReference
-        private User user;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private StatusEnum status;
 
-        private StatusEnum status;
+    @Column(nullable = false)
+    private String shipToAddress;
 
-        private String shipToAddress;
-        private String billAddress;
+    @Column(nullable = false)
+    private String billAddress;
 
-        @Temporal(TemporalType.TIMESTAMP)
-        @CreationTimestamp
-        private String dateOrdered;
+    @CreationTimestamp
+    private Date dateOrdered;
 
-    // Constructors
+    private enum StatusEnum {
+        PENDING,
+        APPROVED
+    }
 
-    // no-args constructor
-    public Order() {}
-    // all-args constructor
-    public Order(int orderId, User user, StatusEnum status, String shipToAddress, String billAddress, String dateOrdered) {
-        this.orderId = orderId;
-        this.user = user;
+    public Order(int userId, StatusEnum status, String shipToAddress, String billAddress, Date dateOrdered) {
+        // this.userId = userId;
         this.status = status;
         this.shipToAddress = shipToAddress;
         this.billAddress = billAddress;
         this.dateOrdered = dateOrdered;
     }
-
-
-    // Getters and Setters
-
-    public int getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public StatusEnum getStatus() {
-        return status;
-    }
-
-    public void setStatus(StatusEnum status) {
-        this.status = status;
-    }
-
-    public String getShipToAddress() {
-        return shipToAddress;
-    }
-
-    public void setShipToAddress(String shipToAddress) {
-        this.shipToAddress = shipToAddress;
-    }
-
-    public String getBillAddress() {
-        return billAddress;
-    }
-
-    public void setBillAddress(String billAddress) {
-        this.billAddress = billAddress;
-    }
-
-    public String getDateOrdered() {
-        return dateOrdered;
-    }
-
-    public void setDateOrdered(String dateOrdered) {
-        this.dateOrdered = dateOrdered;
-    }
-
-
 }
