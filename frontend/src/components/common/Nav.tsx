@@ -7,9 +7,10 @@ import axios from 'axios';
 import { UserContext } from '../../App';
 const Nav: React.FC = () => {
 
-  const {username, setUsername} = useContext<any>(UserContext)
+  const {userId, setUserId} = useContext<any>(UserContext)
   const navigateTo = useNavigate();
 
+  /*
   let logout = async() => {
     try {
       let res = await axios.get('http://localhost:8080/users/logout', {
@@ -25,6 +26,7 @@ const Nav: React.FC = () => {
       console.log(error)
     }
   }
+  */
 
   return (
     <>
@@ -41,16 +43,22 @@ const Nav: React.FC = () => {
             <li className="nav-item p-2">
               <Link to="/" className="nav-link">Browse Products</Link>
             </li>
-          {!username &&
+          {!userId &&
             <li className="nav-item p-2">
               <Link to="/login" className="nav-link">Login</Link>
             </li>
           }
-            {username && <><li className="nav-item p-2"><Link to="/listings" className="nav-link">My Listings</Link></li>
-            <li className="nav-item p-2"><Link to="/orders" className="nav-link">My Orders</Link></li>
-            <li className="nav-item p-2"><Link to="/cart" className="nav-link">Cart</Link></li>
-            <li className="nav-item p-2"><Link to="/checkout" className="nav-link">Checkout</Link></li>
-            <li className="nav-item p-2"><button onClick={logout} className="nav-link">Logout</button></li>
+            {userId && <><li className="nav-item p-2">
+              <Link to="/listings" className="nav-link">My Listings</Link></li>
+            <li className="nav-item p-2">
+              <Link to="/orders" className="nav-link">My Orders</Link></li>
+            <li className="nav-item p-2">
+              <Link to="/cart" className="nav-link">Cart</Link></li>
+            <li className="nav-item p-2">
+              <Link to="/checkout" className="nav-link">Checkout</Link></li>
+            <li className="nav-item p-2">
+              <Link to="/login" className="nav-link">Logout</Link>
+            </li>
             </>}
           </ul>
         </div>
