@@ -2,17 +2,26 @@ package com.revature.nile.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+// import lombok data
+import lombok.*;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.jpa.repository.Temporal;
 
+import java.util.Date;
+import java.util.Objects;
+
+import static jakarta.persistence.TemporalType.DATE;
+
+
 @Entity
 @Table(name = "orders")
+@Data
 public class Order {
 
-        public enum StatusEnum {
+        private enum StatusEnum {
             PENDING,
-            APPROVED,
-            COMPLETED
+            APPROVED
         }
 
         // Data Fields
@@ -22,27 +31,30 @@ public class Order {
 
         // Foreign
         @ManyToOne
-        @JoinColumn(nullable = false, name = "user_id")
-        @JsonBackReference
-        private User user;
+        @JoinColumn(nullable = false, name = "userId")
+        private int userId;
 
+        @Column(nullable = false)
+        @Enumerated(EnumType.STRING)
         private StatusEnum status;
 
+        @Column(nullable = false)
         private String shipToAddress;
+
+        @Column(nullable = false)
         private String billAddress;
 
-        @Temporal(TemporalType.TIMESTAMP)
         @CreationTimestamp
-        private String dateOrdered;
+        private Date dateOrdered;
+
+
 
     // Constructors
+    public Order() {
+    }
 
-    // no-args constructor
-    public Order() {}
-    // all-args constructor
-    public Order(int orderId, User user, StatusEnum status, String shipToAddress, String billAddress, String dateOrdered) {
-        this.orderId = orderId;
-        this.user = user;
+    public Order(int userId, StatusEnum status, String shipToAddress, String billAddress, Date dateOrdered) {
+        this.userId = userId;
         this.status = status;
         this.shipToAddress = shipToAddress;
         this.billAddress = billAddress;
@@ -50,55 +62,28 @@ public class Order {
     }
 
 
-    // Getters and Setters
-
-    public int getOrderId() {
-        return orderId;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return getOrderId() == order.getOrderId() && userId == order.userId && getStatus() == order.getStatus() && Objects.equals(getShipToAddress(), order.getShipToAddress()) && Objects.equals(getBillAddress(), order.getBillAddress()) && Objects.equals(getDateOrdered(), order.getDateOrdered());
     }
 
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
+    @Override
+    public int hashCode() {
+        return Objects.hash(getOrderId(), userId, getStatus(), getShipToAddress(), getBillAddress(), getDateOrdered());
     }
 
-    public User getUser() {
-        return user;
+    @Override
+    public String toString() {
+        return "Order{" +
+                "orderId=" + orderId +
+                ", userId=" + userId +
+                ", status=" + status +
+                ", shipToAddress='" + shipToAddress + '\'' +
+                ", billAddress='" + billAddress + '\'' +
+                ", dateOrdered=" + dateOrdered +
+                '}';
     }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public StatusEnum getStatus() {
-        return status;
-    }
-
-    public void setStatus(StatusEnum status) {
-        this.status = status;
-    }
-
-    public String getShipToAddress() {
-        return shipToAddress;
-    }
-
-    public void setShipToAddress(String shipToAddress) {
-        this.shipToAddress = shipToAddress;
-    }
-
-    public String getBillAddress() {
-        return billAddress;
-    }
-
-    public void setBillAddress(String billAddress) {
-        this.billAddress = billAddress;
-    }
-
-    public String getDateOrdered() {
-        return dateOrdered;
-    }
-
-    public void setDateOrdered(String dateOrdered) {
-        this.dateOrdered = dateOrdered;
-    }
-
-
 }
