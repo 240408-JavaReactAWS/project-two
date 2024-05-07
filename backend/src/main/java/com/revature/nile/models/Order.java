@@ -30,9 +30,9 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int orderId;
 
-    // @ManyToOne
-    // @JoinColumn(nullable = false, name = "userId")
-    // private int userId;
+     @ManyToOne
+     @JoinColumn(nullable = false, name = "userId")
+     private User user;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

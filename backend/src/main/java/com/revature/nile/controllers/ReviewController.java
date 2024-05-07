@@ -11,6 +11,8 @@ import java.util.List;
 @RestController
 @RequestMapping("reviews")
 public class ReviewController {
+
+    @Autowired
     private final ReviewService reviewService;
 
     @Autowired
@@ -31,4 +33,6 @@ public class ReviewController {
             return new ResponseEntity<>(BAD_REQUEST);
         }
     }
+
+
 }
