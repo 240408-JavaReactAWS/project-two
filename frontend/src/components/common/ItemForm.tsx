@@ -27,11 +27,11 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
       // FIX ME: Add correct URL
       axios.get(`${process.env.BACKEND_URL}/items/${itemId}`)
         .then(response => {
-          const { name, description, price, image } = response.data;
+          const { name, description, price, stock, image } = response.data;
           setName(name);
           setDescription(description);
           setPrice(parseFloat(price).toFixed(2));
-          setStock(0);
+          setStock(stock);
           setImage(image);
         })
         .catch(error => {
