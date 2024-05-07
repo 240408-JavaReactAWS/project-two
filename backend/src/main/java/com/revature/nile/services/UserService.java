@@ -20,7 +20,7 @@ public class UserService {
     }
 
     public User registerUser(User user) throws EntityExistsException {
-        Optional<User> optionalUser = ur.findByUsername(user.getUserName());
+        Optional<User> optionalUser = ur.findByUserName(user.getUserName());
         if (optionalUser.isPresent()) {
             throw new EntityExistsException(user.getUserName() + " already exists");
         }
