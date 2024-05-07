@@ -7,7 +7,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Data;
@@ -16,6 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -51,6 +54,15 @@ public class Order {
         PENDING,
         APPROVED
     }
+
+    // An order can have multiple items
+    @OneToMany(mappedBy = "order")
+    private List<OrderItem> orderItems;
+
+    // An order can have only one user
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private User user;
 
     public Order(int userId, StatusEnum status, String shipToAddress, String billAddress, Date dateOrdered) {
         // this.userId = userId;
