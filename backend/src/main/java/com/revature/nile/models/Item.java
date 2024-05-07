@@ -29,9 +29,9 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int itemId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sellerId", referencedColumnName = "userId")
-    private User sellerId;
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "sellerId", referencedColumnName = "userId")
+    // private User sellerId;
 
     @Column(nullable = false)
     private String name;
@@ -63,7 +63,7 @@ public class Item {
         this.price = price;
         this.description = description;
         this.name = name;
-        this.sellerId = sellerId;
+        // this.sellerId = sellerId;
         this.itemId = itemId;
     }
 }

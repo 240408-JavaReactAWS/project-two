@@ -26,12 +26,12 @@ public class Review {
     private LocalDateTime datePosted;
 
     // @JoinColumn(name = "fk_user_id")
-    @JoinColumn(name = "userId")
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private User user;
+    // @JoinColumn(name = "userId")
+    // @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // private User user;
 
     // @JoinColumn(name = "fk_item_id")
-    @JoinColumn(name = "itemId")
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Item item;
+    // @JoinColumn(name = "itemId")
+    // @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // private Item item;
 }

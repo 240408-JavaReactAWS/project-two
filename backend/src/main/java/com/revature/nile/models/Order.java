@@ -30,9 +30,9 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int orderId;
 
-    @ManyToOne
-    @JoinColumn(nullable = false, name = "userId")
-    private int userId;
+    // @ManyToOne
+    // @JoinColumn(nullable = false, name = "userId")
+    // private int userId;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -53,7 +53,7 @@ public class Order {
     }
 
     public Order(int userId, StatusEnum status, String shipToAddress, String billAddress, Date dateOrdered) {
-        this.userId = userId;
+        // this.userId = userId;
         this.status = status;
         this.shipToAddress = shipToAddress;
         this.billAddress = billAddress;

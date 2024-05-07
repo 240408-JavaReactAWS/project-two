@@ -44,14 +44,14 @@ public class User {
     @Column(nullable = false)
     private String lastName;
 
-    @OneToMany(mappedBy = "user")
-    private List<Order> Orders;
+    // @OneToMany(mappedBy = "user")
+    // private List<Order> Orders;
 
-    @OneToMany(mappedBy = "user")
-    private List<Review> Reviews;
+    // @OneToMany(mappedBy = "user")
+    // private List<Review> Reviews;
 
-    @OneToMany(mappedBy = "user")
-    private List<Item> Items;
+    // @OneToMany(mappedBy = "user")
+    // private List<Item> Items;
 
     public User(String email, String userName, String password, String address, String firstName, String lastName) {
         this.email = email;
