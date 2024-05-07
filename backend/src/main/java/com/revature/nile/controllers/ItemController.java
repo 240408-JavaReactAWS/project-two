@@ -13,19 +13,18 @@ import jakarta.persistence.EntityNotFoundException;
 @RestController
 @RequestMapping("items")
 public class ItemController {
-
     private final ItemService itemService;
 
     @Autowired
-    public ItemController(ItemService itemService){
+    public ItemController(ItemService itemService) {
         this.itemService= itemService;
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<Item> getItemById(int id){
+    @GetMapping("{itemId}")
+    public ResponseEntity<Item> getItemById(int itemId) {
         Item item;
         try {
-            item = itemService.getItemById(id);
+            item = itemService.getItemById(itemId);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(NOT_FOUND);
         }

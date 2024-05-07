@@ -1,14 +1,24 @@
 package com.revature.nile.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.OneToMany;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import java.util.List;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Entity
-@Table(name = "users")
 @NoArgsConstructor
 @Data
+@EqualsAndHashCode
+@ToString
+@Table(name = "users")
 public class User {
 
     @Id
@@ -34,14 +44,14 @@ public class User {
     @Column(nullable = false)
     private String lastName;
 
-    @OneToMany(mappedBy = "user")
-    private List<Order> Orders;
+    // @OneToMany(mappedBy = "user")
+    // private List<Order> Orders;
 
-    @OneToMany(mappedBy = "user")
-    private List<Review> Reviews;
+    // @OneToMany(mappedBy = "user")
+    // private List<Review> Reviews;
 
-    @OneToMany(mappedBy = "user")
-    private List<Item> Items;
+    // @OneToMany(mappedBy = "user")
+    // private List<Item> Items;
 
     public User(String email, String userName, String password, String address, String firstName, String lastName) {
         this.email = email;
