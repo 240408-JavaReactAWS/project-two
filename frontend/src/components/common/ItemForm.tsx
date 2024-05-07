@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Button, InputGroup, Form, FormControl } from 'react-bootstrap';
+import { Button, InputGroup, Form, FormControl, FormGroup, FormLabel, FormText } from 'react-bootstrap';
 import './ItemForm.css';
 
 interface IItemFormProps {
@@ -11,42 +11,24 @@ interface IItemFormProps {
 const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('0.00');
-  const [stock, setStock] = useState(0);
+  const [price, setPrice] = useState('');
   const [image, setImage] = useState('');
   const [errors, setErrors] = useState({
     name: false,
     description: false,
     price: false,
-    stock: false,
     image: false
   });
 
-  const validateForm = () => {
-    const newErrors = {
-      name: !name,
-      description: !description,
-      price: parseFloat(price) <= 0,
-      stock: stock === 0,
-      image: !image
-    };
-
-    setErrors(newErrors);
-    // Check if every value in error object is false
-    return Object.values(newErrors).every(v => !v);
-  };
-
-  // Check if Item already exists
   useEffect(() => {
     if (itemId) {
-      // FIX ME: Update URL
+      // FIX ME: Add correct URL
       axios.get(`${process.env.BACKEND_URL}/items/${itemId}`)
         .then(response => {
-          const { name, description, price, stock, image } = response.data;
+          const { name, description, price, image } = response.data;
           setName(name);
           setDescription(description);
-          setPrice(price.toFixed(2));
-          setStock(stock);
+          setPrice(parseFloat(price).toFixed(2));
           setImage(image);
         })
         .catch(error => {
@@ -55,7 +37,19 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
     }
   }, [itemId]);
 
-  // Force price input to be in dollar format
+  const validateForm = () => {
+    const newErrors = {
+      name: !name,
+      description: !description,
+      // ADJUST MAX PRICE
+      price: parseFloat(price) <= 0 || parseFloat(price) >= 50000,
+      image: !image
+    };
+
+    setErrors(newErrors);
+    return Object.values(newErrors).every(v => !v);
+  };
+
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
     let numericInput = input.replace(/\D/g, '');
@@ -68,16 +62,21 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (validateForm()) {
-      const itemData = { name, description, price: parseFloat(price), stock, image, sellerId };
+      const itemData = {
+        name,
+        description,
+        price: parseFloat(price.replace(/,/g, '')),
+        image,
+        sellerId
+      };
       const axiosMethod = itemId ? axios.patch : axios.post;
-      // FIX ME: Update URL
+      // FIX ME: Add correct URLs
       const url = itemId ? `${process.env.BACKEND_URL}/items/store/${itemId}` : `${process.env.BACKEND_URL}/items/store`;
 
       axiosMethod(url, itemData)
         .then(response => console.log(response))
         .catch(error => console.log(error));
     } else {
-      // Shake form if validation fails
       document.getElementById('formContainer')?.classList.add('shake');
       setTimeout(() => {
         document.getElementById('formContainer')?.classList.remove('shake');
@@ -87,78 +86,78 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, sellerId }) => {
 
   return (
     <div id="formContainer">
+      <h1>Add more details</h1>
+      <p>Add a photo and some details about your item. You will be able to edit this later.</p>
       <Form onSubmit={handleSubmit}>
-        <Form.Group>
-          <Form.Label>Item Name</Form.Label>
+        <FormGroup>
+          <FormLabel>Item Name</FormLabel>
+          <FormText className="text-muted">
+            Include keywords that buyers would use to search for this item.
+          </FormText>
           <FormControl
-            className={errors.name ? 'error' : ''}
+            className={`form-control ${errors.name ? 'is-invalid' : ''}`}
             type="text"
             value={name}
             onChange={e => {
               setName(e.target.value);
               setErrors(prev => ({ ...prev, name: false }));
             }}
+            maxLength={140}
             placeholder="Enter item name"
           />
-        </Form.Group>
+          <FormText>{name.length}/140</FormText>
+        </FormGroup>
 
-        <Form.Group>
-          <Form.Label>Item Description</Form.Label>
+        <FormGroup>
+          <FormLabel>Description</FormLabel>
+          <FormText className="text-muted">
+            Buyers will only see the first few lines unless they expand the description.
+          </FormText>
           <FormControl
-            className={errors.description ? 'error' : ''}
-            type="text"
+            className={`form-control ${errors.description ? 'is-invalid' : ''}`}
+            as="textarea"
             value={description}
             onChange={e => {
               setDescription(e.target.value);
               setErrors(prev => ({ ...prev, description: false }));
             }}
-            placeholder="Enter item description"
+            style={{ resize: 'vertical' }}
+            placeholder="What makes your item special?"
           />
-        </Form.Group>
+        </FormGroup>
 
-        <Form.Group>
-          <Form.Label>Price</Form.Label>
+        <FormGroup>
+          <FormLabel>Price</FormLabel>
           <InputGroup>
             <InputGroup.Text>$</InputGroup.Text>
             <FormControl
-              className={errors.price ? 'error' : ''}
+              className={`form-control ${errors.price ? 'is-invalid' : ''}`}
               type="text"
-              placeholder="0.00"
               value={price}
               onChange={handlePriceChange}
+              placeholder="0.00"
             />
+            {errors.price && <FormText className="invalid-feedback">
+              Price must be between $0.01 and $50,000.00
+            </FormText>}
           </InputGroup>
-        </Form.Group>
+        </FormGroup>
 
-        <Form.Group>
-          <Form.Label>Stock</Form.Label>
+        <FormGroup>
+          <FormLabel>Image URL</FormLabel>
           <FormControl
-            className={errors.stock ? 'error' : ''}
-            type="number"
-            placeholder="0"
-            value={stock}
-            onChange={e => {
-              setStock(Number(e.target.value));
-              setErrors(prev => ({ ...prev, stock: false }));
-            }}
-          />
-        </Form.Group>
-
-        <Form.Group>
-          <Form.Label>Image URL</Form.Label>
-          <FormControl
-            className={errors.image ? 'error' : ''}
+            className={`form-control ${errors.image ? 'is-invalid' : ''}`}
             type="text"
-            placeholder="http://example.com/image.jpg"
             value={image}
             onChange={e => {
               setImage(e.target.value);
               setErrors(prev => ({ ...prev, image: false }));
             }}
+            placeholder="http://example.com/image.jpg"
           />
-        </Form.Group>
+        </FormGroup>
 
-        <Button type="submit" variant="primary">Sell Item</Button>
+        <Button type="submit" className="custom-button">Sell Item</Button>
       </Form>
     </div>
   );
