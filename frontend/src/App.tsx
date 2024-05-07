@@ -8,22 +8,22 @@ import Nav from './components/common/Nav';
 import RegistrationPage from './components/pages/registration/RegistrationPage';
 
 interface contextInterface {
-  username: string,
-  setUsername: React.Dispatch<React.SetStateAction<string>>
+  userId: any,
+  setUserId: React.Dispatch<React.SetStateAction<any>>
 }
 
 export const UserContext = createContext<contextInterface>(
-  {username: "", 
-  setUsername: () => {}})
+  {userId: null, 
+  setUserId: () => {}})
 
 function App() {
 
-  const [username, setUsername] = useState<string>("")
+  const [userId, setUserId] = useState<any>(null)
 
   return (
     <div className="content">
       <header className="header"></header>
-      <UserContext.Provider value={{username, setUsername}}>
+      <UserContext.Provider value={{userId, setUserId}}>
         <BrowserRouter>
         <Nav/>
           <Routes>
