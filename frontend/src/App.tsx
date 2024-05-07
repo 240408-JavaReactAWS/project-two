@@ -4,6 +4,7 @@ import './App.css';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import LoginPage from './components/pages/LoginPage';
 import { IUser } from './interfaces/IUser';
+import Nav from './components/common/Nav';
 import RegistrationPage from './components/pages/registration/RegistrationPage';
 
 interface contextInterface {
@@ -24,6 +25,7 @@ function App() {
       <header className="header"></header>
       <UserContext.Provider value={{username, setUsername}}>
         <BrowserRouter>
+        <Nav/>
           <Routes>
             {/* <Route path="/" element={<BrowsingPage />} /> */}
             <Route path="/login" element={<LoginPage />} />
