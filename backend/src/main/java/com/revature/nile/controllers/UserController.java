@@ -3,6 +3,7 @@ package com.revature.nile.controllers;
 import com.revature.nile.models.User;
 import com.revature.nile.services.UserService;
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,5 +40,15 @@ public class UserController  {
             return new ResponseEntity<>(UNAUTHORIZED);
         }
         return new ResponseEntity<>(user, OK);
+    }
+
+    @GetMapping("logout")
+    public ResponseEntity<User> logoutHandler(@RequestBody User logoutAttempt) {
+        try {
+            us.logoutUser(logoutAttempt);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+        return new ResponseEntity<>(OK);
     }
 }
