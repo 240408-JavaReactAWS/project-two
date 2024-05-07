@@ -20,15 +20,6 @@ export const UserContext = createContext<contextInterface>(
 function App() {
 
   const [userId, setUserId] = useState<any>(null)
-  //below is test code for ViewReview
-  // let review = {
-  //   id: 1,
-  //   userId: 2,
-  //   itemId: 3,
-  //   rating: 4,
-  //   reviewText: "string1",
-  //   reviewDate: "string2"
-  //   }
 
   return (
     <div className="content">
@@ -50,8 +41,6 @@ function App() {
           </Routes>
         </BrowserRouter>
 
-        {/* below is test code for ViewReview */}
-        {/* <ViewReview {...review}> </ViewReview> */}
       </UserContext.Provider>
     </div>
   );
