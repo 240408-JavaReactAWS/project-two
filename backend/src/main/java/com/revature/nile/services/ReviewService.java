@@ -21,9 +21,9 @@ public class ReviewService {
     public Review addReview(Review review) {
         List<Review> listOfReviews = reviewRepository.findAll();
 
-        if (listOfReviews.contains(review.getUser())) {
-            throw new OnlyOneReviewPerUserException("Only one review per user is allowed");
-        }
+        // if (listOfReviews.contains(review.getUser())) {
+        //     throw new OnlyOneReviewPerUserException("Only one review per user is allowed");
+        // }
 
         return reviewRepository.save(review);
     }

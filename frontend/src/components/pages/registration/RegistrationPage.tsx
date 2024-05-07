@@ -9,52 +9,55 @@ import {
   MDBCardBody,
   MDBInput
 } from 'mdb-react-ui-kit';
+import './Registration.css';
 
 
 function RegistrationPage() {
-    const [email, setEmail] = useState('');
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [address, setAddress] = useState('');
-    const [city, setCity] = useState('');
-    const [state, setState] = useState('');
-    const [zipCode, setZipCode] = useState('');
-    const [country, setCountry] = useState('');
+    const [formData, setFormData] = useState({
+        email: '',
+        username: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+        address: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        country: ''
+    });
     const [message, setMessage] = useState('');
 
     const handleUserInfo = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        switch (name) {
-            case 'email': setEmail(value); break;
-            case 'username': setUsername(value); break;
-            case 'password': setPassword(value); break;
-            case 'firstName': setFirstName(value); break;
-            case 'lastName': setLastName(value); break;
-            default: break;
-        }
+        setFormData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
     };
 
     const handleAddressInfo = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        switch (name) {
-            case 'address': setAddress(value); break;
-            case 'city': setCity(value); break;
-            case 'state': setState(value); break;
-            case 'zipCode': setZipCode(value); break;
-            case 'country': setCountry(value); break;
-            default: break;
-        }
+        setFormData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
     };
 
     const handleRegister = async () => {
         try {
-            let response = await axios.post('http://localhost:8080/users/register', {
-                email, username, password, firstName, lastName,
-                address, city, state, zipCode, country
+            let response = await axios.post('http://localhost:8080/users', {
+                email: formData.email,
+                username: formData.username,
+                password: formData.password,
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                address: formData.address,
+                city: formData.city,
+                state: formData.state,
+                zipCode: formData.zipCode,
+                country: formData.country
             }, {
-                withCredentials: true, headers: { 'Content-Type': 'application/json', 'username': username}
+                withCredentials: true, headers: { 'Content-Type': 'application/json' }
             });
             if (response.status === 201) {
                 setMessage('User registered successfully');
@@ -66,6 +69,7 @@ function RegistrationPage() {
     };
 
     return (
+          //This form and styling came from this site https://mdbootstrap.com/docs/react/extended/registration-form/
         <MDBContainer fluid className='h-custom'>
             <MDBRow className='d-flex justify-content-center align-items-center h-100'>
                 <MDBCol col='12' className='m-5'>
@@ -94,7 +98,7 @@ function RegistrationPage() {
                                 </MDBCol>
                                 <MDBCol md='6' className='bg-indigo p-5'>
                                     <h3 className="fw-normal mb-5 text-white">Contact Details</h3>
-                                    <MDBInput wrapperClass='mb-4' labelClass='text-white' label='Street + Number' size='lg' name='address' onChange={handleAddressInfo}/>
+                                    <MDBInput wrapperClass='mb-4' labelClass='text-white' label='Street Address / PO Box ' size='lg' name='address' onChange={handleAddressInfo}/>
                                     <MDBRow>
                                         <MDBCol md='5'>
                                             <MDBInput wrapperClass='mb-4' labelClass='text-white' label='Zip Code' size='lg' name='zipCode' onChange={handleAddressInfo}/>

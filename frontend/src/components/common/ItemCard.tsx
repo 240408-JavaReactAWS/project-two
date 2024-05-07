@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { UserContext } from '../../App';
 import { Link } from 'react-router-dom';
+import { IItem } from '../../interfaces/IItem';
 
 export enum DisplayType {
     OWNED,
@@ -9,20 +10,11 @@ export enum DisplayType {
 }
 
 interface IItemCardProps {
-    item: {
-        id: number;
-        name: string;
-        price: number;
-        description: string;
-        image: string;
-        sellerId: number;
-        rating: number;
-        quantity: number;
-    };
+    item: IItem;
     type: DisplayType;
 }
 function ItemCard(props : IItemCardProps) {
-    const [quantity, setQuantity] = useState(props.item.quantity)
+    const [quantity, setQuantity] = useState(props.item.stock)
     const plusQuantity = () => {
         setQuantity(quantity + 1)
     }
@@ -44,7 +36,7 @@ function ItemCard(props : IItemCardProps) {
                     <h5 className="card-title">{props.item.name}</h5>
                     <p className="card-text">Price: {props.item.price}</p>
                     <p className="card-text">Rating: {props.item.rating}</p>
-                    <p className="card-text">Quantity: {props.item.quantity}</p>
+                    <p className="card-text">Quantity: {props.item.stock}</p>
                     <button className="btn btn-primary" onClick={deleteItem}>Delete</button>
                     </div>
                 </div>
@@ -57,7 +49,7 @@ function ItemCard(props : IItemCardProps) {
                     <h5 className="card-title">{props.item.name}</h5>
                     <p className="card-text">Price: {props.item.price}</p>
                     <p className="card-text">Rating: {props.item.rating}</p>
-                    <p className="card-text">Quantity: {props.item.quantity}</p>
+                    <p className="card-text">Quantity: {props.item.stock}</p>
                     <button className="btn btn-primary" onClick={addToCart}>Add to Cart</button>
                 </div>
             </div>
