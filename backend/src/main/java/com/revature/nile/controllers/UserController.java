@@ -1,27 +1,30 @@
 package com.revature.nile.controllers;
 
+import com.revature.nile.models.Item;
 import com.revature.nile.models.User;
+import com.revature.nile.services.ItemService;
 import com.revature.nile.services.UserService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import javax.naming.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("users")
 public class UserController  {
     private final UserService us;
+    private final ItemService itemService;
 
     @Autowired
-    public UserController(UserService us) {
+    public UserController(UserService us, ItemService itemService) {
         this.us = us;
+        this.itemService = itemService;
     }
 
     @PostMapping("register")
@@ -55,4 +58,6 @@ public class UserController  {
         }
         return new ResponseEntity<>(OK);
     }
+
+
 }

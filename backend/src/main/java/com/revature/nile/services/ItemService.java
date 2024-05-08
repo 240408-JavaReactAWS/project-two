@@ -5,6 +5,8 @@ import com.revature.nile.repositories.ItemRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,4 +26,17 @@ public class ItemService {
         }
         throw new EntityNotFoundException("Item with id: " + itemId + " doesn't exist");
     }
+
+
+
+
+    public void pathItem(Item item) {
+        Optional<Item> itemOptional = itemRepository.findById(item.getItemId());
+        if (itemOptional.isPresent()) {
+            Item item1 = itemOptional.get();
+            itemRepository.save(item);
+        }
+        throw new EntityNotFoundException("Item with id: " + item.getItemId() + " doesn't exist");
+    }
+
 }
