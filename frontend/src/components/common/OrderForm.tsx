@@ -1,3 +1,7 @@
+// TODO
+// Styling
+// Form validation
+// Testing eventually
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { IOrder } from '../../interfaces/IOrder';
@@ -21,8 +25,6 @@ const OrderForm: React.FC = () => {
   const [billingCountry, setBillingCountry] = useState('');
   const [billingZipCode, setBillingZipCode] = useState('');
 
-  // validate if shipping/billing address is empty
-
   const handleCopyAddress = () => {
     setBillingStreetAddress(shippingStreetAddress);
     setBillingCity(shippingCity);
@@ -31,9 +33,6 @@ const OrderForm: React.FC = () => {
     setBillingZipCode(shippingZipCode);
   }
 
-  // const handleInput
-  // patch request to update order status
-  // PATCH /users/{userID}/orders/checkout
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -49,36 +48,6 @@ const OrderForm: React.FC = () => {
       .catch(error => { alert(error) });
 }
 
-  // send address as a string
-
-  // display error if quantity requested > stock
-  // display error if session user != {userID} in request URL
-
-  // <div>Shipping Information
-  //   <input>First Name</input>
-  //   <input>Last Name</input>
-  //   <input>Street Address</input>
-  //   <input>City</input>
-  //   <input>State</input>
-  //   <input>Country</input>
-  //   <input>Zip Code</input>
-  // </div>
-
-  // {/* doesn't do anything, for display only */}
-  // <div>Billing Information
-  //   <input>Card Number</input>
-  //   <input>Name on Card</input>
-  //   <input>Expiration Date</input>
-  //   <input>Security Code</input>
-  //   <p>**same as shipping info button</p>
-  //   <input>Street Address</input>
-  //   <input>City</input>
-  //   <input>State</input>
-  //   <input>Country</input>
-  //   <input>Zip Code</input>
-  // </div>
-
-  // <button>Submit</button>
   return (
     <>
       <Form onSubmit={handleSubmit}>
