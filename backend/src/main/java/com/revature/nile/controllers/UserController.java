@@ -11,16 +11,13 @@ import jakarta.persistence.EntityNotFoundException;
 import javax.naming.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
+
 import static org.springframework.http.HttpStatus.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("users")
@@ -118,6 +115,38 @@ public class UserController  {
         currOrder.getOrderItems().add(orderItem);
 
         return new ResponseEntity<Order>(os.getOrderById(currOrder.getOrderId()), CREATED);
+    }
+
+    @PatchMapping("{userId}/orders/current")
+    public ResponseEntity<Optional<String>> updateOrderItemHandler(@PathVariable("userId") int userId, @RequestBody OrderItem orderItem) {
+
+        /** Quantity less than 0: Return 400 (Bad Request) with information “Can’t have a quantity less than zero!” in the response body. */
+        if (orderItem.getQuantity()<0){
+            Optional<String> msg = Optional.of("Can’t have a quantity less than zero!");
+            return new ResponseEntity<>(msg, BAD_REQUEST);
+        }
+        /** Quantity greater than Item.stock: Return 400 (Bad Request) with information "Requested quantity higher than current stock." in the response body. */
+        else if (orderItem.getQuantity()>orderItem.getItem().getStock()){
+            Optional<String> msg = Optional.of("Requested quantity higher than current stock!");
+            return new ResponseEntity<>(msg, BAD_REQUEST);
+        }
+        /** Logged-in user ID and path parameter ID mismatch: Return 403 (Forbidden) */
+        User user;
+        try {
+            user = us.getUserById(userId);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(FORBIDDEN);
+        }
+        /** Item not in the current order: Return 404 (Not Found) */
+        OrderItem oldOrderItem = os.getOrderItemByOrderItemId(orderItem.getOrderItemId());
+        if (oldOrderItem == null || oldOrderItem.getOrder().getStatus()==Order.StatusEnum.PENDING){
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+        /** Update the quantity of the order item */
+        oldOrderItem.setQuantity(orderItem.getQuantity());
+        os.updateOrderItem(oldOrderItem);
+        Optional<String> orderItemOpt = Optional.of(orderItem.toString());
+        return new ResponseEntity<>(orderItemOpt, OK);
     }
 
 }

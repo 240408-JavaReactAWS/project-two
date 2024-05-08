@@ -52,4 +52,13 @@ public class OrderService {
             }
             return null;
       }
+
+      public OrderItem getOrderItemByOrderItemId(int orderItemId) {
+            return orderItemRepository.findById(orderItemId).orElse(null);
+      }
+
+      public OrderItem updateOrderItem(OrderItem orderItem) {
+            return orderItemRepository.save(orderItem);
+      }
+
 }
