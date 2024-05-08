@@ -43,7 +43,7 @@ function ItemCard(props : IItemCardProps) {
         </Link>
         : props.type === DisplayType.NONOWNED ?
         <Link style={{textDecoration:'none', color:'black'}}to={`/item/${props.item.id}`}>
-            <div className="card" style={{width: '18rem'}}>
+            <div className="card" style={{maxWidth: '18rem'}}>
                 <img className="card-img-top" src={props.item.image} alt="Card image cap"/>
                 <div className="card-body">
                     <h5 className="card-title">{props.item.name}</h5>

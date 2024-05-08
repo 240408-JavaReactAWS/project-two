@@ -127,7 +127,7 @@ function BrowsingPage() {
     </header>
     <div className="container w-90 h-100 d-flex align-items-center justify-content-center" style={{backgroundColor: "#fcead6"}}>
 
-    <div  className="row row-cols-1 g-4 d-flex align-items-center justify-content-center flex-wrap" style={{ width: '80%'}}>
+    <div  className="row row-cols-1 row-cols-md-3 g-4 d-flex align-items-center justify-content-center flex-wrap" style={{ width: '80%'}}>
         
         {items.sort(compare).map((itemMap) => (
             //<ItemCard key={`item${itemMap.id}`} item={itemMap}></ItemCard>
