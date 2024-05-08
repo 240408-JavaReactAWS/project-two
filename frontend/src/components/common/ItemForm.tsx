@@ -26,7 +26,7 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId }) => {
   // Check if item already exists
   useEffect(() => {
     if (itemId) {
-      axios.get(`${process.env.BACKEND_URL}/items/${itemId}`)
+      axios.get(`${process.env.REACT_APP_API_URL}/items/${itemId}`)
         .then(response => {
           const { name, description, price, stock, datePosted, image } = response.data;
           setName(name);
@@ -77,10 +77,9 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId }) => {
         price: parseFloat(price.replace(/,/g, '')),
         stock,
         image,
-        datePosted,
       };
       const axiosMethod = itemId ? axios.patch : axios.post;
-      const url = itemId ? `${process.env.BACKEND_URL}/items/${itemId}` : `${process.env.BACKEND_URL}/items`;
+      const url = itemId ? `${process.env.REACT_APP_API_URL}/items/${itemId}` : `${process.env.REACT_APP_API_URL}/items`;
 
       axiosMethod(url, itemData)
         .then(response => console.log(response))
