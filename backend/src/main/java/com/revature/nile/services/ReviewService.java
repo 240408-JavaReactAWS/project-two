@@ -14,6 +14,14 @@ public class ReviewService {
         this.reviewRepository = reviewRepository;
     }
 
+    public Review createReview(Review review) {
+        return reviewRepository.save(review);
+    }
+    
+    public Review getReviewById(int reviewId) {
+        return reviewRepository.findById(reviewId).orElse(null);
+    }
+
     public List<Review> getAllReviews() {
         return reviewRepository.findAll();
     }
@@ -21,9 +29,9 @@ public class ReviewService {
     public Review addReview(Review review) {
         List<Review> listOfReviews = reviewRepository.findAll();
 
-        if (listOfReviews.contains(review.getUser())) {
-            throw new OnlyOneReviewPerUserException("Only one review per user is allowed");
-        }
+        // if (listOfReviews.contains(review.getUser())) {
+        //     throw new OnlyOneReviewPerUserException("Only one review per user is allowed");
+        // }
 
         return reviewRepository.save(review);
     }

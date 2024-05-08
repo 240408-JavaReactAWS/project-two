@@ -4,10 +4,12 @@ import com.revature.nile.models.User;
 import com.revature.nile.repositories.UserRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.naming.AuthenticationException;
 import java.util.Optional;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -20,7 +22,7 @@ public class UserService {
     }
 
     public User registerUser(User user) throws EntityExistsException {
-        Optional<User> optionalUser = ur.findByUsername(user.getUserName());
+        Optional<User> optionalUser = ur.findByUserName(user.getUserName());
         if (optionalUser.isPresent()) {
             throw new EntityExistsException(user.getUserName() + " already exists");
         }
@@ -45,5 +47,21 @@ public class UserService {
             return;
         }
         throw new EntityNotFoundException(logoutAttempt.getEmail() + " doesn't exist");
+    }
+
+    public User getUserById(int userId) throws EntityNotFoundException {
+        Optional<User> user = ur.findById(userId);
+        if (user.isPresent()) {
+            return user.get();
+        }
+        throw new EntityNotFoundException("User with id: " + userId + " doesn't exist");
+    }
+
+    public List<User> getAllUsers() {
+        return ur.findAll();
+    }
+
+    public User updateUser(User user) {
+        return ur.save(user);
     }
 }

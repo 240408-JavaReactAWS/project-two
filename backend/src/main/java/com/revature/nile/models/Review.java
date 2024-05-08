@@ -1,7 +1,12 @@
 package com.revature.nile.models;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
+
+import java.util.Date;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @NoArgsConstructor
@@ -23,15 +28,16 @@ public class Review {
     private String text;
 
     @Column(name = "datePosted")
-    private LocalDateTime datePosted;
+    @CreationTimestamp
+    private Date datePosted;
 
-    // @JoinColumn(name = "fk_user_id")
-    // @JoinColumn(name = "userId")
-    // @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    // private User user;
+    // A review is written by a user
+    @JoinColumn(name = "userId")
+     @ManyToOne(cascade = CascadeType.ALL)
+     private User user;
 
-    // @JoinColumn(name = "fk_item_id")
-    // @JoinColumn(name = "itemId")
-    // @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    // private Item item;
+    // A review is written for an item
+    @JoinColumn(name = "itemId")
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Item item;
 }

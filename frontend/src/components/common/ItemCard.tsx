@@ -64,6 +64,7 @@ function ItemCard(props : IItemCardProps ) {
                     <p className="card-text">Price: {props.item.price}</p>
                     <p className="card-text">Rating: {props.item.rating}</p>
                     <p className="card-text">Quantity: {props.item.stock}</p>
+                    <p className="card-text">Quantity: {props.item.stock}</p>
                     <button className="btn btn-primary" onClick={deleteItem}>Delete</button>
                     </div>
                 </div>
@@ -76,6 +77,7 @@ function ItemCard(props : IItemCardProps ) {
                     <h5 className="card-title">{props.item.name}</h5>
                     <p className="card-text">Price: {props.item.price}</p>
                     <p className="card-text">Rating: {props.item.rating}</p>
+                    <p className="card-text">Quantity: {props.item.stock}</p>
                     <p className="card-text">Quantity: {props.item.stock}</p>
                     <button className="btn btn-primary" onClick={addToCart}>Add to Cart</button>
                 </div>

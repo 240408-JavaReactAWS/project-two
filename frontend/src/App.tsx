@@ -7,6 +7,7 @@ import { IUser } from './interfaces/IUser';
 import Nav from './components/common/Nav';
 import RegistrationPage from './components/pages/registration/RegistrationPage';
 import SellerItemsPage from './components/pages/SellerItemsPage';
+import BrowsingPage from './components/pages/BrowsingPage';
 
 interface contextInterface {
   userId: any,
@@ -28,7 +29,7 @@ function App() {
         <BrowserRouter>
         <Nav/>
           <Routes>
-            {/* <Route path="/" element={<BrowsingPage />} /> */}
+            <Route path="/" element={<BrowsingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegistrationPage />} />
             {/* <Route path="/item/:id" element={<ItemPage />} /> */}
