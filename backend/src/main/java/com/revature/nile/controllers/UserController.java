@@ -13,12 +13,8 @@ import jakarta.persistence.EntityNotFoundException;
 import javax.naming.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
+
 import static org.springframework.http.HttpStatus.*;
 
 import java.util.ArrayList;
@@ -126,10 +122,14 @@ public class UserController  {
 
     // This function retrieves all items for a specific user
     @GetMapping("/{userId}/items")
-    public ResponseEntity<List<Item>> getItemsByUserIdHandler(@PathVariable int userId) {
+    public ResponseEntity<List<Item>> getItemsByUserIdHandler(@PathVariable int userId, @RequestHeader("userId") String userIdHeader) {
         User user;
         List<Item> items;
         try {
+            int userIdInt = Integer.parseInt(userIdHeader);
+            if (userIdInt != userId) {
+                return new ResponseEntity<>(FORBIDDEN);
+            }
             user = us.getUserById(userId);
             items = is.getItemsByUserId(user.getUserId());
         } catch (EntityNotFoundException e) {
