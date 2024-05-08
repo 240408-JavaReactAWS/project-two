@@ -27,22 +27,6 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.getAllReviews());
     }
 
-    /*This function creates a new Review 
-     * This is passing the reviewer ID as a request parameter for now.
-     * In actual implementation, the reviewerId should be retrieved from the header.
-     * We're not worrying about matching item IDs for now.
-     */
-    @PostMapping
-    public ResponseEntity<Review> addReview(@RequestBody Review review, @RequestParam int reviewerId) {
-        try {
-            Review toAdd = review;
-            toAdd.setUser(userService.getUserById(reviewerId));
-            return ResponseEntity.ok(reviewService.addReview(review));
-        } catch (Exception e) {
-            return new ResponseEntity<>(BAD_REQUEST);
-        }
-    }
-
     @GetMapping("{reviewId}")
     public ResponseEntity<Review> getReviewById(@PathVariable int reviewId) {
         Review review = reviewService.getReviewById(reviewId);

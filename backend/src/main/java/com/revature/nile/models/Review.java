@@ -3,9 +3,10 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
-import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @NoArgsConstructor
@@ -32,11 +33,11 @@ public class Review {
 
     // A review is written by a user
     @JoinColumn(name = "userId")
-     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+     @ManyToOne(cascade = CascadeType.ALL)
      private User user;
 
     // A review is written for an item
     @JoinColumn(name = "itemId")
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     private Item item;
 }

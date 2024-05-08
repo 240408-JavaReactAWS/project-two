@@ -60,4 +60,8 @@ public class UserService {
     public List<User> getAllUsers() {
         return ur.findAll();
     }
+
+    public User updateUser(User user) {
+        return ur.save(user);
+    }
 }

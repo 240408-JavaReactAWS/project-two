@@ -15,9 +15,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.val;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -36,7 +42,7 @@ public class Item {
     private int itemId;
 
     //An item is sold by a user
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "sellerId", referencedColumnName = "userId")
     private User user;
 
@@ -64,10 +70,12 @@ public class Item {
 
     //An item can have many reviews
     @OneToMany(mappedBy = "item")
+    @JsonIgnore
     private List<Review> reviews;
 
     //An item can be part of multiple order items
     @OneToMany(mappedBy = "item")
+    @JsonIgnore
     private List<OrderItem> orderItems;
 
     public Item(String image, int stock, Double price, String description, String name, User seller) {
