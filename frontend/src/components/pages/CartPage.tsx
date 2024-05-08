@@ -6,6 +6,8 @@ import ItemCard, { DisplayType } from '../common/ItemCard';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { IItem } from '../../interfaces/IItem';
+import './Cart.css';
+
 const itemsOk: IItem[] = [{
   id: 1,
   name: 'Item 1',
@@ -125,15 +127,31 @@ function CartPage() {
     <header style={{paddingBottom:"40px"}}>
       <h1 style={{fontSize:"5rem", textAlign:"center" }}>Items</h1>
     </header>
-    <div className="container w-90 h-100 d-flex align-items-center justify-content-center" style={{backgroundColor: "#fcead6"}}>
+    <div className="cart-page w-90 container" style={{backgroundColor: "#fcead6"}}>
 
-    <div  className="row row-cols-1 row-cols-lg-3 g-4 d-flex align-items-center justify-content-center" style={{ width: '80%'}}>
+    <div  className="cart-container row row-cols-1" style={{ width: '80%'}}>
         
         {items.sort(compare).map((itemMap) => (
             //<ItemCard key={`item${itemMap.id}`} item={itemMap}></ItemCard>
-            <div className="col">
+            <>
+            <div className="col cart-item" style={{backgroundColor:"aliceblue"}}>
               <ItemCard key={`item${itemMap.id}`} item={itemMap} type={DisplayType.CART}></ItemCard>
-            </div>))}
+            </div>
+            </>
+            ))}
+            
+    </div>
+    <div className="col cart-summary" style={{backgroundColor:"aliceblue"}}>
+      <h2>Cart Summary</h2>
+      <div className="row">
+        <div className="col">
+          <h3>Subtotal</h3>
+        </div>
+        <div className="col">
+          <h3>$100</h3>
+        </div>
+      </div>
+      <button className="btn btn-primary" onClick={() => navigate('/checkout')}>Proceed to checkout</button>
     </div>
     </div>
     </>

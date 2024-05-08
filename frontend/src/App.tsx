@@ -20,7 +20,7 @@ export const UserContext = createContext<contextInterface>(
 
 function App() {
 
-  const [userId, setUserId] = useState<any>(1)
+  const [userId, setUserId] = useState<any>(null)
 
   return (
     <div className="content">

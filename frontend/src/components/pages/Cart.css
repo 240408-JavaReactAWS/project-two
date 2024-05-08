@@ -1,0 +1,53 @@
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+.cart-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.cart-summary {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+.cart-page {
+    margin-top: 2rem;
+    margin-left: 5%;
+    margin-right: 5%;
+
+}   
+
+@media (max-width: 768px) {
+    .cart-summary {
+        margin-top: 1rem;
+        padding: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        margin-left: 0;
+    }
+    .cart-page {
+        margin-top: 2rem;
+        margin-left: 0;
+        margin-right: 0;
+        position: absolute;
+    }
+    /* I want to make the card summary stick to the top of cart page beside the card items */
+    
+    .cart-summary {
+        position: relative;
+
+        margin-top: 1rem;
+        padding: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+    }
+    
+    
+}
