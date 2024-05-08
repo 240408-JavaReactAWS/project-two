@@ -9,7 +9,7 @@ import {
   MDBCardBody,
   MDBInput
 } from 'mdb-react-ui-kit';
-import './Registration.css';
+import './RegistrationPage.css';
 
 
 function RegistrationPage() {
