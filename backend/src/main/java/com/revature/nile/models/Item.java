@@ -15,8 +15,17 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.val;
+
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -33,7 +42,7 @@ public class Item {
     private int itemId;
 
     //An item is sold by a user
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "sellerId", referencedColumnName = "userId")
     private User user;
 
@@ -52,29 +61,29 @@ public class Item {
     @Column(nullable = false)
     private String image;
 
-    @CreatedDate
-    @Column(nullable = false)
-    private LocalDateTime datePosted;
+    @Column
+    @CreationTimestamp
+    private Date datePosted;
 
     @Column
     private Double rating;
 
     //An item can have many reviews
     @OneToMany(mappedBy = "item")
+    @JsonIgnore
     private List<Review> reviews;
 
     //An item can be part of multiple order items
     @OneToMany(mappedBy = "item")
+    @JsonIgnore
     private List<OrderItem> orderItems;
 
-    public Item(Double rating, LocalDateTime datePosted, String image, int stock, Double price, String description, String name, User sellerId, int itemId) {
-        this.rating = rating;
-        this.datePosted = datePosted;
+    public Item(String image, int stock, Double price, String description, String name, User seller) {
         this.image = image;
         this.stock = stock;
         this.price = price;
         this.description = description;
         this.name = name;
-        this.itemId = itemId;
+        this.user = seller;
     }
 }

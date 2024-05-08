@@ -14,7 +14,7 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId }) => {
   const [price, setPrice] = useState('');
   const [stock, setStock] = useState(0);
   const [image, setImage] = useState('');
-  const [datePosted, setDatePosted] = useState(new Date());
+  const [datePosted, setDatePosted] = useState('');
   const [errors, setErrors] = useState({
     name: false,
     description: false,

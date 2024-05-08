@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import javax.naming.AuthenticationException;
 import java.util.List;
 import java.util.Optional;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -47,6 +48,22 @@ public class UserService {
             return;
         }
         throw new EntityNotFoundException(logoutAttempt.getEmail() + " doesn't exist");
+    }
+
+    public User getUserById(int userId) throws EntityNotFoundException {
+        Optional<User> user = ur.findById(userId);
+        if (user.isPresent()) {
+            return user.get();
+        }
+        throw new EntityNotFoundException("User with id: " + userId + " doesn't exist");
+    }
+
+    public List<User> getAllUsers() {
+        return ur.findAll();
+    }
+
+    public User updateUser(User user) {
+        return ur.save(user);
     }
 
 }
