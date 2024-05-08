@@ -1,6 +1,7 @@
 package com.revature.nile.services;
 
 import com.revature.nile.models.Item;
+import com.revature.nile.models.Order;
 import com.revature.nile.models.Review;
 import com.revature.nile.models.User;
 import com.revature.nile.repositories.ItemRepository;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class ItemService {
@@ -60,6 +62,17 @@ public class ItemService {
         }
         Item item = optionalItem.get();
         User user = optionalUser.get();
+        AtomicBoolean hasOrdered = new AtomicBoolean(false);
+        user.getOrders().forEach(order -> {
+            order.getOrderItems().forEach(orderItem -> {
+                if (orderItem.getItem().getItemId() == id && !order.getStatus().equals(Order.StatusEnum.PENDING)) {
+                    hasOrdered.set(true);
+                }
+            });
+        });
+        if (!hasOrdered.get()) {
+            throw new EntityExistsException("User has not ordered this item");
+        }
         List<Review> reviews = user.getReviews();
         for (Review r : reviews) {
             if (r.getItem().getItemId() == id) {
