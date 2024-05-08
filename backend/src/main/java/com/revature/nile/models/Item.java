@@ -15,8 +15,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -52,9 +55,9 @@ public class Item {
     @Column(nullable = false)
     private String image;
 
-    @CreatedDate
-    @Column(nullable = false)
-    private LocalDateTime datePosted;
+    @Column
+    @CreationTimestamp
+    private Date datePosted;
 
     @Column
     private Double rating;
@@ -67,14 +70,12 @@ public class Item {
     @OneToMany(mappedBy = "item")
     private List<OrderItem> orderItems;
 
-    public Item(Double rating, LocalDateTime datePosted, String image, int stock, Double price, String description, String name, User sellerId, int itemId) {
-        this.rating = rating;
-        this.datePosted = datePosted;
+    public Item(String image, int stock, Double price, String description, String name, User seller) {
         this.image = image;
         this.stock = stock;
         this.price = price;
         this.description = description;
         this.name = name;
-        this.itemId = itemId;
+        this.user = seller;
     }
 }

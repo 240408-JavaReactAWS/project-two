@@ -10,9 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import static org.springframework.http.HttpStatus.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("users")
@@ -32,7 +35,7 @@ public class UserController  {
         } catch (EntityExistsException e){
             return new ResponseEntity<>(BAD_REQUEST);
         }
-        return new ResponseEntity<>(newUser, CREATED);
+        return new ResponseEntity<>(registerUser, CREATED);
     }
 
     @PostMapping("login")
@@ -54,5 +57,21 @@ public class UserController  {
             return new ResponseEntity<>(NOT_FOUND);
         }
         return new ResponseEntity<>(OK);
+    }
+
+    @GetMapping("{userId}")
+    public ResponseEntity<User> getUserByIdHandler(@PathVariable int userId) {
+        User user;
+        try {
+            user = us.getUserById(userId);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+        return new ResponseEntity<>(user, OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsersHandler() {
+        return ResponseEntity.ok(us.getAllUsers());
     }
 }

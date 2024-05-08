@@ -64,8 +64,7 @@ public class Order {
     @JoinColumn(name = "userId")
     private User user;
 
-    public Order(int userId, StatusEnum status, String shipToAddress, String billAddress, Date dateOrdered) {
-        // this.userId = userId;
+    public Order(StatusEnum status, String shipToAddress, String billAddress, Date dateOrdered) {
         this.status = status;
         this.shipToAddress = shipToAddress;
         this.billAddress = billAddress;

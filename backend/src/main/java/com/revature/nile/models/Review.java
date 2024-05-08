@@ -1,7 +1,11 @@
 package com.revature.nile.models;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Date;
 import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @NoArgsConstructor
@@ -23,7 +27,8 @@ public class Review {
     private String text;
 
     @Column(name = "datePosted")
-    private LocalDateTime datePosted;
+    @CreationTimestamp
+    private Date datePosted;
 
     // A review is written by a user
     @JoinColumn(name = "userId")
