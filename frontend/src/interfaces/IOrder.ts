@@ -1,8 +1,8 @@
 export interface IOrder {
     id: number,
-    buyerId: number,
+    userId: number,
+    status: string, 
     shipToAddress: string,
-    billingAddress: string,
-    dateOrdered: string,
-    status: string   
+    billAddress: string,
+    dateOrdered: string    
 }
