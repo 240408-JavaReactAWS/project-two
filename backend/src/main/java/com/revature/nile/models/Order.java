@@ -12,11 +12,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.util.Date;
 import java.util.List;
 
@@ -33,10 +39,6 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int orderId;
 
-    // @ManyToOne
-    // @JoinColumn(nullable = false, name = "userId")
-    // private int userId;
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private StatusEnum status;
@@ -50,7 +52,7 @@ public class Order {
     @CreationTimestamp
     private Date dateOrdered;
 
-    private enum StatusEnum {
+    public enum StatusEnum {
         PENDING,
         APPROVED
     }
@@ -64,8 +66,7 @@ public class Order {
     @JoinColumn(name = "userId")
     private User user;
 
-    public Order(int userId, StatusEnum status, String shipToAddress, String billAddress, Date dateOrdered) {
-        // this.userId = userId;
+    public Order(StatusEnum status, String shipToAddress, String billAddress, Date dateOrdered) {
         this.status = status;
         this.shipToAddress = shipToAddress;
         this.billAddress = billAddress;

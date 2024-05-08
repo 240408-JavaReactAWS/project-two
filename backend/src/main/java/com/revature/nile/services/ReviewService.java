@@ -14,6 +14,14 @@ public class ReviewService {
         this.reviewRepository = reviewRepository;
     }
 
+    public Review createReview(Review review) {
+        return reviewRepository.save(review);
+    }
+    
+    public Review getReviewById(int reviewId) {
+        return reviewRepository.findById(reviewId).orElse(null);
+    }
+
     public List<Review> getAllReviews() {
         return reviewRepository.findAll();
     }
