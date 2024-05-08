@@ -9,13 +9,8 @@ import com.revature.nile.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import static org.springframework.http.HttpStatus.*;
 
 import java.util.List;
@@ -69,20 +64,14 @@ public class ItemController {
      * In actual implementation, the reviewerId should be retrieved from the header.
      * We're not worrying about matching item IDs for now.
      */
-    @PostMapping("{id}/reviews")
-    public ResponseEntity<Review> addReview(@RequestBody Review review, @PathVariable int id, @RequestParam int reviewerId) {
-        try {
-            Review toAdd = review;
-            toAdd.setItem(itemService.getItemById(id));
-            toAdd.setUser(userService.getUserById(reviewerId));
-            return new ResponseEntity<Review>(reviewService.addReview(review), HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(BAD_REQUEST);
-        }
-    }
-
     @PostMapping("{itemId}/reviews")
     public ResponseEntity<Review> addReviewToItem(@PathVariable int itemId, @RequestHeader(name="userId") int userId, @RequestBody Review review) {
+        if (review.getRating() < 1 || review.getRating() > 5) {
+            return new ResponseEntity<>(BAD_REQUEST);
+        }
+        if (review.getText() == null || review.getText().isEmpty()) {
+            return new ResponseEntity<>(BAD_REQUEST);
+        }
         try {
             return ResponseEntity.ok(itemService.addReviewToItem(review, userId, itemId));
         } catch (Exception e) {
