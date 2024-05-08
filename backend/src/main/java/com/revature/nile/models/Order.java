@@ -19,9 +19,9 @@ import static jakarta.persistence.TemporalType.DATE;
 @Data
 public class Order {
 
-        private enum StatusEnum {
+        public enum StatusEnum {
             PENDING,
-            APPROVED
+            COMPLETED,
         }
 
         // Data Fields
@@ -49,9 +49,10 @@ public class Order {
 
 
 
+
     // Constructors
-    public Order() {
-    }
+//    public Order() {
+//    }
 
     public Order(int userId, StatusEnum status, String shipToAddress, String billAddress, Date dateOrdered) {
         this.userId = userId;
@@ -62,21 +63,83 @@ public class Order {
     }
 
 
+    public Order(int orderId, int userId, StatusEnum status, String shipToAddress, String billAddress, Date dateOrdered) {
+        this.orderId = orderId;
+        this.userId = userId;
+        this.status = status;
+        this.shipToAddress = shipToAddress;
+        this.billAddress = billAddress;
+        this.dateOrdered = dateOrdered;
+    }
+
+
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public StatusEnum getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusEnum status) {
+        this.status = status;
+    }
+
+    public String getShipToAddress() {
+        return shipToAddress;
+    }
+
+    public void setShipToAddress(String shipToAddress) {
+        this.shipToAddress = shipToAddress;
+    }
+
+    public String getBillAddress() {
+        return billAddress;
+    }
+
+    public void setBillAddress(String billAddress) {
+        this.billAddress = billAddress;
+    }
+
+    public Date getDateOrdered() {
+        return dateOrdered;
+    }
+
+    public void setDateOrdered(Date dateOrdered) {
+        this.dateOrdered = dateOrdered;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return getOrderId() == order.getOrderId() && userId == order.userId && getStatus() == order.getStatus() && Objects.equals(getShipToAddress(), order.getShipToAddress()) && Objects.equals(getBillAddress(), order.getBillAddress()) && Objects.equals(getDateOrdered(), order.getDateOrdered());
+        return this.orderId == order.orderId && this.userId == order.userId && this.status == order.status && Objects.equals(this.shipToAddress, order.shipToAddress) && Objects.equals(this.billAddress, order.billAddress) && Objects.equals(this.dateOrdered, order.dateOrdered);
     }
+
+
+
 
     @Override
     public int hashCode() {
-        return Objects.hash(getOrderId(), userId, getStatus(), getShipToAddress(), getBillAddress(), getDateOrdered());
+        return Objects.hash(this.orderId, this.userId, this.status, this.shipToAddress, this.billAddress, this.dateOrdered);
     }
 
     @Override
     public String toString() {
+
         return "Order{" +
                 "orderId=" + orderId +
                 ", userId=" + userId +
