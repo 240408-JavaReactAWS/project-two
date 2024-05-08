@@ -15,7 +15,7 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
     const [quantity, setQuantity] = useState(1);
     const navigate = useNavigate();
     const {userId: contextUserId, setUserId} = useContext(UserContext)
-    
+
     const handleChangeQuantity = (e: React.ChangeEvent<HTMLInputElement>) => {
         setQuantity(parseInt(e.target.value));
     };
@@ -44,7 +44,7 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
       } else {
         navigate('/itemForm/'+item.id);
       }
-       
+
     };
 
     const handleViewRelatedOrders = () => {
@@ -56,7 +56,7 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
     }
     };
 
-    
+
   return (
     <Col>
     {item && (
@@ -79,7 +79,7 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
                 )}
               </Col>
             </Row>
-            
+
             <Row>
               <Col>
                 <p>Price: ${item.price}</p>

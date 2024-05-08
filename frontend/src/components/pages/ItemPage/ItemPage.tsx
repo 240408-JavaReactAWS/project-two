@@ -137,9 +137,6 @@ const ItemPage = () => {
     // Set dummy review data
     setReviews(dummyReviews);
 
-    if (!itemId) {
-      navigate('/');
-    }
   }, []);
 
   // Fetch data
@@ -168,7 +165,7 @@ const ItemPage = () => {
   //     });
   // },);
 
-    
+
   // Function to handle leaving a review
   const handleLeaveReview = () => {
     setShowReviewForm(true);

@@ -24,16 +24,16 @@ const ReviewForm: React.FC<Props> = ({ itemId, userId, onClose, reviews, setRevi
     console.log('Rating:', rating);
     console.log('Review Text:', reviewText);
     /* Add review to the database */
-    
+
     /* QUESTION What is Back end generating time or are WE generating time?
-                What is the request Body? 
+                What is the request Body?
      */
     axios.post(`${process.env.BACKEND_URL}/items/{itemId}/reviews`, { userId, rating, reviewText, reviewDate: new Date().toISOString()})
         .then(response => {
-            // Handle success 
+            // Handle success
             console.log('Review added:', response.data);
             setReviews([response.data, ...reviews]);
-            
+
         })
         .catch(error => {
             // Handle error
@@ -49,7 +49,7 @@ const ReviewForm: React.FC<Props> = ({ itemId, userId, onClose, reviews, setRevi
             // };
             // setReviews([mockReview, ...reviews]);
         });
-    
+
     // Close the form
     onClose();
   };
