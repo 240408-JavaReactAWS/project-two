@@ -1,5 +1,6 @@
 package com.revature.nile.services;
 
+import com.revature.nile.exceptions.ItemNotFoundException;
 import com.revature.nile.models.Item;
 import com.revature.nile.repositories.ItemRepository;
 import com.revature.nile.repositories.OrderItemRepository;
@@ -38,5 +39,12 @@ public class ItemService {
 
     public List<Item> getAllItems() {
         return itemRepository.findAll();
+    }
+
+    public void deleteItemOnSale(int itemId){
+        if (!itemRepository.existsById(itemId)) {
+            throw new ItemNotFoundException("Item not found with id: " + itemId);
+        }
+        itemRepository.deleteById(itemId);
     }
 }

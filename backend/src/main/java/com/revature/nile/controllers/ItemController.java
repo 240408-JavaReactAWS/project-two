@@ -1,7 +1,9 @@
 package com.revature.nile.controllers;
 
+import com.revature.nile.exceptions.ItemNotFoundException;
 import com.revature.nile.models.Item;
 import com.revature.nile.models.Review;
+import com.revature.nile.models.User;
 import com.revature.nile.services.ItemService;
 import com.revature.nile.services.ReviewService;
 import com.revature.nile.services.UserService;
@@ -9,13 +11,8 @@ import com.revature.nile.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import static org.springframework.http.HttpStatus.*;
 
 import java.util.List;
@@ -36,7 +33,7 @@ public class ItemController {
         this.reviewService = reviewService;
     }
 
-    /*This function creates a new Item 
+    /*This function creates a new Item
      * This is passing the seller ID as a request parameter for now.
      * In actual implementation, the sellerId should be retrieved from the header.
      */
@@ -64,7 +61,7 @@ public class ItemController {
         return ResponseEntity.ok(itemService.getAllItems());
     }
 
-    /*This function creates a new Review 
+    /*This function creates a new Review
      * This is passing the reviewer ID as a request parameter for now.
      * In actual implementation, the reviewerId should be retrieved from the header.
      * We're not worrying about matching item IDs for now.
@@ -79,5 +76,20 @@ public class ItemController {
         } catch (Exception e) {
             return new ResponseEntity<>(BAD_REQUEST);
         }
+    }
+
+    @DeleteMapping("/{itemId}")
+    public ResponseEntity<Integer> deleteItemByHandler(@PathVariable int itemId, @RequestHeader("userId") int id){
+    try{
+        Item item = itemService.getItemById(itemId);
+        int sellerId = item.getUser().getUserId();
+        if(sellerId!=id) {
+            return new ResponseEntity<>(FORBIDDEN);
+        }
+        itemService.deleteItemOnSale(itemId);
+        return ResponseEntity.ok(itemId);
+    } catch (EntityNotFoundException e) {
+        return new ResponseEntity<>(NOT_FOUND);
+    }
     }
 }
