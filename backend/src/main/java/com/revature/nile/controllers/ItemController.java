@@ -1,12 +1,12 @@
 package com.revature.nile.controllers;
 
 import com.revature.nile.models.Item;
+import com.revature.nile.models.Review;
 import com.revature.nile.services.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import static org.springframework.http.HttpStatus.*;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -29,5 +29,14 @@ public class ItemController {
             return new ResponseEntity<>(NOT_FOUND);
         }
         return new ResponseEntity<>(item, OK);
+    }
+
+    @PostMapping("{itemId}/reviews")
+    public ResponseEntity<Review> addReviewToItem(@PathVariable int itemId, @RequestHeader(name="userId") int userId, @RequestBody Review review) {
+        try {
+            return ResponseEntity.ok(itemService.addReviewToItem(review, userId, itemId));
+        } catch (Exception e) {
+            return new ResponseEntity<>(BAD_REQUEST);
+        }
     }
 }
