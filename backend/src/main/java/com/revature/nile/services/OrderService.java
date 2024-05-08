@@ -7,6 +7,7 @@ import com.revature.nile.models.User;
 import com.revature.nile.repositories.OrderItemRepository;
 import com.revature.nile.repositories.OrderRepository;
 import com.revature.nile.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class OrderService {
             return null;
       }
 
-      public Order addOrderItemToCart(int userId, OrderItem orderItem) {
+      public Order addOrderItemToCart(int userId, OrderItem orderItem) throws EntityNotFoundException {
             Optional<User> optionalUser = userRepository.findById(userId);
             if(optionalUser.isEmpty()) {
                   return null;
@@ -77,6 +78,9 @@ public class OrderService {
             orderItem.setOrder(currOrder);
             for(OrderItem cartItems : currOrder.getOrderItems()) { // if item id is already in cart, add quantity
                   if(cartItems.getItem().getItemId() == orderItem.getItem().getItemId()) {
+                        if(cartItems.getQuantity() + orderItem.getQuantity() > cartItems.getItem().getStock()) {
+                              throw new EntityNotFoundException("Not enough stock for item: " + cartItems.getItem().getItemId());
+                        }
                         cartItems.setQuantity(cartItems.getQuantity() + orderItem.getQuantity());
                         orderItemRepository.save(cartItems);
                         return currOrder;

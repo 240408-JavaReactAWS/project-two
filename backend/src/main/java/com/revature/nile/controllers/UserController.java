@@ -113,7 +113,12 @@ public class UserController  {
             return new ResponseEntity<>(BAD_REQUEST);
         orderItem.setItem(item);
         //If the user does not have a current order, create a new order for them
-        Order finalOrder = os.addOrderItemToCart(userId, orderItem);
+        Order finalOrder;
+        try {
+            finalOrder = os.addOrderItemToCart(userId, orderItem);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(BAD_REQUEST);
+        }
         if(finalOrder == null)
             return new ResponseEntity<>(NOT_FOUND);
 
