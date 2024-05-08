@@ -23,7 +23,13 @@ const OrderForm: React.FC = () => {
 
   // validate if shipping/billing address is empty
 
-  // const handl
+  const handleCopyAddress = () => {
+    setBillingStreetAddress(shippingStreetAddress);
+    setBillingCity(shippingCity);
+    setBillingState(shippingState);
+    setBillingCountry(shippingCountry);
+    setBillingZipCode(shippingZipCode);
+  }
 
   // const handleInput
   // patch request to update order status
@@ -31,8 +37,8 @@ const OrderForm: React.FC = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const shipToAddress = '123 Main St, Anytown, USA 12345';
-    const billAddress = '123 Main St, Anytown, USA 12345';
+    const shipToAddress = shippingStreetAddress + ', ' + shippingCity + ', ' + shippingState + ', ' + shippingCountry + ' ' + shippingZipCode;
+    const billAddress = billingStreetAddress + ', ' + billingCity + ', ' + billingState + ', ' + billingCountry + ' ' + billingZipCode;
 
     axios.patch(`${process.env.REACT_APP_API_URL})/users/${userId}/orders/checkout`, {
       status: 'Approved',
@@ -83,6 +89,7 @@ const OrderForm: React.FC = () => {
               placeholder="First Name"
               aria-label="First Name"
               aria-describedby="basic-addon1"
+              value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
             />
           </InputGroup>
@@ -91,6 +98,7 @@ const OrderForm: React.FC = () => {
               placeholder="Last Name"
               aria-label="Last Name"
               aria-describedby="basic-addon1"
+              value={lastName}
               onChange={(e) => setLastName(e.target.value)}
             />
           </InputGroup>
@@ -99,6 +107,7 @@ const OrderForm: React.FC = () => {
               placeholder="Street Address"
               aria-label="Street Address"
               aria-describedby="basic-addon1"
+              value={shippingStreetAddress}
               onChange={(e) => setShippingStreetAddress(e.target.value)}
             />
           </InputGroup>
@@ -107,6 +116,7 @@ const OrderForm: React.FC = () => {
               placeholder="City"
               aria-label="City"
               aria-describedby="basic-addon1"
+              value={shippingCity}
               onChange={(e) => setShippingCity(e.target.value)}
             />
           </InputGroup>
@@ -115,6 +125,7 @@ const OrderForm: React.FC = () => {
               placeholder="State"
               aria-label="State"
               aria-describedby="basic-addon1"
+              value={shippingState}
               onChange={(e) => setShippingState(e.target.value)}
             />
           </InputGroup>
@@ -123,6 +134,7 @@ const OrderForm: React.FC = () => {
               placeholder="Country"
               aria-label="Country"
               aria-describedby="basic-addon1"
+              value={shippingCountry}
               onChange={(e) => setShippingCountry(e.target.value)}
             />
           </InputGroup>
@@ -131,6 +143,7 @@ const OrderForm: React.FC = () => {
               placeholder="Zip Code"
               aria-label="Zip Code"
               aria-describedby="basic-addon1"
+              value={shippingZipCode}
               onChange={(e) => setShippingZipCode(e.target.value)}
             />
           </InputGroup>
@@ -147,8 +160,8 @@ const OrderForm: React.FC = () => {
             </InputGroup>
             <InputGroup className="mb-3">
             <FormControl
-              placeholder="Name on Card"
-              aria-label="Name on Card"
+              placeholder="Cardholder Name"
+              aria-label="Cardholder Name"
               aria-describedby="basic-addon1"
             />
             </InputGroup>
@@ -171,6 +184,7 @@ const OrderForm: React.FC = () => {
               placeholder="Street Address"
               aria-label="Street Address"
               aria-describedby="basic-addon1"
+              value={billingStreetAddress}
               onChange={(e) => setBillingStreetAddress(e.target.value)}
             />
           </InputGroup>
@@ -179,6 +193,7 @@ const OrderForm: React.FC = () => {
               placeholder="City"
               aria-label="City"
               aria-describedby="basic-addon1"
+              value={billingCity}
               onChange={(e) => setBillingCity(e.target.value)}
             />
           </InputGroup>
@@ -187,6 +202,7 @@ const OrderForm: React.FC = () => {
               placeholder="State"
               aria-label="State"
               aria-describedby="basic-addon1"
+              value={billingState}
               onChange={(e) => setBillingState(e.target.value)}
             />
           </InputGroup>
@@ -195,6 +211,7 @@ const OrderForm: React.FC = () => {
               placeholder="Country"
               aria-label="Country"
               aria-describedby="basic-addon1"
+              value={billingCountry}
               onChange={(e) => setBillingCountry(e.target.value)}
             />
           </InputGroup>
@@ -203,6 +220,7 @@ const OrderForm: React.FC = () => {
               placeholder="Zip Code"
               aria-label="Zip Code"
               aria-describedby="basic-addon1"
+              value={billingZipCode}
               onChange={(e) => setBillingZipCode(e.target.value)}
             />
           </InputGroup>
