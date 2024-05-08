@@ -1,9 +1,6 @@
 package com.revature.nile.services;
 
-import com.revature.nile.models.Item;
-import com.revature.nile.models.Order;
-import com.revature.nile.models.Review;
-import com.revature.nile.models.User;
+import com.revature.nile.models.*;
 import com.revature.nile.repositories.ItemRepository;
 import com.revature.nile.repositories.OrderItemRepository;
 
@@ -14,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.naming.AuthenticationException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -51,7 +49,7 @@ public class ItemService {
         return itemRepository.findAll();
     }
 
-    public Review addReviewToItem(Review review, int userId, int id) {
+    public Review addReviewToItem(Review review, int userId, int id) throws EntityNotFoundException, AuthenticationException {
         Optional<Item> optionalItem = itemRepository.findById(id);
         if (optionalItem.isEmpty()) {
             throw new EntityNotFoundException("Item with id: " + id + " doesn't exist");
@@ -62,21 +60,23 @@ public class ItemService {
         }
         Item item = optionalItem.get();
         User user = optionalUser.get();
-        AtomicBoolean hasOrdered = new AtomicBoolean(false);
-        user.getOrders().forEach(order -> {
-            order.getOrderItems().forEach(orderItem -> {
-                if (orderItem.getItem().getItemId() == id && !order.getStatus().equals(Order.StatusEnum.PENDING)) {
-                    hasOrdered.set(true);
+        boolean hasOrdered = false;
+        List<Order> userOrders = user.getOrders();
+        for(Order order : userOrders) {
+            for(OrderItem orderItem : order.getOrderItems()) {
+                if(orderItem.getItem().getItemId() == id && !order.getStatus().equals(Order.StatusEnum.PENDING)) {
+                    hasOrdered = true;
+                    break;
                 }
-            });
-        });
-        if (!hasOrdered.get()) {
-            throw new EntityExistsException("User has not ordered this item");
+            }
+        }
+        if (!hasOrdered) {
+            throw new AuthenticationException("User has not ordered this item");
         }
         List<Review> reviews = user.getReviews();
         for (Review r : reviews) {
             if (r.getItem().getItemId() == id) {
-                throw new EntityExistsException("User has already reviewed this item");
+                throw new AuthenticationException("User has already reviewed this item");
             }
         }
         review.setItem(item);

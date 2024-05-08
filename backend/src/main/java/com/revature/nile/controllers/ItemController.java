@@ -17,6 +17,8 @@ import java.util.List;
 
 import jakarta.persistence.EntityNotFoundException;
 
+import javax.naming.AuthenticationException;
+
 @RestController
 @RequestMapping("items")
 public class ItemController {
@@ -74,8 +76,10 @@ public class ItemController {
         }
         try {
             return ResponseEntity.ok(itemService.addReviewToItem(review, userId, itemId));
-        } catch (Exception e) {
-            return new ResponseEntity<>(BAD_REQUEST);
+        } catch (AuthenticationException e) {
+            return new ResponseEntity<>(FORBIDDEN);
+        } catch( EntityNotFoundException e) {
+            return new ResponseEntity<>(NOT_FOUND);
         }
     }
 }
