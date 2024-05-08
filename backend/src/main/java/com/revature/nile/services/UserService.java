@@ -20,30 +20,30 @@ public class UserService {
     }
 
     public User registerUser(User user) throws EntityExistsException {
-        Optional<User> optionalUser = ur.findByUsername(user.getUserName());
-        if(optionalUser.isPresent()) {
-            throw new EntityExistsException(user.getUserName()+" already exists");
+        Optional<User> optionalUser = ur.findByUserName(user.getUserName());
+        if (optionalUser.isPresent()) {
+            throw new EntityExistsException(user.getUserName() + " already exists");
         }
         return ur.save(user);
     }
 
     public User loginUser(User user) throws AuthenticationException, EntityNotFoundException {
         Optional<User> optionalUser = ur.findByEmail(user.getEmail());
-        if(optionalUser.isPresent()) {
+        if (optionalUser.isPresent()) {
             User u = optionalUser.get();
             if(u.getPassword().equals(user.getPassword())) {
                 return u;
             }
             throw new AuthenticationException("Incorrect Password");
         }
-        throw new EntityNotFoundException(user.getEmail()+" doesn't exist");
+        throw new EntityNotFoundException(user.getEmail() + " doesn't exist");
     }
 
     public void logoutUser(User logoutAttempt) {
         Optional<User> optionalUser = ur.findByEmail(logoutAttempt.getEmail());
-        if(optionalUser.isPresent()) {
+        if (optionalUser.isPresent()) {
             return;
         }
-        throw new EntityNotFoundException(logoutAttempt.getEmail()+ " doesn't exist");
+        throw new EntityNotFoundException(logoutAttempt.getEmail() + " doesn't exist");
     }
 }
