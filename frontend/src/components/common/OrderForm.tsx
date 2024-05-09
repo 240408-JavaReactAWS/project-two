@@ -4,10 +4,8 @@
 // Testing eventually
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
-import { IOrder } from '../../interfaces/IOrder';
-import { IUser } from '../../interfaces/IUser';
 import { UserContext } from '../../App';
-import { Button, InputGroup, Form, FormControl, FormGroup, FormLabel, FormText } from 'react-bootstrap';
+import { Button, InputGroup, Form, FormControl, FormGroup, FormLabel } from 'react-bootstrap';
 import './OrderForm.css';
 
 const OrderForm: React.FC = () => {
@@ -17,27 +15,32 @@ const OrderForm: React.FC = () => {
   const [shippingStreetAddress, setShippingStreetAddress] = useState('');
   const [shippingCity, setShippingCity] = useState('');
   const [shippingState, setShippingState] = useState('');
-  const [shippingCountry, setShippingCountry] = useState('');
   const [shippingZipCode, setShippingZipCode] = useState('');
+  const [shippingCountry, setShippingCountry] = useState('');
   const [billingStreetAddress, setBillingStreetAddress] = useState('');
   const [billingCity, setBillingCity] = useState('');
   const [billingState, setBillingState] = useState('');
-  const [billingCountry, setBillingCountry] = useState('');
   const [billingZipCode, setBillingZipCode] = useState('');
+  const [billingCountry, setBillingCountry] = useState('');
 
   const handleCopyAddress = () => {
     setBillingStreetAddress(shippingStreetAddress);
     setBillingCity(shippingCity);
     setBillingState(shippingState);
-    setBillingCountry(shippingCountry);
     setBillingZipCode(shippingZipCode);
+    setBillingCountry(shippingCountry);
   }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const shipToAddress = shippingStreetAddress + ', ' + shippingCity + ', ' + shippingState + ', ' + shippingCountry + ' ' + shippingZipCode;
-    const billAddress = billingStreetAddress + ', ' + billingCity + ', ' + billingState + ', ' + billingCountry + ' ' + billingZipCode;
+    const shipToAddress = [shippingStreetAddress, shippingCity, shippingState, shippingZipCode, shippingCountry].join(', ');
+    const billAddress = [billingStreetAddress, billingCity, billingState, billingZipCode, billingCountry].join(', ');
+
+    if (shipToAddress.length > 255 || billAddress.length > 255) {
+      alert("Address too long. Please make sure the address is less than 255 characters.");
+      return;
+    }
 
     axios.patch(`${process.env.REACT_APP_API_URL})/users/${userId}/orders/checkout`, {
       status: 'Approved',
