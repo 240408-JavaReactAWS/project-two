@@ -1,32 +1,30 @@
 import React, { useContext, useState } from 'react';
-import { Col, Button, Row, Form, Nav } from 'react-bootstrap';
+import { Col, Button, Row, Form } from 'react-bootstrap';
 import { IItem } from '../../../interfaces/IItem';
 import axios from 'axios';
 import StarRating from './StarRating';
-import { useNavigate, useRevalidator } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../../App';
 
 interface Props {
   item: IItem | null;
 }
 
-
 const ItemDetails: React.FC<Props> = ({ item }) => {
     const [quantity, setQuantity] = useState(1);
     const navigate = useNavigate();
-    const {userId: contextUserId, setUserId} = useContext(UserContext)
+    const { userId } = useContext(UserContext)
 
     const handleChangeQuantity = (e: React.ChangeEvent<HTMLInputElement>) => {
         setQuantity(parseInt(e.target.value));
     };
 
     const handleAddToCart = () => {
-
         if (item === null) {
             return;
         } else {
-            // Make a PATCH request to add item to cart
-            axios.patch(`/orders/cart`, { itemId: item.id, quantity: quantity })
+            // Make a POST request to add item to cart
+            axios.post(`${process.env.REACT_APP_API_URL}/users/${userId}/orders/current`, { itemId: item.id, quantity: quantity })
                 .then(response => {
                     // Handle success
                     console.log('Item added to cart:', response.data);
