@@ -1,7 +1,9 @@
 package com.revature.nile.controllers;
 
+import com.revature.nile.exceptions.ItemNotCreatedException;
 import com.revature.nile.models.Item;
 import com.revature.nile.models.Review;
+import com.revature.nile.models.User;
 import com.revature.nile.services.ItemService;
 import com.revature.nile.services.ReviewService;
 import com.revature.nile.services.UserService;
@@ -15,6 +17,7 @@ import static org.springframework.http.HttpStatus.*;
 import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("items")
@@ -35,10 +38,16 @@ public class ItemController {
      * In actual implementation, the sellerId should be retrieved from the header.
      */
     @PostMapping
-    public ResponseEntity<Item> createItem(@RequestBody Item item, @RequestParam int sellerId) {
-        Item newItem = item;
-        newItem.setUser(userService.getUserById(sellerId));
-        return new ResponseEntity<>(itemService.createItem(newItem), CREATED);
+    public ResponseEntity<Item> addNewItemHandler(@RequestBody Item item, @RequestHeader(name="userId") int userId) {
+        Item newItem;
+        try {
+            newItem = itemService.addNewItem(item, userId);
+        } catch (ItemNotCreatedException e) {
+            return new ResponseEntity<>(BAD_REQUEST);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+        return new ResponseEntity<>(newItem, CREATED);
     }
 
 

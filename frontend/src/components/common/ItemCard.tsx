@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { UserContext } from '../../App';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { IItem } from '../../interfaces/IItem';
+import axios from 'axios';
 
 export enum DisplayType {
     OWNED,
@@ -10,17 +11,43 @@ export enum DisplayType {
 }
 
 interface IItemCardProps {
-    item: IItem;
-    type: DisplayType;
+    item:IItem;
+    type: DisplayType,
+    setSellersItems?:React.Dispatch<React.SetStateAction<IItem[]>>;
 }
-function ItemCard(props : IItemCardProps) {
+function ItemCard(props : IItemCardProps ) {
     const [quantity, setQuantity] = useState(props.item.stock)
     const plusQuantity = () => {
         setQuantity(quantity + 1)
     }
     const minusQuantity = () => setQuantity(quantity - 1)
-    const deleteItem = (e:React.SyntheticEvent) => {
+    const seller=useContext(UserContext)
+    const navigate=useNavigate()
+
+    const deleteItem = async (e:React.SyntheticEvent) => {
         e.preventDefault()
+        try{
+            let response=await axios.delete(process.env.REACT_APP_API_URL + `items/${props.item.id}`, {
+                withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': seller.userId} 
+              })
+              if(response.status==403){
+
+              }
+              if(response.status==200){
+               
+              }
+
+              
+
+        }catch(error){
+            console.error(error)
+        }
+
+        props.setSellersItems && props.setSellersItems((sellersItem:IItem[]) => {
+            return sellersItem.filter((item) => {
+                return item.id !== props.item.id;
+            });
+        })
     }
     const addToCart = (e:React.SyntheticEvent) => {
         e.preventDefault()
@@ -37,18 +64,20 @@ function ItemCard(props : IItemCardProps) {
                     <p className="card-text">Price: {props.item.price}</p>
                     <p className="card-text">Rating: {props.item.rating}</p>
                     <p className="card-text">Quantity: {props.item.stock}</p>
+                    <p className="card-text">Quantity: {props.item.stock}</p>
                     <button className="btn btn-primary" onClick={deleteItem}>Delete</button>
                     </div>
                 </div>
         </Link>
         : props.type === DisplayType.NONOWNED ?
         <Link style={{textDecoration:'none', color:'black'}}to={`/item/${props.item.id}`}>
-            <div className="card" style={{width: '18rem'}}>
+            <div className="card" style={{maxWidth: '18rem'}}>
                 <img className="card-img-top" src={props.item.image} alt="Card image cap"/>
                 <div className="card-body">
                     <h5 className="card-title">{props.item.name}</h5>
                     <p className="card-text">Price: {props.item.price}</p>
                     <p className="card-text">Rating: {props.item.rating}</p>
+                    <p className="card-text">Quantity: {props.item.stock}</p>
                     <p className="card-text">Quantity: {props.item.stock}</p>
                     <button className="btn btn-primary" onClick={addToCart}>Add to Cart</button>
                 </div>
