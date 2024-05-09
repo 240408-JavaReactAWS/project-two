@@ -22,12 +22,14 @@ public class UserController  {
     private final UserService us;
     private final OrderService os;
     private final ItemService is;
+    private final EmailService es;
 
     @Autowired
-    public UserController(UserService us, OrderService os, ItemService is) {
+    public UserController(UserService us, OrderService os, ItemService is, EmailService es) {
         this.us = us;
         this.os = os;
         this.is = is;
+        this.es = es;
     }
 
     /*
