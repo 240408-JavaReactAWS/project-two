@@ -1,6 +1,7 @@
 package com.revature.nile.controllers;
 
 import com.revature.nile.exceptions.ItemNotFoundExceptions;
+import com.revature.nile.exceptions.OrderProcessingException;
 import com.revature.nile.exceptions.UserAlreadyExistsException;
 import com.revature.nile.models.*;
 import com.revature.nile.services.*;
@@ -240,6 +241,28 @@ public class UserController  {
             return new ResponseEntity<>(NOT_FOUND);
         }
         return new ResponseEntity<>(items, OK);
+    }
+
+  /*
+  * Merged in to handle in IDE
+  * TO-DO: The request body should be an Item, not an OrderItem
+  * This is to allow the front end to pass in an itemID and a stock for use in updating the orderItem.
+  */
+    @PatchMapping("/{userId}/orders/current")
+    public ResponseEntity<Order> updateOrderStatusHandler(
+            @PathVariable int userId,
+            @RequestBody OrderItem orderItem,
+            @RequestHeader("userId") int userIdHeader) {
+        OrderItem updatedOrderItem;
+        try {
+            if (userIdHeader != userId) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            updatedOrderItem = us.removeItemFromPendingOrder(userId, orderItem.getItem().getItemId(), orderItem.getQuantity());
+            return ResponseEntity.status(HttpStatus.OK).body(updatedOrderItem.getOrder());
+        } catch (OrderProcessingException e) {
+            return ResponseEntity.status(NOT_FOUND).build();
+        }
     }
 
     @GetMapping("{userId}/orders")

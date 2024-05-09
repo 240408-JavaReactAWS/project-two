@@ -2,6 +2,7 @@ package com.revature.nile.controllers;
 
 import com.revature.nile.exceptions.ItemNotFoundException;
 import com.revature.nile.exceptions.ItemNotCreatedException;
+import com.revature.nile.exceptions.ReviewNotFoundException;
 import com.revature.nile.models.Item;
 import com.revature.nile.models.Order;
 import com.revature.nile.models.Review;
@@ -193,5 +194,16 @@ public class ItemController {
         } catch (ItemNotFoundException e) {
             return new ResponseEntity<>(NOT_FOUND);
         }
+    }
+
+
+    @GetMapping("/{itemId}/reviews")
+    public ResponseEntity<List<Review>> getAllReviews(@PathVariable int itemId) {
+        try{
+            return ResponseEntity.ok(reviewService.getAllReviewsByItemId(itemId));
+        } catch (ReviewNotFoundException e) {
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+
     }
 }
