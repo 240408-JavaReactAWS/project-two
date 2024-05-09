@@ -98,7 +98,7 @@ function CartPage() {
 
   const {userId, setUserId} = useContext(UserContext);
   
-  const [items, setItems] = useState<IItem[]>(itemsOk);
+  const [items, setItems] = useState<IItem[]>([]);
   const navigate = useNavigate();
 
 
@@ -117,8 +117,11 @@ function CartPage() {
       let response = await axios.get(`${process.env.REACT_APP_API_URL}/users/${userId}/orders/current`, {
           withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': userId}})
           setItems(response.data);
-      } catch (e) {
-        console.log(e)
+      } catch (e: any) {
+        if (e.response) {
+          console.log(e.response.data)
+        }
+        
       }
     }
 
@@ -130,6 +133,8 @@ function CartPage() {
     <header style={{paddingBottom:"40px"}}>
       <h1 style={{fontSize:"5rem", textAlign:"center" }}>Items</h1>
     </header>
+
+    {items.length != 0 ?
     <div className="cart-page w-90 container" style={{backgroundColor: "#fcead6"}}>
 
     <div  className="cart-container row row-cols-1" style={{ width: '80%'}}>
@@ -156,7 +161,10 @@ function CartPage() {
       </div>
       <button className="btn btn-primary" onClick={() => navigate('/checkout')}>Proceed to checkout</button>
     </div>
-    </div>
+    </div> : 
+    <div className="h-100 d-flex align-items-center justify-content-center">
+    <h1>No items in cart</h1>
+    </div>}
     </>
   )
 }
