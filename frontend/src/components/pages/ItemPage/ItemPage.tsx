@@ -22,25 +22,31 @@ const ItemPage = () => {
     if (!itemId) {
           navigate('/');
     }
-
+    let fetchItemData = async () => {
     // Fetch item data
-    axios.get(`${process.env.REACT_APP_API_URL}/items/${itemId}`)
+    await axios.get(`${process.env.REACT_APP_API_URL}/items/${itemId}`)
       .then(response => {
         setItem(response.data);
       })
       .catch(error => {
         console.error('Error fetching item data:', error);
       });
+    }
 
+    let fetchReviewsData = async () => {
     // Fetch reviews data
-    axios.get(`${process.env.REACT_APP_API_URL}/items/${itemId}/reviews`)
+    await axios.get(`${process.env.REACT_APP_API_URL}/items/${itemId}/reviews`)
       .then(response => {
         setReviews(response.data);
       })
       .catch(error => {
         console.error('Error fetching reviews:', error);
       });
-  },);
+    }
+
+    fetchItemData();
+    fetchReviewsData();
+  },[]);
 
 
   // Function to handle leaving a review
@@ -70,7 +76,6 @@ const ItemPage = () => {
           {showReviewForm ? (
             <ReviewForm
               itemId={itemId ? parseInt(itemId) : null}
-              userId={123} // Set the userId here
               onClose={handleCloseReviewForm}
               reviews={reviews}
               setReviews={setReviews}
