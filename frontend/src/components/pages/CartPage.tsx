@@ -95,12 +95,14 @@ const itemsOk: IItem[] = [{
   datePosted: '2021-10-11'
 }]
 */
+
+
+
 function CartPage() {
 
 
   let context = useContext(UserContext);
   const [cart, setCart] = useState<IOrder>();
-  const [items, setItems] = useState<IItem[]>([]);
     const navigate = useNavigate();
     const [error, setError] = useState<string>('');
     function compare(a: IItem, b: IItem) {
@@ -111,6 +113,15 @@ function CartPage() {
             return 1;
         }
         return 0;
+    }
+
+    let getTotal = (order: IOrder) => {
+        let total = 0;
+        order.orderItemsList.forEach((orderItem) => {
+            let subtotal: number = orderItem.item.price * orderItem.quantity;
+            total += subtotal;
+        });
+        return total;
     }
 
     let getCart = async () => {
@@ -124,7 +135,6 @@ function CartPage() {
             console.error('Error fetching items:', error);
             setError('Failed to fetch items.');
         });}
-
     // get Items out of Order
 
     useEffect(() => {
@@ -136,16 +146,15 @@ function CartPage() {
       <h1 style={{fontSize:"5rem", textAlign:"center" }}>Items</h1>
     </header>
 
-    {items.length != 0 ?
+    {cart?.orderItemsList.length != 0 ?
     <div className="cart-page w-90 container" style={{backgroundColor: "#fcead6"}}>
 
     <div  className="cart-container row row-cols-1" style={{ width: '80%'}}>
         
-        {items.sort(compare).map((itemMap) => (
-            //<ItemCard key={`item${itemMap.id}`} item={itemMap}></ItemCard>
+        {cart?.orderItemsList.map((orderItemMap) => (
             <>
             <div className="col cart-item" style={{backgroundColor:"aliceblue"}}>
-              <ItemCard key={`item${itemMap.itemId}`} item={itemMap} type={DisplayType.CART}></ItemCard>
+              <ItemCard key={`item${orderItemMap.item.itemId}`} item={orderItemMap.item} type={DisplayType.CART} itemQuantity={orderItemMap.quantity} isInCart={true} orderId={orderItemMap.orderId}></ItemCard>
             </div>
             </>
             ))}
@@ -158,7 +167,7 @@ function CartPage() {
           <h3>Subtotal</h3>
         </div>
         <div className="col">
-          <h3>$100</h3>
+          <h3>${cart&&getTotal(cart)}</h3>
         </div>
       </div>
       <button className="btn btn-primary" onClick={() => navigate('/checkout')}>Proceed to checkout</button>
