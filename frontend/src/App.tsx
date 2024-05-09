@@ -5,9 +5,9 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import LoginPage from './components/pages/LoginPage';
 import { IUser } from './interfaces/IUser';
 import Nav from './components/common/Nav';
-import RegistrationPage from './components/pages/registration/RegistrationPage';
 import SellerItemsPage from './components/pages/SellerItemsPage';
 import BrowsingPage from './components/pages/BrowsingPage';
+import RegistrationPage from './components/pages/RegistrationPage/RegistrationPage';
 
 interface contextInterface {
   userId: any,
