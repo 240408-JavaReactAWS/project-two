@@ -11,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -43,7 +44,6 @@ public class OrderService {
             else {
                   return null;
             }
-            
       }
 
       public OrderItem createOrderItem(OrderItem orderItem) {
