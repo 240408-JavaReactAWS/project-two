@@ -37,7 +37,7 @@ public class UserController  {
      * The function handles a UserAlreadyExistsException from the UserService by returning a CONFLICT status.
      * On success, the function returns a CREATED status and the created User.
      */
-    @PostMapping("register")
+    @PostMapping
     public ResponseEntity<User> registerNewUserHandler(@RequestBody User newUser) {
         User registerUser;
         try {
@@ -182,30 +182,44 @@ public class UserController  {
     /**
      * UPDATE ORDER ITEM QUANTITY
      * */
-    // @PatchMapping("{userId}/orders/current")
-    // public ResponseEntity<String> updateOrderItemHandler(@PathVariable("userId") int userId, @RequestHeader(name="username") String username, @RequestBody OrderItem orderItem) {
+    /* 
+    @PatchMapping("{id}/orders/current")
+    public ResponseEntity<String> updateOrderItemHandler(@PathVariable("id") int targetUserId, 
+        @RequestHeader(name="userId") int userId, @RequestBody Item itemToUpdateQuantity) {
+        //Make sure the Item we're trying to change in the cart exists!
+        Item theRealItem;
+        try{
+            theRealItem = is.getItemById(itemToUpdateQuantity.getItemId());
+        }
+        catch(EntityNotFoundException e){
+            return new ResponseEntity<>(NOT_FOUND);
+        }
 
-    //     if (orderItem.getQuantity() < 0){ //Quantity less than 0: Return 400 (Bad Request) with information “Can’t have a quantity less than zero!” in the response body.
-    //         return new ResponseEntity<>("Can’t have a quantity less than zero!", BAD_REQUEST);
-    //     } else if (orderItem.getQuantity() > orderItem.getItem().getStock()){ // Quantity greater than Item.stock: Return 400 (Bad Request) with information "Requested quantity higher than current stock." in the response body.
-    //         return new ResponseEntity<>("Requested quantity higher than current stock!", BAD_REQUEST);
-    //     }
-    //     User loggedInUser;
-    //     try {
-    //         loggedInUser = us.getUserById(userId);
-    //         if(loggedInUser.getUserId() != userId){
-    //             throw new EntityExistsException("User ID and logged-in user ID mismatch");
-    //         }
-    //     } catch (EntityNotFoundException e) {
-    //         return new ResponseEntity<>(FORBIDDEN); // Logged-in user ID and path parameter ID mismatch: Return 403 (Forbidden)
-    //     }
-    //     OrderItem updatedOrderItem /** Update the quantity of the order item */
-    //             = us.editCartItemQuantity(userId, orderItem.getItem().getItemId(), orderItem.getQuantity());
-    //     if(updatedOrderItem == null){
-    //         return new ResponseEntity<>(NOT_FOUND); /** Item not in the current order: Return 404 (Not Found) */
-    //     }
-    //     return new ResponseEntity<>("Quantity Updated", OK);
-    // }
+
+        if (itemToUpdateQuantity.getStock() < 0){ //Quantity less than 0: Return 400 (Bad Request) with information “Can’t have a quantity less than zero!” in the response body.
+            return new ResponseEntity<>("Can’t have a quantity less than zero!", BAD_REQUEST);
+        } else if (itemToUpdateQuantity.getStock() > theRealItem.getStock()){ // Quantity greater than Item.stock: Return 400 (Bad Request) with information "Requested quantity higher than current stock." in the response body.
+            return new ResponseEntity<>("Requested quantity higher than current stock!", BAD_REQUEST);
+        }
+
+        //Authorization check: If the user ID in the header does not match the user ID in the path, return a 403 (Forbidden) status
+        User loggedInUser;
+        try {
+            loggedInUser = us.getUserById(userId);
+            
+            if(loggedInUser.getUserId() != userId){
+                throw new EntityExistsException("User ID and logged-in user ID mismatch");
+            }
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(FORBIDDEN); // Logged-in user ID and path parameter ID mismatch: Return 403 (Forbidden)
+        }
+        OrderItem updatedOrderItem /** Update the quantity of the order item */
+   //             = us.editCartItemQuantity(userId, orderItem.getItem().getItemId(), orderItem.getQuantity());
+   //     if(updatedOrderItem == null){
+   //         return new ResponseEntity<>(NOT_FOUND); //Item not in the current order: Return 404 (Not Found)
+   //     }
+   //     return new ResponseEntity<>("Quantity Updated", OK);
+   // }
 
     //Story ID 14: User Gets All of Their Items For Sale
     // This function retrieves all items for a specific user
