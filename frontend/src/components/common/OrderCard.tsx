@@ -61,7 +61,7 @@ function OrderCard(props: IOrder) {
                 <ul className='list-group'>
                     {orderedItems.map((orderedItem) => {
                     return (
-                        <li className="list-group-item" key={orderedItem.item.id}>
+                        <li className="list-group-item" key={orderedItem.item.itemId}>
                         <p>{orderedItem.item.name}</p>
                         <p>Quantity: {orderedItem.quantity}</p>
                         <p>Price: {orderedItem.item.price * orderedItem.quantity}</p>
