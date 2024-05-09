@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import 'bootstrap/dist/js/bootstrap.bundle.min'; // Import Bootstrap JS
@@ -7,7 +7,9 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { IItem } from '../../interfaces/IItem';
 import './Cart.css';
-
+import { UserContext } from '../../App';
+import { IOrder } from '../../interfaces/IOrder';
+/*
 const itemsOk: IItem[] = [{
   id: 1,
   name: 'Item 1',
@@ -92,11 +94,12 @@ const itemsOk: IItem[] = [{
   stock: 2,
   datePosted: '2021-10-11'
 }]
-
+*/
 function CartPage() {
 
-
-  const [items, setItems] = useState<IItem[]>(itemsOk);
+  let context = useContext(UserContext);
+  const [cart, setCart] = useState<IOrder>();
+  const [items, setItems] = useState<IItem[]>([]);
     const navigate = useNavigate();
     const [error, setError] = useState<string>('');
     function compare(a: IItem, b: IItem) {
@@ -108,19 +111,24 @@ function CartPage() {
         }
         return 0;
     }
-    let getItems = async () => {
-        let response = await axios.get("http://localhost:8080/items", {
-            withCredentials: true
+
+    let getCart = async () => {
+        let response = await axios.get(`${process.env.REACT_APP_API_URL}/users/${context.userId}/orders/current`, {
+            withCredentials: true,
+            headers: { 'Content-Type': 'application/json', 'userId': context.userId }
         }).then((response) => {
-            setItems(response.data);
+
+            setCart(response.data);
         }).catch((error) => {
             console.error(error);
             console.error('Error fetching items:', error);
             setError('Failed to fetch items.');
         });}
 
+    // get Items out of Order
+
     useEffect(() => {
-        getItems();
+        getCart();
     }, []);
   return (
     <>
@@ -135,7 +143,7 @@ function CartPage() {
             //<ItemCard key={`item${itemMap.id}`} item={itemMap}></ItemCard>
             <>
             <div className="col cart-item" style={{backgroundColor:"aliceblue"}}>
-              <ItemCard key={`item${itemMap.id}`} item={itemMap} type={DisplayType.CART}></ItemCard>
+              <ItemCard key={`item${itemMap.itemId}`} item={itemMap} type={DisplayType.CART}></ItemCard>
             </div>
             </>
             ))}

@@ -1,5 +1,5 @@
 export interface IItem {
-    id: number,
+    itemId: number,
     sellerId: number,
     name: string,
     description: string,
