@@ -26,7 +26,7 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
             return;
         } else {
             // Make a POST request to add item to cart
-            axios.post(`${process.env.REACT_APP_API_URL}/users/${userId}/orders/current`, { itemId: item.id, quantity: quantity })
+            axios.post(`${process.env.REACT_APP_API_URL}/users/${userId}/orders/current`, { itemId: item.itemId, quantity: quantity })
                 .then(response => {
                     // Handle success
                     console.log('Item added to cart:', response.data);
@@ -49,7 +49,7 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
 
     const handleViewRelatedOrders = () => {
       if (item !== null) {
-        navigate(`/orders/${item.id}`);
+        navigate(`/orders/${item.itemId}`);
       } else {
         navigate('/');
       }
@@ -105,7 +105,7 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
           </Col>
         </Row>
       )}
-      {showForm && <ItemForm itemId={item?.id} />}
+      {showForm && <ItemForm itemId={item?.itemId} />}
     </Col>
   );
 };
