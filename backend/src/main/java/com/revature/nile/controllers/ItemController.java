@@ -78,14 +78,15 @@ public class ItemController {
     }
 
 
-    @PatchMapping("{itemId}")
+    @PatchMapping("/{itemId}")
     public ResponseEntity<Item> patchItemByHandler(@RequestBody Item item, @PathVariable int itemId) {
         int stock = item.getStock();
+        Item returnedItem;
         try {
-            itemService.pathItem(itemId, stock);
+            returnedItem = itemService.pathItem(itemId, stock);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(NOT_FOUND);
         }
-        return new ResponseEntity<>(OK);
+        return new ResponseEntity<>(returnedItem, OK);
     }
 }

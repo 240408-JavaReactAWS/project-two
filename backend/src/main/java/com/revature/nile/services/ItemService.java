@@ -39,12 +39,13 @@ public class ItemService {
 
 
 
-    public void pathItem(int itemId, int stock) throws EntityNotFoundException {
+    public Item pathItem(int itemId, int stock) throws EntityNotFoundException {
         Optional<Item> itemOptional = itemRepository.findById(itemId);
         if (itemOptional.isPresent()) {
             Item item = itemOptional.get();
             item.setStock(stock);
-            itemRepository.save(item);
+            return itemRepository.save(item);
+            //return;
         }
         throw new EntityNotFoundException("Item with id: " + itemId + " doesn't exist");
     }
