@@ -98,7 +98,9 @@ public class UserController  {
      * Currently, we have to have the entire Item object in the orderItem.
      */
     @PostMapping("{id}/orders/current")
-    public ResponseEntity<Order> addItemToOrderHandler(@PathVariable("id") int userId, @RequestBody OrderItem orderItem) {
+    public ResponseEntity<Order> addItemToOrderHandler(@PathVariable("id") int id, @RequestHeader(name="userId") int userId, @RequestBody OrderItem orderItem) {
+        if (id != userId)
+            return new ResponseEntity<>(FORBIDDEN);
         User user;
         // Get the user by ID
         try {
@@ -106,23 +108,28 @@ public class UserController  {
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(NOT_FOUND);
         }
-        //If the user does not have a current order, create a new order for them
-        Order currOrder = os.getCurrentOrderByUserId(userId);
-        if (currOrder == null) {
-            Order newOrder = new Order();
-            newOrder.setUser(user);
-            newOrder.setStatus(Order.StatusEnum.PENDING);
-            newOrder.setBillAddress(user.getAddress());
-            newOrder.setShipToAddress(user.getAddress());
-            newOrder.setOrderItems(new ArrayList<OrderItem>());
-            os.createOrder(newOrder);
-            currOrder = newOrder;
+        if (orderItem.getItem() == null || orderItem.getQuantity() <= 0)
+            return new ResponseEntity<>(BAD_REQUEST);
+        Item item;
+        try {
+            item = is.getItemById(orderItem.getItem().getItemId());
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(BAD_REQUEST);
         }
-        orderItem.setOrder(currOrder);
-        os.createOrderItem(orderItem);
-        currOrder.getOrderItems().add(orderItem);
+        if (item.getStock() < orderItem.getQuantity())
+            return new ResponseEntity<>(BAD_REQUEST);
+        orderItem.setItem(item);
+        //If the user does not have a current order, create a new order for them
+        Order finalOrder;
+        try {
+            finalOrder = os.addOrderItemToCart(userId, orderItem);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(BAD_REQUEST);
+        }
+        if (finalOrder == null)
+            return new ResponseEntity<>(NOT_FOUND);
 
-        return new ResponseEntity<Order>(os.getOrderById(currOrder.getOrderId()), CREATED);
+        return new ResponseEntity<Order>(os.getOrderById(finalOrder.getOrderId()), CREATED);
     }
 
     // This function retrieves all items for a specific user

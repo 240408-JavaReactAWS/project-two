@@ -1,10 +1,13 @@
 package com.revature.nile.services;
 
+import com.revature.nile.models.Item;
 import com.revature.nile.models.Order;
 import com.revature.nile.models.OrderItem;
 import com.revature.nile.models.User;
 import com.revature.nile.repositories.OrderItemRepository;
 import com.revature.nile.repositories.OrderRepository;
+import com.revature.nile.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,11 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Service
 public class OrderService {
       private final OrderRepository orderRepository;
+      private final UserRepository userRepository;
       private final OrderItemRepository orderItemRepository;
 
       @Autowired
-      public OrderService(OrderRepository orderRepository, OrderItemRepository orderItemRepository) {
+      public OrderService(OrderRepository orderRepository, UserRepository userRepository, OrderItemRepository orderItemRepository) {
             this.orderRepository = orderRepository;
+            this.userRepository = userRepository;
             this.orderItemRepository = orderItemRepository;
       }
 
@@ -51,5 +56,38 @@ public class OrderService {
                   return order.get().getUser();
             }
             return null;
+      }
+
+      public Order addOrderItemToCart(int userId, OrderItem orderItem) throws EntityNotFoundException {
+            Optional<User> optionalUser = userRepository.findById(userId);
+            if(optionalUser.isEmpty()) {
+                  return null;
+            }
+            User user = optionalUser.get();
+            Order currOrder = this.getCurrentOrderByUserId(userId);
+            if (currOrder == null) {
+                  Order newOrder = new Order();
+                  newOrder.setUser(user);
+                  newOrder.setStatus(Order.StatusEnum.PENDING);
+                  newOrder.setBillAddress(user.getAddress());
+                  newOrder.setShipToAddress(user.getAddress());
+                  newOrder.setOrderItems(new ArrayList<OrderItem>());
+                  this.createOrder(newOrder);
+                  currOrder = newOrder;
+            }
+            orderItem.setOrder(currOrder);
+            for(OrderItem cartItems : currOrder.getOrderItems()) { // if item id is already in cart, add quantity
+                  if(cartItems.getItem().getItemId() == orderItem.getItem().getItemId()) {
+                        if(cartItems.getQuantity() + orderItem.getQuantity() > cartItems.getItem().getStock()) {
+                              throw new EntityNotFoundException("Not enough stock for item: " + cartItems.getItem().getItemId());
+                        }
+                        cartItems.setQuantity(cartItems.getQuantity() + orderItem.getQuantity());
+                        orderItemRepository.save(cartItems);
+                        return currOrder;
+                  }
+            }
+            this.createOrderItem(orderItem);
+            currOrder.getOrderItems().add(orderItem);
+            return currOrder;
       }
 }
