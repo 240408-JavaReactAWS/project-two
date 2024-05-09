@@ -16,6 +16,7 @@ import static org.springframework.http.HttpStatus.*;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import javax.naming.AuthenticationException;
 
 @RestController
 @RequestMapping("items")
@@ -69,15 +70,20 @@ public class ItemController {
      * In actual implementation, the reviewerId should be retrieved from the header.
      * We're not worrying about matching item IDs for now.
      */
-    @PostMapping("{id}/reviews")
-    public ResponseEntity<Review> addReview(@PathVariable int id, @RequestBody Review review, @RequestParam int reviewerId) {
-        try {
-            Review toAdd = review;
-            toAdd.setItem(itemService.getItemById(id));
-            toAdd.setUser(userService.getUserById(reviewerId));
-            return new ResponseEntity<Review>(reviewService.addReview(review), HttpStatus.CREATED);
-        } catch (Exception e) {
+    @PostMapping("{itemId}/reviews")
+    public ResponseEntity<Review> addReviewToItem(@PathVariable int itemId, @RequestHeader(name="userId") int userId, @RequestBody Review review) {
+        if (review.getRating() < 1 || review.getRating() > 5) {
             return new ResponseEntity<>(BAD_REQUEST);
+        }
+        if (review.getText() == null || review.getText().isEmpty()) {
+            return new ResponseEntity<>(BAD_REQUEST);
+        }
+        try {
+            return ResponseEntity.ok(itemService.addReviewToItem(review, userId, itemId));
+        } catch (AuthenticationException e) {
+            return new ResponseEntity<>(FORBIDDEN);
+        } catch( EntityNotFoundException e) {
+            return new ResponseEntity<>(NOT_FOUND);
         }
     }
 

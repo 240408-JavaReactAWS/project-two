@@ -1,31 +1,31 @@
 package com.revature.nile.services;
 
-import com.revature.nile.exceptions.ItemNotCreatedException;
-import com.revature.nile.exceptions.ItemNotFoundExceptions;
-import com.revature.nile.exceptions.ItemNotFoundException;
-import com.revature.nile.models.Item;
-import com.revature.nile.models.User;
-import com.revature.nile.repositories.ItemRepository;
-import com.revature.nile.repositories.OrderItemRepository;
-import com.revature.nile.repositories.UserRepository;
+import com.revature.nile.models.*;
+import com.revature.nile.repositories.*;
+import jakarta.persistence.EntityExistsException;
+import com.revature.nile.exceptions.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import javax.naming.AuthenticationException;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 public class ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final ReviewRepository reviewRepository;
     private final OrderItemRepository orderItemRepository;
 
     @Autowired
-    public ItemService(ItemRepository itemRepository, UserRepository userRepository, OrderItemRepository orderItemRepository) {
+    public ItemService(ItemRepository itemRepository, OrderItemRepository orderItemRepository, UserRepository userRepository, ReviewRepository reviewRepository) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
+        this.reviewRepository = reviewRepository;
         this.orderItemRepository = orderItemRepository;
     }
 
@@ -72,19 +72,38 @@ public class ItemService {
         return itemRepository.findAll();
     }
 
-    public void deleteItemOnSale(int itemId) {
-        if (!itemRepository.existsById(itemId)) {
-            throw new ItemNotFoundException("Item not found with id: " + itemId);
+    public Review addReviewToItem(Review review, int userId, int id) throws EntityNotFoundException, AuthenticationException {
+        Optional<Item> optionalItem = itemRepository.findById(id);
+        if (optionalItem.isEmpty()) {
+            throw new EntityNotFoundException("Item with id: " + id + " doesn't exist");
         }
-        itemRepository.deleteById(itemId);
-    }
-  
-    // This function retrieves all items for a specific user
-    public List<Item> getItemsByUserId(int userId) {
-        Optional<List<Item>> items = itemRepository.findAllByUserUserId(userId);
-        if(!items.isPresent() || items.get().isEmpty()) {
-            throw new ItemNotFoundExceptions("No items found for user with id: " + userId);
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            throw new EntityNotFoundException("User with username: " + userId + " doesn't exist");
         }
-        return items.get();
+        Item item = optionalItem.get();
+        User user = optionalUser.get();
+        boolean hasOrdered = false;
+        List<Order> userOrders = user.getOrders();
+        for(Order order : userOrders) {
+            for(OrderItem orderItem : order.getOrderItems()) {
+                if(orderItem.getItem().getItemId() == id && !order.getStatus().equals(Order.StatusEnum.PENDING)) {
+                    hasOrdered = true;
+                    break;
+                }
+            }
+        }
+        if (!hasOrdered) {
+            throw new AuthenticationException("User has not ordered this item");
+        }
+        List<Review> reviews = user.getReviews();
+        for (Review r : reviews) {
+            if (r.getItem().getItemId() == id) {
+                throw new AuthenticationException("User has already reviewed this item");
+            }
+        }
+        review.setItem(item);
+        review.setUser(user);
+        return reviewRepository.save(review);
     }
 }
