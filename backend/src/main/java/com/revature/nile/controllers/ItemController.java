@@ -14,11 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.*;
+import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("items")
@@ -34,7 +33,7 @@ public class ItemController {
         this.reviewService = reviewService;
     }
 
-    /*This function creates a new Item 
+    /*This function creates a new Item
      * This is passing the seller ID as a request parameter for now.
      * In actual implementation, the sellerId should be retrieved from the header.
      */
@@ -63,12 +62,14 @@ public class ItemController {
         return new ResponseEntity<>(item, OK);
     }
 
+
+
     @GetMapping
     public ResponseEntity<List<Item>> getAllItems() {
         return ResponseEntity.ok(itemService.getAllItems());
     }
 
-    /*This function creates a new Review 
+    /*This function creates a new Review
      * This is passing the reviewer ID as a request parameter for now.
      * In actual implementation, the reviewerId should be retrieved from the header.
      * We're not worrying about matching item IDs for now.
@@ -83,5 +84,17 @@ public class ItemController {
         } catch (Exception e) {
             return new ResponseEntity<>(BAD_REQUEST);
         }
+    }
+
+
+    @PatchMapping("{itemId}")
+    public ResponseEntity<Item> patchItemByHandler(@RequestBody Item item, @PathVariable int itemId) {
+        int stock = item.getStock();
+        try {
+            itemService.pathItem(itemId, stock);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+        return new ResponseEntity<>(OK);
     }
 }

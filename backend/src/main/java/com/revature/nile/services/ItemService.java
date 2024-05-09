@@ -58,6 +58,20 @@ public class ItemService {
         throw new EntityNotFoundException("Item with id: " + itemId + " doesn't exist");
     }
 
+
+
+
+    public void pathItem(int itemId, int stock) throws EntityNotFoundException {
+        Optional<Item> itemOptional = itemRepository.findById(itemId);
+        if (itemOptional.isPresent()) {
+            Item item = itemOptional.get();
+            item.setStock(stock);
+            itemRepository.save(item);
+        }
+        throw new EntityNotFoundException("Item with id: " + itemId + " doesn't exist");
+    }
+
+
     public List<Item> getAllItems() {
         return itemRepository.findAll();
     }
