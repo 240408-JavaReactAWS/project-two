@@ -4,7 +4,12 @@ import { IReview } from '../../../interfaces/IReview';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar } from '@fortawesome/free-solid-svg-icons'
 
-function ReviewCard(review: IReview) {
+interface IReviewProps{
+    review:IReview
+}
+
+function ReviewCard(props:IReviewProps) {
+    const review = props.review
     return (
         <div className="card">
             <div className="card-body">

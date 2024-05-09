@@ -56,7 +56,7 @@ export default function SellerItemsPage() {
             navigate("/login")
           }
           
-          const response=await axios.get(process.env.REACT_APP_API_URL + `users/${seller.userId}/items`, {
+          const response=await axios.get(process.env.REACT_APP_API_URL + `/users/${seller.userId}/items`, {
             withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': seller.userId} 
           })
           if(response.status==200){
@@ -68,6 +68,7 @@ export default function SellerItemsPage() {
           }
 
         }catch(error){
+          console.error(error)
           navigate("/login")
       }}
         
