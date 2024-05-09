@@ -7,28 +7,30 @@ import { UserContext } from '../../../App';
 
 interface Props {
   itemId: number | null;
-  userId: number | null;
   onClose: () => void;
   reviews: IReview[];
   setReviews: React.Dispatch<React.SetStateAction<IReview[]>>;
 }
 
-const ReviewForm: React.FC<Props> = ({ itemId, userId, onClose, reviews, setReviews }) => {
+const ReviewForm: React.FC<Props> = ({ itemId, onClose, reviews, setReviews }) => {
   const [rating, setRating] = useState<number | null>(null);
-  const [reviewText, setReviewText] = useState('');
-  const {userId: contextUserId, setUserId} = useContext(UserContext)
+  const [text, setText] = useState('');
+  const { userId } = useContext(UserContext)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission
     console.log('Rating:', rating);
-    console.log('Review Text:', reviewText);
+    console.log('Review Text:', text);
     /* Add review to the database */
 
-    /* QUESTION What is Back end generating time or are WE generating time?
-                What is the request Body?
-     */
-    axios.post(`${process.env.BACKEND_URL}/items/{itemId}/reviews`, { userId, rating, reviewText, reviewDate: new Date().toISOString()})
+
+    axios.post(`${process.env.BACKEND_URL}/items/{itemId}/reviews`, { rating, text }, {
+      withCredentials: true,
+      headers: {
+        'userId': userId
+      }
+    })
         .then(response => {
             // Handle success
             console.log('Review added:', response.data);
@@ -38,16 +40,6 @@ const ReviewForm: React.FC<Props> = ({ itemId, userId, onClose, reviews, setRevi
         .catch(error => {
             // Handle error
             console.error('Error adding review:', error);
-            // For testing purposes, add a mock review to the reviews list
-            // let mockReview: IReview = {
-            //   id: 1,
-            //   userId: userId!,
-            //   itemId: itemId!,
-            //   rating: rating!,
-            //   reviewText: reviewText,
-            //   reviewDate: new Date().toISOString()
-            // };
-            // setReviews([mockReview, ...reviews]);
         });
 
     // Close the form
@@ -76,8 +68,8 @@ const ReviewForm: React.FC<Props> = ({ itemId, userId, onClose, reviews, setRevi
         <Form.Control
           as="textarea"
           rows={3}
-          value={reviewText}
-          onChange={(e) => setReviewText(e.target.value)}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
           required
         />
       </Form.Group>
