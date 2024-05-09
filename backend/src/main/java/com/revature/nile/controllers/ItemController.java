@@ -39,6 +39,10 @@ public class ItemController {
      * The function handles an ItemNotCreatedException by returning a BAD_REQUEST status.
      * The function handles an EntityNotFoundException by returning a NOT_FOUND status.
      * On success, the function returns a CREATED status and the created Item.
+     * 
+     * NOTE: At present, front end should be passing an item with no specified userId. If they do,
+     *     the userId will be changed to the userId in the header. In the future, we may want to validate
+     *     that the Item does not contain a userID to begin with.
      */
     @PostMapping
     public ResponseEntity<Item> addNewItemHandler(@RequestBody Item item, @RequestHeader(name="userId") int userId) {
@@ -108,7 +112,6 @@ public class ItemController {
             return new ResponseEntity<>(NOT_FOUND);
         }
     }
-
     /*
      * Story ID 14: User Deletes One Of Their Items For Sale
      * This function deletes an item for sale
@@ -123,6 +126,7 @@ public class ItemController {
     public ResponseEntity<Integer> deleteItemByHandler(@PathVariable int itemId, @RequestHeader("userId") int id) {
         try {
             Item item = itemService.getItemById(itemId);
+            //Authorization check: User ID in the header must match the seller ID of the item
             int sellerId = item.getUser().getUserId();
             if (sellerId != id) {
                 return new ResponseEntity<>(FORBIDDEN);
@@ -151,14 +155,15 @@ public class ItemController {
      */
     @PatchMapping("{itemId}")
     public ResponseEntity<Item> patchItemByHandler(@PathVariable int itemId, @RequestBody Item item, @RequestHeader("userId") int userId) {
-        // Make sure the user is the seller of the item
         Item oldItem;
+        // Make sure the item exists before we try to update it
         try{
             oldItem = itemService.getItemById(itemId);
         }
         catch(EntityNotFoundException e){
             return new ResponseEntity<>(NOT_FOUND);
         }
+        //Authorization check: User ID in the header must match the seller ID of the item
         if (userId != oldItem.getUser().getUserId()) {
             return new ResponseEntity<>(FORBIDDEN);
         }

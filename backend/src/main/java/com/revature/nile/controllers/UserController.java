@@ -112,41 +112,71 @@ public class UserController  {
      * We then create a new order item and add it to the order.
      * Finally, we return the updated order.
      *
-     * Currently, we have to have the entire Item object in the orderItem.
+     * The front end will pass in a partially-completed OrderItem object. It should have the ItemID and Quantity.
+     * {
+     *    "itemId": 1,
+     *    "stock": 2
+     * }
+     * 
+     * The other fields will be populated when the OrderItem is added to the database.
      */
     @PostMapping("{id}/orders/current")
-    public ResponseEntity<Order> addItemToOrderHandler(@PathVariable("id") int id, @RequestHeader(name="userId") int userId, @RequestBody OrderItem orderItem) {
+    public ResponseEntity<Order> addItemToOrderHandler(@PathVariable("id") int id, @RequestHeader(name="userId") int userId, 
+        @RequestBody Item itemToItemOrderize) {
+            
+        //Make sure the Item we're trying to put in the cart exists!
+        Item theRealItem;
+        try{
+            theRealItem = is.getItemById(itemToItemOrderize.getItemId());
+        }
+        catch(EntityNotFoundException e){
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+        //You can't put an item in a cart if the cart isn't yours!
         if (id != userId)
             return new ResponseEntity<>(FORBIDDEN);
         User user;
-        // Get the user by ID
+        // Get the user by ID. If the user does not exist, return a 404 (Not Found) status.
         try {
             user = us.getUserById(userId);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(NOT_FOUND);
         }
-        if (orderItem.getItem() == null || orderItem.getQuantity() <= 0)
+
+        //Create and populate a new OrderItem object to be added to the current order
+        OrderItem orderItem = new OrderItem();
+        //Set the relationship between the OrderItem (what we're putting in the cart) and the Item (that someone is selling)
+        orderItem.setItem(theRealItem);
+        orderItem.setQuantity(itemToItemOrderize.getStock());
+
+        //if (itemToItemOrderize.getStock() <= 0)
+        //    return new ResponseEntity<>(BAD_REQUEST);
+
+        //You can't put less than 1 item in a cart!
+        if(orderItem.getQuantity() <= 0)
             return new ResponseEntity<>(BAD_REQUEST);
-        Item item;
-        try {
+
+        /*try {
             item = is.getItemById(orderItem.getItem().getItemId());
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(BAD_REQUEST);
-        }
-        if (item.getStock() < orderItem.getQuantity())
+        }*/
+        //You can't put more OrderItems in your cart than there are Items in stock!
+        if (theRealItem.getStock() < orderItem.getQuantity())
             return new ResponseEntity<>(BAD_REQUEST);
-        orderItem.setItem(item);
+
         //If the user does not have a current order, create a new order for them
-        Order finalOrder;
+        Order currentOrder;
         try {
-            finalOrder = os.addOrderItemToCart(userId, orderItem);
+            currentOrder = os.addOrderItemToCart(userId, orderItem);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(BAD_REQUEST);
         }
-        if (finalOrder == null)
+
+        if (currentOrder == null)
             return new ResponseEntity<>(NOT_FOUND);
 
-        return new ResponseEntity<Order>(os.getOrderById(finalOrder.getOrderId()), CREATED);
+        return new ResponseEntity<Order>(os.getOrderById(currentOrder.getOrderId()), CREATED);
     }
 
     /**
@@ -183,6 +213,7 @@ public class UserController  {
     public ResponseEntity<List<Item>> getItemsByUserIdHandler(@PathVariable int userId, @RequestHeader("userId") int userIdHeader) {
         User user;
         List<Item> items;
+        // Authorization check: If the user ID in the header does not match the user ID in the path, return a 403 (Forbidden) status
         try {
             if (userIdHeader != userId) {
                 return new ResponseEntity<>(FORBIDDEN);
