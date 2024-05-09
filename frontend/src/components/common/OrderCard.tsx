@@ -26,17 +26,10 @@ function OrderCard(props: IOrder) {
 
     useEffect(() => {
         
-        let getItems = async() => {
+        let getItems = () => {
             let orderItems: IOrderItemDisplay[] = []
-            props.orderItemsList.forEach(async(orderItem) => {
-                try {
-                    let res = await axios.get<IItem>(`${process.env.REACT_APP_API_URL}/items/${orderItem.itemId}`)
-                    if (res.status === 200) {
-                        orderItems.push({item: res.data, quantity: orderItem.quantity})
-                    }
-                } catch (error) {
-                    console.log(error)
-                }
+            props.orderItemsList.forEach((orderItem) => {
+                orderItems.push({item: orderItem.item, quantity: orderItem.quantity})
             })
             setOrderedItems(orderItems)
         }
