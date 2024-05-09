@@ -134,7 +134,7 @@ function ItemCard(props : IItemCardProps ) {
                     <p className="card-text">Rating: {props.item.rating}</p>
                     <p className="card-text">Quantity: {props.item.stock}</p>
                     {!cart && <AddToCartButton setDisplayQuantity={setCart} orderItem={
-                        {itemId : props.item.id, quantity:1}}/>}
+                        {itemId : props.item.id, stock:1}}/>}
                     {cart && 
                     <>
                         <button className="btn btn-primary" onClick={minusQuantity}>-</button>
