@@ -128,12 +128,11 @@ public class ItemController {
                 return new ResponseEntity<>(FORBIDDEN);
             }
             itemService.deleteItemOnSale(itemId);
-            return ResponseEntity.ok(itemId);
+            return new ResponseEntity<>(OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(NOT_FOUND);
         }
     }
-    
     /*
      * Story ID 14: User Updates One Of Their Items For Sale
      * This function updates an item for sale
