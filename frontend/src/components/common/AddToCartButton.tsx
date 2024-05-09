@@ -1,6 +1,7 @@
 import React, { useContext } from 'react'
 import { UserContext } from '../../App'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 interface ICartProps{
   orderItem:{itemId:number,
   quantity:number},
@@ -12,6 +13,10 @@ export default function AddToCartButton(props:ICartProps) {
 
   const addToCart = (e:React.SyntheticEvent) => {
     e.preventDefault()
+    let navigate = useNavigate()
+    if (!user.userId) {
+      navigate('/login')
+    }
     async function saveItemToCart(orderItem:{itemId:number,quantity:number}){
       try{
           const res= await axios.post(`${process.env.REACT_APP_API_URL}/users/${user.userId}/orders/current`,
