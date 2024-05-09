@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import 'bootstrap/dist/js/bootstrap.bundle.min'; // Import Bootstrap JS
@@ -6,6 +6,7 @@ import ItemCard, { DisplayType } from '../common/ItemCard';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { IItem } from '../../interfaces/IItem';
+import { UserContext } from '../../App';
 const itemsOk: IItem[] = [{
   id: 1,
   name: 'Item 1',
@@ -93,10 +94,12 @@ const itemsOk: IItem[] = [{
 
 function BrowsingPage() {
 
-
-  const [items, setItems] = useState<IItem[]>(itemsOk);
+    const {userId, setUserId} = useContext(UserContext);
+    const [items, setItems] = useState<IItem[]>(itemsOk);
     const navigate = useNavigate();
     const [error, setError] = useState<string>('');
+
+    
     function compare(a: IItem, b: IItem) {
         if (a.name < b.name) {
             return -1;
@@ -108,7 +111,7 @@ function BrowsingPage() {
     }
     let getItems = async () => {
         let response = await axios.get("${process.env.REACT_APP_API_URL}/items", {
-            withCredentials: true
+            withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': userId}
         }).then((response) => {
             setItems(response.data);
         }).catch((error) => {

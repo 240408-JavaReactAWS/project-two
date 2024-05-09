@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import 'bootstrap/dist/js/bootstrap.bundle.min'; // Import Bootstrap JS
@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { IItem } from '../../interfaces/IItem';
 import './Cart.css';
+import { UserContext } from '../../App';
 
 const itemsOk: IItem[] = [{
   id: 1,
@@ -95,33 +96,35 @@ const itemsOk: IItem[] = [{
 
 function CartPage() {
 
-
+  const {userId, setUserId} = useContext(UserContext);
+  
   const [items, setItems] = useState<IItem[]>(itemsOk);
-    const navigate = useNavigate();
-    const [error, setError] = useState<string>('');
-    function compare(a: IItem, b: IItem) {
-        if (a.name < b.name) {
-            return -1;
-        }
-        if (a.name > b.name) {
-            return 1;
-        }
-        return 0;
-    }
-    let getItems = async () => {
-        let response = await axios.get("${process.env.REACT_APP_API_URL}/items", {
-            withCredentials: true
-        }).then((response) => {
-            setItems(response.data);
-        }).catch((error) => {
-            console.error(error);
-            console.error('Error fetching items:', error);
-            setError('Failed to fetch items.');
-        });}
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        getItems();
-    }, []);
+
+  function compare(a: IItem, b: IItem) {
+    if (a.name < b.name) {
+        return -1;
+    }
+    if (a.name > b.name) {
+        return 1;
+    }
+    return 0;
+}
+  
+  let getCurrentOrder = async () => {
+    try {
+      let response = await axios.get(`${process.env.REACT_APP_API_URL}/users/${userId}/orders/current`, {
+          withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': userId}})
+          setItems(response.data);
+      } catch (e) {
+        console.log(e)
+      }
+    }
+
+  useEffect(() => {
+      getCurrentOrder();
+  }, []);
   return (
     <>
     <header style={{paddingBottom:"40px"}}>
