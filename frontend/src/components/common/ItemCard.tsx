@@ -3,6 +3,7 @@ import { UserContext } from '../../App';
 import { Link, useNavigate } from 'react-router-dom';
 import { IItem } from '../../interfaces/IItem';
 import axios from 'axios';
+import AddToCartButton from './AddToCartButton';
 
 export enum DisplayType {
     OWNED,
@@ -12,26 +13,65 @@ export enum DisplayType {
 
 interface IItemCardProps {
     item:IItem;
+    itemQuantity?:number,
     type: DisplayType,
-    setSellersItems?:React.Dispatch<React.SetStateAction<IItem[]>>;
+    setSellersItems?:React.Dispatch<React.SetStateAction<IItem[]>>,
+    isInCart?:boolean
+    orderId?:number
+
 }
 function ItemCard(props : IItemCardProps ) {
 
-    console.log(props)
+    const [quantity, setQuantity] = useState(!!props.itemQuantity ? props.itemQuantity:1)
+    const [cart,setCart] = useState(!!props.isInCart)
+    
+    const plusQuantity = async (e:React.SyntheticEvent) => {
+        e.preventDefault()
+        try{
+            let response=await axios.patch(process.env.REACT_APP_API_URL + `users/${user.userId}/orders/current`, 
+             {quantity: quantity + 1, itemId: props.item.id},
+             {withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': user.userId}})
+            if(response.status==403){
 
-    const [quantity, setQuantity] = useState(props.item.stock)
-    const plusQuantity = () => {
-        setQuantity(quantity + 1)
+            }
+            if(response.status==200){
+                setQuantity(quantity + 1)
+            }
+        } catch(error){
+            console.error(error)
+        }
     }
-    const minusQuantity = () => setQuantity(quantity - 1)
-    const seller=useContext(UserContext)
+
+    const minusQuantity = async (e:React.SyntheticEvent) => {
+        e.preventDefault()
+        try{
+            let response=await axios.patch(process.env.REACT_APP_API_URL + `users/${user.userId}/orders/current`, 
+            {quantity: quantity - 1, itemId: props.item.id}, {
+                withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': user.userId} 
+            })
+            if(response.status==403){
+
+            }
+            if(response.status==200){
+                setQuantity(quantity - 1)
+                if (quantity - 1 === 0) {
+                    setCart(false)
+                }
+            }
+        } catch(error){
+            console.error(error)
+        }
+    }
+
+    const user=useContext(UserContext)
     const navigate=useNavigate()
 
     const deleteItem = async (e:React.SyntheticEvent) => {
         e.preventDefault()
         try{
-            let response=await axios.delete(process.env.REACT_APP_API_URL + `items/${props.item.itemId}`, {
-                withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': seller.userId} 
+            let response = await axios.delete(process.env.REACT_APP_API_URL + `items/${props.item.itemId}`, {
+                withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': user.userId} 
+
               })
               if(response.status==403){
 
@@ -39,9 +79,6 @@ function ItemCard(props : IItemCardProps ) {
               if(response.status==200){
                
               }
-
-              
-
         }catch(error){
             console.error(error)
         }
@@ -52,9 +89,26 @@ function ItemCard(props : IItemCardProps ) {
             });
         })
     }
-    const addToCart = (e:React.SyntheticEvent) => {
-        e.preventDefault()
-    }
+
+    // const addToCart = (e:React.SyntheticEvent) => {
+    //     e.preventDefault()
+    //     const 
+    // //     let saveItemToCart= async ()=>{
+    // //         try{
+    // //             // let res=await axios.post(process.env.REACT_APP_API_URL + `/users/${user.userId}/orders/current`, {
+    // //             //     withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': user.userId} 
+    // //             //   })
+
+    // //             //   if(res.status==403){
+
+    // //             //   }
+    // //             //   if(res.status==200){
+    // //             //    setCart(true);
+    // //             //   }
+    // //             <AddToCartButton />
+    // //         }catch(error){console.error(error)}
+    // //     }
+    // }
     
     
     return (
@@ -66,8 +120,7 @@ function ItemCard(props : IItemCardProps ) {
                     <h5 className="card-title">{props.item.name}</h5>
                     <p className="card-text">Price: {props.item.price}</p>
                     <p className="card-text">Rating: {props.item.rating}</p>
-                    <p className="card-text">Quantity: {props.item.stock}</p>
-                    <p className="card-text">Quantity: {props.item.stock}</p>
+                    <p className="card-text">Stock: {props.item.stock}</p>
                     <button className="btn btn-primary" onClick={deleteItem}>Delete</button>
                     </div>
                 </div>
@@ -81,8 +134,14 @@ function ItemCard(props : IItemCardProps ) {
                     <p className="card-text">Price: {props.item.price}</p>
                     <p className="card-text">Rating: {props.item.rating}</p>
                     <p className="card-text">Quantity: {props.item.stock}</p>
-                    <p className="card-text">Quantity: {props.item.stock}</p>
-                    <button className="btn btn-primary" onClick={addToCart}>Add to Cart</button>
+                    {!cart && <AddToCartButton setDisplayQuantity={setCart} orderItem={
+                        {itemId : props.item.id, stock:1}}/>}
+                    {cart && 
+                    <>
+                        <button className="btn btn-primary" onClick={minusQuantity}>-</button>
+                        {quantity}
+                        <button className="btn btn-primary" onClick={plusQuantity}>+</button>
+                    </>}
                 </div>
             </div>
         </Link>
@@ -92,7 +151,11 @@ function ItemCard(props : IItemCardProps ) {
                 <td>{props.item.name}</td>
                 <td>{props.item.price}</td>
                 <td>{props.item.rating}</td>
-                <td><button className="btn btn-primary" onClick={minusQuantity}>-</button>{quantity}<button className="btn btn-primary" onClick={plusQuantity}>+</button></td>
+                <td>
+                    <button className="btn btn-primary" onClick={minusQuantity}>-</button>
+                    {quantity}
+                    <button className="btn btn-primary" onClick={plusQuantity}>+</button>
+                </td>
             </tr>
     )
 }
