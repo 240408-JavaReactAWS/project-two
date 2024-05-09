@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("reviews")
+@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.PATCH})
 public class ReviewController {
     private final ReviewService reviewService;
     private final UserService userService;
