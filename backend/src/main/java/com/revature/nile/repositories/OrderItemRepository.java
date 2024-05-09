@@ -7,6 +7,6 @@ import com.revature.nile.models.OrderItem;
 
 public interface OrderItemRepository extends JpaRepository<OrderItem, Integer>{
 
-    OrderItem findByItemIdAndOrder(int itemId, Order order);
+    // OrderItem findByItemIdAndOrder(int itemId, Order order);
     
 }

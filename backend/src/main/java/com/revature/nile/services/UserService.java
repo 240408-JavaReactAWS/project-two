@@ -78,14 +78,14 @@ public class UserService {
     /**
      * EDIT CART ITEM QUANTITY
      * */
-    public OrderItem editCartItemQuantity(int userId, int itemId, int quantity){
-        Optional<Order> orderOptional = orderRepository.findByUserIdAndStatus(userId, "PENDING");
-        if (orderOptional.isPresent()) {
-            Order order = orderOptional.get();
-            OrderItem orderItem = orderItemRepository.findByItemIdAndOrder(itemId, order);
-            orderItem.setQuantity(quantity);
-            return orderItemRepository.save(orderItem);
-        }
-        return null;
-    }
+    // public OrderItem editCartItemQuantity(int userId, int itemId, int quantity){
+    //     Optional<Order> orderOptional = orderRepository.findByUserIdAndStatus(userId, "PENDING");
+    //     if (orderOptional.isPresent()) {
+    //         Order order = orderOptional.get();
+    //         OrderItem orderItem = orderItemRepository.findByItemIdAndOrder(itemId, order);
+    //         orderItem.setQuantity(quantity);
+    //         return orderItemRepository.save(orderItem);
+    //     }
+    //     return null;
+    // }
 }
