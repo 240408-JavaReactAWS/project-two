@@ -7,6 +7,7 @@ import { IUser } from './interfaces/IUser';
 import Nav from './components/common/Nav';
 import SellerItemsPage from './components/pages/SellerItemsPage';
 import BrowsingPage from './components/pages/BrowsingPage';
+import CartPage from './components/pages/CartPage';
 import RegistrationPage from './components/pages/RegistrationPage/RegistrationPage';
 
 interface contextInterface {
@@ -35,7 +36,7 @@ function App() {
             {/* <Route path="/item/:id" element={<ItemPage />} /> */}
             <Route path="/listings" element={<SellerItemsPage />} />
             {/* <Route path="/orders" element={<OrderHistoryPage />} /> */}
-            {/* <Route path="/cart" element={<CartPage />} /> */}
+            <Route path="/cart" element={<CartPage />} />
             {/* <Route path="/checkout" element={<CheckoutPage />} /> */}
             {/* <Route path="/order-review" element={<AfterOrderPage />} /> */}
           </Routes>
