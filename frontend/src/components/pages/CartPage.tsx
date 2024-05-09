@@ -109,7 +109,7 @@ function CartPage() {
         return 0;
     }
     let getItems = async () => {
-        let response = await axios.get("http://localhost:8080/items", {
+        let response = await axios.get("${process.env.REACT_APP_API_URL}/items", {
             withCredentials: true
         }).then((response) => {
             setItems(response.data);
