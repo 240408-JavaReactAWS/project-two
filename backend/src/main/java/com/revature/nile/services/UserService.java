@@ -2,6 +2,11 @@ package com.revature.nile.services;
 
 import com.revature.nile.models.User;
 import com.revature.nile.repositories.UserRepository;
+import com.revature.nile.models.Order;
+import com.revature.nile.repositories.OrderRepository;
+import com.revature.nile.models.OrderItem;
+import com.revature.nile.repositories.OrderItemRepository;
+
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -15,10 +20,14 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository ur;
+    private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
 
     @Autowired
-    public UserService(UserRepository ur) {
+    public UserService(UserRepository ur, OrderRepository orderRepository, OrderItemRepository orderItemRepository) {
         this.ur = ur;
+        this.orderRepository = orderRepository;
+        this.orderItemRepository = orderItemRepository;
     }
 
     public User registerUser(User user) throws EntityExistsException {
@@ -64,4 +73,19 @@ public class UserService {
     public User updateUser(User user) {
         return ur.save(user);
     }
+
+    /**
+     * EDIT CART ITEM QUANTITY
+     * */
+    public OrderItem editCartItemQuantity(int userId, int itemId, int quantity){
+        Optional<Order> orderOptional = orderRepository.findByUserIdAndStatus(userId, "PENDING");
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+            OrderItem orderItem = orderItemRepository.findByItemIdAndOrder(itemId, order);
+            orderItem.setQuantity(quantity);
+            return orderItemRepository.save(orderItem);
+        }
+        return null;
+    }
+
 }
