@@ -35,8 +35,9 @@ public class ItemService {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             item.setUser(user);
-            if (item.getStock() < 0)
-                throw new ItemNotCreatedException("Cannot create an item with negative stock");
+            // We want to make sure there's at least one item for sale!
+            if (item.getStock() <= 0)
+                throw new ItemNotCreatedException("Cannot create an item with negative or zero stock");
             if (item.getPrice() < 0)
                 throw new ItemNotCreatedException("Cannot create an item with negative price");
             if (item.getName() == null || item.getName().isEmpty())
@@ -58,12 +59,14 @@ public class ItemService {
         throw new EntityNotFoundException("Item with id: " + itemId + " doesn't exist");
     }
 
-    public void pathItem(int itemId, int stock) throws EntityNotFoundException {
+    //public void pathItem(int itemId, int stock) throws EntityNotFoundException {
+    public Item patchItemStockById(int itemId, int stock) throws EntityNotFoundException {
         Optional<Item> itemOptional = itemRepository.findById(itemId);
         if (itemOptional.isPresent()) {
             Item item = itemOptional.get();
             item.setStock(stock);
             itemRepository.save(item);
+            return item;
         }
         throw new EntityNotFoundException("Item with id: " + itemId + " doesn't exist");
     }
