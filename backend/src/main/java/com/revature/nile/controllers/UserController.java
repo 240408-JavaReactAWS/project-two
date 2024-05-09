@@ -1,6 +1,7 @@
 package com.revature.nile.controllers;
 
 import com.revature.nile.exceptions.ItemNotFoundExceptions;
+import com.revature.nile.exceptions.OrderProcessingException;
 import com.revature.nile.models.Item;
 import com.revature.nile.models.Order;
 import com.revature.nile.models.OrderItem;
@@ -123,12 +124,12 @@ public class UserController  {
 
     // This function retrieves all items for a specific user
     @GetMapping("/{userId}/items")
-    public ResponseEntity<List<Item>> getItemsByUserIdHandler(@PathVariable int userId, @RequestHeader("userId") String userIdHeader) {
+    public ResponseEntity<List<Item>> getItemsByUserIdHandler(@PathVariable int userId, @RequestHeader("userId") int userIdHeader) {
         User user;
         List<Item> items;
         try {
-            int userIdInt = Integer.parseInt(userIdHeader);
-            if (userIdInt != userId) {
+
+            if (userIdHeader != userId) {
                 return new ResponseEntity<>(FORBIDDEN);
             }
             user = us.getUserById(userId);
@@ -142,18 +143,22 @@ public class UserController  {
     }
 
     @PatchMapping("/{userId}/orders/current")
-    public ResponseEntity<OrderItem> updateOrderStatusHandler(
+    public ResponseEntity<Order> updateOrderStatusHandler(
             @PathVariable int userId,
             @RequestBody OrderItem orderItem,
             @RequestHeader("userId") int userIdHeader) {
-
-        if (userIdHeader != userId) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        OrderItem updatedOrderItem;
+        try {
+            if (userIdHeader != userId) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            updatedOrderItem = us.removeItemFromPendingOrder(userId, orderItem.getItem().getItemId(), orderItem.getQuantity());
+            return ResponseEntity.status(HttpStatus.OK).body(updatedOrderItem.getOrder());
+        } catch (OrderProcessingException e) {
+            return ResponseEntity.status(NOT_FOUND).build();
         }
-
-        us.removeItemFromPendingOrder(userId, orderItem.getItem().getItemId());
-        return ResponseEntity.ok(orderItem);
     }
+
 
 
 }

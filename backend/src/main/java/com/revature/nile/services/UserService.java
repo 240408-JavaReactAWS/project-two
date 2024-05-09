@@ -1,14 +1,20 @@
 package com.revature.nile.services;
 
+import com.revature.nile.exceptions.OrderProcessingException;
+import com.revature.nile.models.Item;
+import com.revature.nile.models.OrderItem;
 import com.revature.nile.models.User;
+import com.revature.nile.repositories.ItemRepository;
 import com.revature.nile.repositories.OrderItemRepository;
 import com.revature.nile.repositories.UserRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.naming.AuthenticationException;
+import javax.swing.text.html.Option;
 import java.util.Optional;
 import java.util.List;
 
@@ -69,12 +75,28 @@ public class UserService {
         return ur.save(user);
     }
 
-    public void removeItemFromPendingOrder(int userId, int itemId) {
-        or.findByItemItemIdAndOrderUserUserId(itemId, userId)
-                .ifPresent(orderItem -> {
-                    if (orderItem.getQuantity() == 0) {
-                        or.deleteByItemItemIdAndOrderStatus(itemId, "PENDING");
-                    }
-                });
+    //remove an item from the pending order if the quantity from the order item is 0 and the order status is pending
+    @Transactional
+    public OrderItem removeItemFromPendingOrder(int userId, int itemId, int itemQuantity) throws OrderProcessingException {
+        Optional<OrderItem> orderItemOpt = or.findByItemItemIdAndOrderUserUserId(itemId, userId);
+        //check if the order item exists
+        if (orderItemOpt.isPresent()) {
+            OrderItem orderItem = orderItemOpt.get();
+            String orderStatus = String.valueOf(orderItem.getOrder().getStatus());
+            if (itemQuantity == 0 && "PENDING".equals(orderStatus)) {
+                //if both condition are true, delete the order item
+                or.deleteByItemItemId(itemId);
+            } else {
+                //if either condition is false, update the quantity of the order item
+                orderItem.setQuantity(itemQuantity);
+                or.save(orderItem);
+            }
+            return orderItemOpt.get();
+        } else {
+            //if the order item does not exist, throw an exception
+            throw new OrderProcessingException("Order item not found for userId: " + userId + " and itemId: " + itemId);
+        }
     }
+
+
 }

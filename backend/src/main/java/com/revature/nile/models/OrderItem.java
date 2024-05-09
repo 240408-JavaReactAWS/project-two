@@ -43,6 +43,6 @@ public class OrderItem {
     //Many order items are associated with one order
     @ManyToOne
     @JoinColumn(name = "orderId")  
-//    @JsonIgnore
+    @JsonIgnore
     private Order order;
 }

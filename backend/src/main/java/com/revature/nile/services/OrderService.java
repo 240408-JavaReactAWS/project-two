@@ -54,19 +54,4 @@ public class OrderService {
             return null;
       }
 
-      public OrderItem getCurrentOrderItemByUserId(int userId ,OrderItem orderItem) {
-
-            Optional<OrderItem> currOrderItem = orderItemRepository.findByItemUserUserId(userId);
-            System.out.println("orderItem"+ currOrderItem);
-
-            if (!currOrderItem.get().getOrder().getStatus().equals("PENDING") || orderItem.getQuantity() != 0) {
-                  throw new IllegalArgumentException("Order is not pending or quantity is not 0");
-            }
-
-            orderItemRepository.deleteByItemItemId(orderItem.getItem().getItemId());
-            orderItemRepository.save(orderItem);
-
-            return currOrderItem.get();
-
-      }
 }
