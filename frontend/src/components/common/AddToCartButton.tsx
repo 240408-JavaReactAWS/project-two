@@ -10,10 +10,11 @@ interface ICartProps{
 
 export default function AddToCartButton(props:ICartProps) {
   const user=useContext(UserContext)
+  const navigate = useNavigate()
 
   const addToCart = (e:React.SyntheticEvent) => {
     e.preventDefault()
-    let navigate = useNavigate()
+    
     if (!user.userId) {
       navigate('/login')
     }

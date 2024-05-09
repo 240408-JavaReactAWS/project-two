@@ -6,90 +6,92 @@ import ItemCard, { DisplayType } from '../common/ItemCard';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { IItem } from '../../interfaces/IItem';
-// const itemsOk: IItem[] = [{
-//   itemId: 1,
-//   name: 'Item 1',
-//   price: 10,
-//   description: 'Description 1',
-//   image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
-//   sellerId: 1,
-//   rating: 5,
-//   stock: 1,
-//   datePosted: '2021-10-10'
-// },{
-//   id: 2,
-//   name: 'Item 2',
-//   price: 20,
-//   description: 'Description 2',
-//   image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
-//   sellerId: 2,
-//   rating: 4,
-//   stock: 2,
-//   datePosted: '2021-10-11'
-// },
-// {
-//   id: 3,
-//   name: 'Item 1',
-//   price: 10,
-//   description: 'Description 1',
-//   image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
-//   sellerId: 1,
-//   rating: 5,
-//   stock: 1,
-//   datePosted: '2021-10-10'
-// },{
-//   id: 4,
-//   name: 'Item 2',
-//   price: 20,
-//   description: 'Description 2',
-//   image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
-//   sellerId: 2,
-//   rating: 4,
-//   stock: 2,
-//   datePosted: '2021-10-11'
-// },
-// {
-//   id: 5,
-//   name: 'Item 1',
-//   price: 10,
-//   description: 'Description 1',
-//   image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
-//   sellerId: 1,
-//   rating: 5,
-//   stock: 1,
-//   datePosted: '2021-10-10'
-// },{
-//   id: 6,
-//   name: 'Item 2',
-//   price: 20,
-//   description: 'Description 2',
-//   image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
-//   sellerId: 2,
-//   rating: 4,
-//   stock: 2,
-//   datePosted: '2021-10-11'
-// },
-// {
-//   id: 7,
-//   name: 'Item 1',
-//   price: 10,
-//   description: 'Description 1',
-//   image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
-//   sellerId: 1,
-//   rating: 5,
-//   stock: 1,
-//   datePosted: '2021-10-10'
-// },{
-//   id: 8,
-//   name: 'Item 2',
-//   price: 20,
-//   description: 'Description 2',
-//   image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
-//   sellerId: 2,
-//   rating: 4,
-//   stock: 2,
-//   datePosted: '2021-10-11'
-// }]
+/*
+const itemsOk: IItem[] = [{
+  itemId: 1,
+  name: 'Item 1',
+  price: 10,
+  description: 'Description 1',
+  image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
+  sellerId: 1,
+  rating: 5,
+  stock: 1,
+  datePosted: '2021-10-10'
+},{
+  itemId: 2,
+  name: 'Item 2',
+  price: 20,
+  description: 'Description 2',
+  image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
+  sellerId: 2,
+  rating: 4,
+  stock: 2,
+  datePosted: '2021-10-11'
+},
+{
+  itemId: 3,
+  name: 'Item 1',
+  price: 10,
+  description: 'Description 1',
+  image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
+  sellerId: 1,
+  rating: 5,
+  stock: 1,
+  datePosted: '2021-10-10'
+},{
+  itemId: 4,
+  name: 'Item 2',
+  price: 20,
+  description: 'Description 2',
+  image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
+  sellerId: 2,
+  rating: 4,
+  stock: 2,
+  datePosted: '2021-10-11'
+},
+{
+  itemId: 5,
+  name: 'Item 1',
+  price: 10,
+  description: 'Description 1',
+  image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
+  sellerId: 1,
+  rating: 5,
+  stock: 1,
+  datePosted: '2021-10-10'
+},{
+  itemId: 6,
+  name: 'Item 2',
+  price: 20,
+  description: 'Description 2',
+  image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
+  sellerId: 2,
+  rating: 4,
+  stock: 2,
+  datePosted: '2021-10-11'
+},
+{
+  itemId: 7,
+  name: 'Item 1',
+  price: 10,
+  description: 'Description 1',
+  image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
+  sellerId: 1,
+  rating: 5,
+  stock: 1,
+  datePosted: '2021-10-10'
+},{
+  itemId: 8,
+  name: 'Item 2',
+  price: 20,
+  description: 'Description 2',
+  image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
+  sellerId: 2,
+  rating: 4,
+  stock: 2,
+  datePosted: '2021-10-11'
+}]
+*/
 
 function BrowsingPage() {
 
