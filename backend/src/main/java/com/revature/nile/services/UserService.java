@@ -1,6 +1,7 @@
 package com.revature.nile.services;
 
 import com.revature.nile.models.User;
+import com.revature.nile.repositories.OrderItemRepository;
 import com.revature.nile.repositories.UserRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,9 +17,12 @@ public class UserService {
 
     private final UserRepository ur;
 
+    private final OrderItemRepository or;
+
     @Autowired
-    public UserService(UserRepository ur) {
+    public UserService(UserRepository ur, OrderItemRepository or) {
         this.ur = ur;
+        this.or = or;
     }
 
     public User registerUser(User user) throws EntityExistsException {
@@ -63,5 +67,14 @@ public class UserService {
 
     public User updateUser(User user) {
         return ur.save(user);
+    }
+
+    public void removeItemFromPendingOrder(int userId, int itemId) {
+        or.findByItemItemIdAndOrderUserUserId(itemId, userId)
+                .ifPresent(orderItem -> {
+                    if (orderItem.getQuantity() == 0) {
+                        or.deleteByItemItemIdAndOrderStatus(itemId, "PENDING");
+                    }
+                });
     }
 }

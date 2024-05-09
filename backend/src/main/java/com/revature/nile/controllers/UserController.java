@@ -12,6 +12,7 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import javax.naming.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -138,6 +139,20 @@ public class UserController  {
             return new ResponseEntity<>(NOT_FOUND);
         }
         return new ResponseEntity<>(items, OK);
+    }
+
+    @PatchMapping("/{userId}/orders/current")
+    public ResponseEntity<OrderItem> updateOrderStatusHandler(
+            @PathVariable int userId,
+            @RequestBody OrderItem orderItem,
+            @RequestHeader("userId") int userIdHeader) {
+
+        if (userIdHeader != userId) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        us.removeItemFromPendingOrder(userId, orderItem.getItem().getItemId());
+        return ResponseEntity.ok(orderItem);
     }
 
 
