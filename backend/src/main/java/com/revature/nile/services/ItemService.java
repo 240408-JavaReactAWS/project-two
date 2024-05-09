@@ -106,4 +106,19 @@ public class ItemService {
         review.setUser(user);
         return reviewRepository.save(review);
     }
+
+    public void deleteItemOnSale(int itemId) {
+        if (!itemRepository.existsById(itemId)) {
+            throw new ItemNotFoundException("Item not found with id: " + itemId);
+        }
+        itemRepository.deleteById(itemId);
+    }
+    
+    public List<Item> getItemsByUserId(int userId) {
+        Optional<List<Item>> items = itemRepository.findAllByUserUserId(userId);
+        if(!items.isPresent() || items.get().isEmpty()) {
+            throw new ItemNotFoundExceptions("No items found for user with id: " + userId);
+        }
+        return items.get();
+    }
 }

@@ -89,18 +89,19 @@ public class ItemController {
 
     @DeleteMapping("{itemId}")
     public ResponseEntity<Integer> deleteItemByHandler(@PathVariable int itemId, @RequestHeader("userId") int id) {
-    try {
-        Item item = itemService.getItemById(itemId);
-        int sellerId = item.getUser().getUserId();
-        if (sellerId != id) {
-            return new ResponseEntity<>(FORBIDDEN);
+        try {
+            Item item = itemService.getItemById(itemId);
+            int sellerId = item.getUser().getUserId();
+            if (sellerId != id) {
+                return new ResponseEntity<>(FORBIDDEN);
+            }
+            itemService.deleteItemOnSale(itemId);
+            return ResponseEntity.ok(itemId);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(NOT_FOUND);
         }
-        itemService.deleteItemOnSale(itemId);
-        return ResponseEntity.ok(itemId);
-    } catch (EntityNotFoundException e) {
-        return new ResponseEntity<>(NOT_FOUND);
     }
-
+    
     @PatchMapping("{itemId}")
     public ResponseEntity<Item> patchItemByHandler(@PathVariable int itemId, @RequestBody Item item) {
         int stock = item.getStock();
