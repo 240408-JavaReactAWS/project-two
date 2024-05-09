@@ -1,24 +1,21 @@
 package com.revature.nile.services;
 
 import com.revature.nile.models.*;
-import com.revature.nile.repositories.ItemRepository;
-import com.revature.nile.repositories.OrderItemRepository;
-
-import com.revature.nile.repositories.ReviewRepository;
-import com.revature.nile.repositories.UserRepository;
+import com.revature.nile.repositories.*;
 import jakarta.persistence.EntityExistsException;
+import com.revature.nile.exceptions.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import javax.naming.AuthenticationException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 public class ItemService {
-
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
@@ -33,14 +30,40 @@ public class ItemService {
     }
 
     /*This function stores an Item in the database */
-    public Item createItem(Item item) {
-        return itemRepository.save(item);
+    public Item addNewItem(Item item, int sellerId) throws ItemNotCreatedException, EntityNotFoundException {
+        Optional<User> optionalUser = userRepository.findById(sellerId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            item.setUser(user);
+            if (item.getStock() < 0)
+                throw new ItemNotCreatedException("Cannot create an item with negative stock");
+            if (item.getPrice() < 0)
+                throw new ItemNotCreatedException("Cannot create an item with negative price");
+            if (item.getName() == null || item.getName().isEmpty())
+                throw new ItemNotCreatedException("Cannot create an item with no name");
+            if (item.getDescription() == null || item.getDescription().isEmpty())
+                throw new ItemNotCreatedException("Cannot create an item with no description");
+            if (item.getImage() == null || item.getImage().isEmpty())
+                throw new ItemNotCreatedException("Cannot create an item with no image");
+            return itemRepository.save(item);
+        }
+        throw new EntityNotFoundException("User with id: " + sellerId + " doesn't exist");
     }
 
     public Item getItemById(int itemId) throws EntityNotFoundException {
         Optional<Item> item = itemRepository.findById(itemId);
         if (item.isPresent()) {
             return item.get();
+        }
+        throw new EntityNotFoundException("Item with id: " + itemId + " doesn't exist");
+    }
+
+    public void pathItem(int itemId, int stock) throws EntityNotFoundException {
+        Optional<Item> itemOptional = itemRepository.findById(itemId);
+        if (itemOptional.isPresent()) {
+            Item item = itemOptional.get();
+            item.setStock(stock);
+            itemRepository.save(item);
         }
         throw new EntityNotFoundException("Item with id: " + itemId + " doesn't exist");
     }

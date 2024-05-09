@@ -1,9 +1,12 @@
 package com.revature.nile.controllers;
 
+import com.revature.nile.exceptions.ItemNotFoundExceptions;
 import com.revature.nile.models.Item;
 import com.revature.nile.models.Order;
 import com.revature.nile.models.OrderItem;
+import com.revature.nile.models.Item;
 import com.revature.nile.models.User;
+import com.revature.nile.services.ItemService;
 import com.revature.nile.services.OrderService;
 import com.revature.nile.services.UserService;
 import jakarta.persistence.EntityExistsException;
@@ -17,8 +20,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 import static org.springframework.http.HttpStatus.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,22 +31,24 @@ import java.util.List;
 public class UserController  {
     private final UserService us;
     private final OrderService os;
+    private final ItemService is;
 
     @Autowired
-    public UserController(UserService us, OrderService os) {
+    public UserController(UserService us, OrderService os, ItemService is) {
         this.us = us;
         this.os = os;
+        this.is = is;
     }
 
     @PostMapping("register")
-    public ResponseEntity<User> registerNewUserHandler(@RequestBody User newUser){
+    public ResponseEntity<User> registerNewUserHandler(@RequestBody User newUser) {
         User registerUser;
-        try{
+        try {
             registerUser = us.registerUser(newUser);
-        } catch (EntityExistsException e){
+        } catch (EntityExistsException e) {
             return new ResponseEntity<>(BAD_REQUEST);
         }
-        return new ResponseEntity<>(registerUser, CREATED);
+        return new ResponseEntity<>(newUser, CREATED);
     }
 
     @PostMapping("login")
@@ -88,36 +94,60 @@ public class UserController  {
      * If the user does not have a current order, we create a new order for them.
      * We then create a new order item and add it to the order.
      * Finally, we return the updated order.
-     * 
+     *
      * Currently, we have to have the entire Item object in the orderItem.
      */
     @PostMapping("{id}/orders/current")
-    public ResponseEntity<Order> addItemToOrderHandler(@PathVariable("id") int userId, @RequestBody OrderItem orderItem) {
+    public ResponseEntity<Order> addItemToOrderHandler(@PathVariable("id") int id, @RequestHeader(name="userId") int userId, @RequestBody OrderItem orderItem) {
+        if (id != userId)
+            return new ResponseEntity<>(FORBIDDEN);
         User user;
-        System.out.println(orderItem.toString());
         // Get the user by ID
         try {
             user = us.getUserById(userId);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(NOT_FOUND);
         }
-        //If the user does not have a current order, create a new order for them
-        Order currOrder = os.getCurrentOrderByUserId(userId);
-        if (currOrder == null) {
-            Order newOrder = new Order();
-            newOrder.setUser(user);
-            newOrder.setStatus(Order.StatusEnum.PENDING);
-            newOrder.setBillAddress(user.getAddress());
-            newOrder.setShipToAddress(user.getAddress());
-            newOrder.setOrderItems(new ArrayList<OrderItem>());
-            os.createOrder(newOrder);
-            currOrder = newOrder;
+        if (orderItem.getItem() == null || orderItem.getQuantity() <= 0)
+            return new ResponseEntity<>(BAD_REQUEST);
+        Item item;
+        try {
+            item = is.getItemById(orderItem.getItem().getItemId());
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(BAD_REQUEST);
         }
-        orderItem.setOrder(currOrder);
-        os.createOrderItem(orderItem);
-        currOrder.getOrderItems().add(orderItem);
+        if (item.getStock() < orderItem.getQuantity())
+            return new ResponseEntity<>(BAD_REQUEST);
+        orderItem.setItem(item);
+        //If the user does not have a current order, create a new order for them
+        Order finalOrder;
+        try {
+            finalOrder = os.addOrderItemToCart(userId, orderItem);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(BAD_REQUEST);
+        }
+        if (finalOrder == null)
+            return new ResponseEntity<>(NOT_FOUND);
 
-        return new ResponseEntity<Order>(os.getOrderById(currOrder.getOrderId()), CREATED);
+        return new ResponseEntity<Order>(os.getOrderById(finalOrder.getOrderId()), CREATED);
     }
 
+    // This function retrieves all items for a specific user
+    @GetMapping("{userId}/items")
+    public ResponseEntity<List<Item>> getItemsByUserIdHandler(@PathVariable int userId, @RequestHeader("userId") int userIdHeader) {
+        User user;
+        List<Item> items;
+        try {
+            if (userIdHeader != userId) {
+                return new ResponseEntity<>(FORBIDDEN);
+            }
+            user = us.getUserById(userId);
+            items = is.getItemsByUserId(user.getUserId());
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(FORBIDDEN);
+        } catch (ItemNotFoundExceptions e) {
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+        return new ResponseEntity<>(items, OK);
+    }
 }

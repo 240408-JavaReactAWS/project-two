@@ -11,7 +11,7 @@ const itemsOk: IItem[] = [{
   name: 'Item 1',
   price: 10,
   description: 'Description 1',
-  image: 'Image 1',
+  image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
   sellerId: 1,
   rating: 5,
   stock: 1,
@@ -21,7 +21,7 @@ const itemsOk: IItem[] = [{
   name: 'Item 2',
   price: 20,
   description: 'Description 2',
-  image: 'Image 2',
+  image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
   sellerId: 2,
   rating: 4,
   stock: 2,
@@ -32,7 +32,7 @@ const itemsOk: IItem[] = [{
   name: 'Item 1',
   price: 10,
   description: 'Description 1',
-  image: 'Image 1',
+  image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
   sellerId: 1,
   rating: 5,
   stock: 1,
@@ -42,7 +42,7 @@ const itemsOk: IItem[] = [{
   name: 'Item 2',
   price: 20,
   description: 'Description 2',
-  image: 'Image 2',
+  image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
   sellerId: 2,
   rating: 4,
   stock: 2,
@@ -53,7 +53,7 @@ const itemsOk: IItem[] = [{
   name: 'Item 1',
   price: 10,
   description: 'Description 1',
-  image: 'Image 1',
+  image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
   sellerId: 1,
   rating: 5,
   stock: 1,
@@ -63,7 +63,7 @@ const itemsOk: IItem[] = [{
   name: 'Item 2',
   price: 20,
   description: 'Description 2',
-  image: 'Image 2',
+  image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
   sellerId: 2,
   rating: 4,
   stock: 2,
@@ -74,7 +74,7 @@ const itemsOk: IItem[] = [{
   name: 'Item 1',
   price: 10,
   description: 'Description 1',
-  image: 'Image 1',
+  image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
   sellerId: 1,
   rating: 5,
   stock: 1,
@@ -84,7 +84,7 @@ const itemsOk: IItem[] = [{
   name: 'Item 2',
   price: 20,
   description: 'Description 2',
-  image: 'Image 2',
+  image: 'https://www.foodandwine.com/thmb/C8XvnSkIMvz2XewXFDB_JYK-mSU=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Perfect-Sandwich-Bread-FT-RECIPE0723-dace53e15a304942acbc880b0ae34f5a.jpg',
   sellerId: 2,
   rating: 4,
   stock: 2,
@@ -122,17 +122,18 @@ function BrowsingPage() {
     }, []);
   return (
     <>
-    <header style={{paddingBottom:"40px", backgroundColor:"aliceblue"}}>
+    <header style={{paddingBottom:"40px"}}>
       <h1 style={{fontSize:"5rem", textAlign:"center" }}>Items</h1>
     </header>
-    <div className="w-80 h-100 d-flex align-items-center justify-content-center" style={{backgroundColor: "#fcead6"}}>
-      
-    <div  className="row row-cols-1 row-cols-md-3 g-4 d-flex align-items-center justify-content-center" style={{ width: '80%', backgroundColor: "aliceblue"}}>
+    <div className="container w-90 h-100 d-flex align-items-center justify-content-center" style={{backgroundColor: "#fcead6"}}>
+
+    <div  className="row row-cols-1 row-cols-md-3 g-4 d-flex align-items-center justify-content-center flex-wrap" style={{ width: '80%'}}>
         
         {items.sort(compare).map((itemMap) => (
             //<ItemCard key={`item${itemMap.id}`} item={itemMap}></ItemCard>
-            <ItemCard key={`item${itemMap.id}`} item={itemMap} type={DisplayType.NONOWNED}></ItemCard>
-        ))}
+            <div className="col">
+              <ItemCard key={`item${itemMap.id}`} item={itemMap} type={DisplayType.NONOWNED}></ItemCard>
+            </div>))}
     </div>
     </div>
     </>
