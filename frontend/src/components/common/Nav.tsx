@@ -7,7 +7,7 @@ import axios from 'axios';
 import { UserContext } from '../../App';
 const Nav: React.FC = () => {
 
-  const {userId, setUserId} = useContext<any>(UserContext)
+  const {userId, setUserId} = useContext(UserContext)
   const navigateTo = useNavigate();
 
   /*
@@ -43,24 +43,31 @@ const Nav: React.FC = () => {
             <li className="nav-item p-2">
               <Link to="/" className="nav-link">Browse Products</Link>
             </li>
+          </ul>
           {!userId &&
+          <ul className="navbar-nav ms-auto">
             <li className="nav-item p-2">
               <Link to="/login" className="nav-link">Login</Link>
             </li>
-          }
-            {userId && <><li className="nav-item p-2">
-              <Link to="/listings" className="nav-link">My Listings</Link></li>
-            <li className="nav-item p-2">
-              <Link to="/orders" className="nav-link">My Orders</Link></li>
-            <li className="nav-item p-2">
-              <Link to="/cart" className="nav-link">Cart</Link></li>
-            <li className="nav-item p-2">
-              <Link to="/checkout" className="nav-link">Checkout</Link></li>
-            <li className="nav-item p-2">
-              <Link to="/login" className="nav-link">Logout</Link>
-            </li>
-            </>}
           </ul>
+          }
+            {userId && <>
+            <ul className="navbar-nav">
+              <li className="nav-item p-2">
+                <Link to="/listings" className="nav-link">My Listings</Link></li>
+              <li className="nav-item p-2">
+                <Link to="/orders" className="nav-link">My Orders</Link></li>
+            </ul>
+            <ul className="navbar-nav ms-auto">
+              <li className="nav-item p-2">
+                <Link to="/cart" className="nav-link">Cart</Link></li>
+              <li className="nav-item p-2">
+                <Link to="/checkout" className="nav-link">Checkout</Link></li>
+              <li className="nav-item p-2">
+                <Link to="/login" className="nav-link">Logout</Link>
+              </li>
+            </ul>
+            </>}
         </div>
       </div>
       </nav>
