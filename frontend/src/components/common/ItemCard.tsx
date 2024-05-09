@@ -17,16 +17,52 @@ interface IItemCardProps {
     type: DisplayType,
     setSellersItems?:React.Dispatch<React.SetStateAction<IItem[]>>,
     isInCart?:boolean
+    orderId?:number
 
 }
 function ItemCard(props : IItemCardProps ) {
     const [quantity, setQuantity] = useState(!!props.itemQuantity ? props.itemQuantity:1)
     const[cart,setCart] = useState(!!props.isInCart)
     
-    const plusQuantity = () => {
-        setQuantity(quantity + 1)
+    const plusQuantity = async (e:React.SyntheticEvent) => {
+        e.preventDefault()
+        try{
+            let response=await axios.patch(process.env.REACT_APP_API_URL + `users/${user.userId}/orders/current`, 
+             {quantity: quantity + 1, itemId: props.item.id},
+             {withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': user.userId}})
+            if(response.status==403){
+
+            }
+            if(response.status==200){
+                setQuantity(quantity + 1)
+            }
+        } catch(error){
+            console.error(error)
+        }
+        
     }
-    const minusQuantity = () => setQuantity(quantity - 1)
+
+    const minusQuantity = async (e:React.SyntheticEvent) => {
+        e.preventDefault()
+        try{
+            let response=await axios.patch(process.env.REACT_APP_API_URL + `users/${user.userId}/orders/current`, 
+            {quantity: quantity - 1, itemId: props.item.id}, {
+                withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': user.userId} 
+            })
+            if(response.status==403){
+
+            }
+            if(response.status==200){
+                setQuantity(quantity - 1)
+                if (quantity - 1 === 0) {
+                    setCart(false)
+                }
+            }
+        } catch(error){
+            console.error(error)
+        }
+    }
+
     const user=useContext(UserContext)
     const navigate=useNavigate()
 
@@ -97,8 +133,14 @@ function ItemCard(props : IItemCardProps ) {
                     <p className="card-text">Price: {props.item.price}</p>
                     <p className="card-text">Rating: {props.item.rating}</p>
                     <p className="card-text">Quantity: {props.item.stock}</p>
-                    {/* {!cart && <AddToCartButton />} */}
-                    {cart && <><button className="btn btn-primary" onClick={minusQuantity}>-</button>{quantity}<button className="btn btn-primary" onClick={plusQuantity}>+</button></>}
+                    {!cart && <AddToCartButton setDisplayQuantity={setCart} orderItem={
+                        {itemId : props.item.id, quantity:1}}/>}
+                    {cart && 
+                    <>
+                        <button className="btn btn-primary" onClick={minusQuantity}>-</button>
+                        {quantity}
+                        <button className="btn btn-primary" onClick={plusQuantity}>+</button>
+                    </>}
                 </div>
             </div>
         </Link>
@@ -108,7 +150,11 @@ function ItemCard(props : IItemCardProps ) {
                 <td>{props.item.name}</td>
                 <td>{props.item.price}</td>
                 <td>{props.item.rating}</td>
-                <td><button className="btn btn-primary" onClick={minusQuantity}>-</button>{quantity}<button className="btn btn-primary" onClick={plusQuantity}>+</button></td>
+                <td>
+                    <button className="btn btn-primary" onClick={minusQuantity}>-</button>
+                    {quantity}
+                    <button className="btn btn-primary" onClick={plusQuantity}>+</button>
+                </td>
             </tr>
     )
 }
