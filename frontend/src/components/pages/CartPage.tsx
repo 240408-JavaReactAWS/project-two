@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, {useContext} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import 'bootstrap/dist/js/bootstrap.bundle.min'; // Import Bootstrap JS
@@ -8,7 +8,8 @@ import { useEffect, useState } from 'react';
 import { IItem } from '../../interfaces/IItem';
 import './Cart.css';
 import { UserContext } from '../../App';
-
+import { IOrder } from '../../interfaces/IOrder';
+/*
 const itemsOk: IItem[] = [{
   id: 1,
   name: 'Item 1',
@@ -93,41 +94,42 @@ const itemsOk: IItem[] = [{
   stock: 2,
   datePosted: '2021-10-11'
 }]
-
+*/
 function CartPage() {
 
-  const {userId, setUserId} = useContext(UserContext);
-  
+
+  let context = useContext(UserContext);
+  const [cart, setCart] = useState<IOrder>();
   const [items, setItems] = useState<IItem[]>([]);
-  const navigate = useNavigate();
-
-
-  function compare(a: IItem, b: IItem) {
-    if (a.name < b.name) {
-        return -1;
-    }
-    if (a.name > b.name) {
-        return 1;
-    }
-    return 0;
-}
-  
-  let getCurrentOrder = async () => {
-    try {
-      let response = await axios.get(`${process.env.REACT_APP_API_URL}/users/${userId}/orders/current`, {
-          withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': userId}})
-          setItems(response.data);
-      } catch (e: any) {
-        if (e.response) {
-          console.log(e.response.data)
+    const navigate = useNavigate();
+    const [error, setError] = useState<string>('');
+    function compare(a: IItem, b: IItem) {
+        if (a.name < b.name) {
+            return -1;
         }
-        
-      }
+        if (a.name > b.name) {
+            return 1;
+        }
+        return 0;
     }
 
-  useEffect(() => {
-      getCurrentOrder();
-  }, []);
+    let getCart = async () => {
+        let response = await axios.get(`${process.env.REACT_APP_API_URL}/users/${context.userId}/orders/current`, {
+            withCredentials: true,
+            headers: { 'Content-Type': 'application/json', 'userId': context.userId }
+        }).then((response) => {
+            setCart(response.data);
+        }).catch((error) => {
+            console.error(error);
+            console.error('Error fetching items:', error);
+            setError('Failed to fetch items.');
+        });}
+
+    // get Items out of Order
+
+    useEffect(() => {
+        getCart();
+    }, []);
   return (
     <>
     <header style={{paddingBottom:"40px"}}>
@@ -143,7 +145,7 @@ function CartPage() {
             //<ItemCard key={`item${itemMap.id}`} item={itemMap}></ItemCard>
             <>
             <div className="col cart-item" style={{backgroundColor:"aliceblue"}}>
-              <ItemCard key={`item${itemMap.id}`} item={itemMap} type={DisplayType.CART}></ItemCard>
+              <ItemCard key={`item${itemMap.itemId}`} item={itemMap} type={DisplayType.CART}></ItemCard>
             </div>
             </>
             ))}
