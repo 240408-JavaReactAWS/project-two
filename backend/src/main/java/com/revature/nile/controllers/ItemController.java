@@ -3,6 +3,7 @@ package com.revature.nile.controllers;
 import com.revature.nile.exceptions.ItemNotFoundException;
 import com.revature.nile.exceptions.ItemNotCreatedException;
 import com.revature.nile.models.Item;
+import com.revature.nile.models.Order;
 import com.revature.nile.models.Review;
 import com.revature.nile.models.User;
 import com.revature.nile.services.ItemService;
@@ -172,6 +173,24 @@ public class ItemController {
             //itemService.pathItem(itemId, stock);
             return new ResponseEntity<Item>(itemService.patchItemStockById(itemId, stock), HttpStatus.OK);
         } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+    }
+
+    @GetMapping("{itemId}/orders")
+    public ResponseEntity<List<Order>> getOrdersByItemHandler(@PathVariable int itemId, @RequestHeader(name="userId") int userId) {
+        try {
+            User user = userService.getUserById(userId);
+            Item item = itemService.getItemById(itemId);
+            if (item.getUser().getUserId() != user.getUserId()) {
+                return new ResponseEntity<>(FORBIDDEN);
+            }
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+        try {
+            return ResponseEntity.ok(itemService.getOrdersByItem(itemId));
+        } catch (ItemNotFoundException e) {
             return new ResponseEntity<>(NOT_FOUND);
         }
     }

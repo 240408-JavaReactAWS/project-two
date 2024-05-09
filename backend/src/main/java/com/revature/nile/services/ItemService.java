@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import javax.naming.AuthenticationException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -123,5 +124,17 @@ public class ItemService {
             throw new ItemNotFoundExceptions("No items found for user with id: " + userId);
         }
         return items.get();
+    }
+
+    public List<Order> getOrdersByItem(int itemId) {
+        Optional<List<OrderItem>> orderItems = orderItemRepository.findAllByItemItemId(itemId);
+        if(orderItems.isEmpty()) {
+            throw new ItemNotFoundException("Item Id not found");
+        }
+        List<Order> orders = new ArrayList<Order>();
+        for(OrderItem orderItem : orderItems.get()) {
+            orders.add(orderItem.getOrder());
+        }
+        return orders;
     }
 }
