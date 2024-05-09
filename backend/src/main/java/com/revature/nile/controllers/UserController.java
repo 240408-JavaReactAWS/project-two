@@ -1,12 +1,14 @@
 package com.revature.nile.controllers;
 
 import com.revature.nile.exceptions.ItemNotFoundExceptions;
+import com.revature.nile.exceptions.OrderProcessingException;
 import com.revature.nile.models.*;
 import com.revature.nile.services.*;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import javax.naming.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -165,4 +167,22 @@ public class UserController  {
         }
         return new ResponseEntity<>(items, OK);
     }
+
+    @PatchMapping("/{userId}/orders/current")
+    public ResponseEntity<Order> updateOrderStatusHandler(
+            @PathVariable int userId,
+            @RequestBody OrderItem orderItem,
+            @RequestHeader("userId") int userIdHeader) {
+        OrderItem updatedOrderItem;
+        try {
+            if (userIdHeader != userId) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            updatedOrderItem = us.removeItemFromPendingOrder(userId, orderItem.getItem().getItemId(), orderItem.getQuantity());
+            return ResponseEntity.status(HttpStatus.OK).body(updatedOrderItem.getOrder());
+        } catch (OrderProcessingException e) {
+            return ResponseEntity.status(NOT_FOUND).build();
+        }
+    }
+
 }
