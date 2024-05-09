@@ -4,6 +4,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+application.properties
+pom.xml
+
 ### STS ###
 .apt_generated
 .classpath

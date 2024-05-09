@@ -3,103 +3,67 @@ package com.revature.nile.services;
 import com.revature.nile.models.Item;
 import com.revature.nile.models.Order;
 import com.revature.nile.models.OrderItem;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import com.revature.nile.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 @Configuration
 public class EmailService {
-    private final JavaMailSender emailSender;
+    private final JavaMailSender javaMailSender;
 
     @Value("${spring.mail.username}")
     private String senderEmail;
 
     @Autowired
-    public EmailService(JavaMailSender emailSender) {
-        this.emailSender = emailSender;
+    public EmailService(JavaMailSender javaMailSender) {
+        this.javaMailSender = javaMailSender;
     }
 
-    public void sendNotificationToSeller(String sellerEmail, String subject, OrderItem orderItem) {
-        MimeMessage mimeMessage = emailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+    public void sendNotificationToSeller(User user, Order order) {
+        // Send email
+        String email = user.getEmail();
+        String subject = "New Order Notification for Order #" + order.getOrderId();
 
-        String htmlContent = generateHtmlContent(orderItem);
+        String buyerEmail = order.getUser().getEmail();
 
-        try {
-            helper.setTo(sellerEmail);
-            helper.setFrom(senderEmail);
-            helper.setSubject(subject);
-            helper.setText(htmlContent, true);
+        StringBuilder body = new StringBuilder();
+        body.append("Hello, " + user.getFirstName() + " " + user.getLastName() + ",\n\n");
+        body.append("You have a new order from " + buyerEmail + " for the following items:\n\n");
+        body.append("Shipping Address: " + order.getShipToAddress() + "\n\n\n");
 
-            emailSender.send(mimeMessage);
-        } catch (MessagingException e) {
-            e.printStackTrace();
+        DecimalFormat df = new DecimalFormat("#.00");
+        double totalAmount= 0.0;
+        for(OrderItem orderitem : order.getOrderItems()){
+            Item item = orderitem.getItem();
+            body.append("Item: " + item.getName() + "\n\n");
+            body.append("Quantity: " + orderitem.getQuantity() + "\n\n");
+            body.append("Price: $" + item.getPrice() + "\n\n");
+            body.append("Total: $" + df.format(item.getPrice() * orderitem.getQuantity())+ "\n\n");
+            totalAmount += item.getPrice() * orderitem.getQuantity();
+            body.append("------------------------------------------------\n\n");
         }
+        body.append("Total Order Price: $" + df.format(totalAmount)+ "\n\n\n");
+        body.append("Items will be shipped to the following address: " + order.getShipToAddress() + "\n\n\n");
+        body.append("Thank you for using Nile!");
+        sendEmail(email, subject, body.toString());
+
     }
 
-    private String generateHtmlContent(OrderItem orderItem) {
-        StringBuilder itemsHtml = new StringBuilder();
-        List<OrderItem> orderItems = orderItem.getItem().getOrderItems();
-        for (int i = 0; i < orderItems.size(); i++) {
-            OrderItem item = orderItems.get(i);
-            String backgroundColor = i % 2 == 0 ? "#f0f0f0" : "#c6ced1"; // Alternate row color
-
-            itemsHtml.append("<tr style=\"background-color:").append(backgroundColor).append(";\">")
-                    .append("<td>").append(item.getItem().getName()).append("</td>")
-                    .append("<td>").append(item.getQuantity()).append("</td>")
-                    .append("</tr>");
-        }
-
-        return "<!DOCTYPE html>\n" +
-                "<html lang=\"en\">\n" +
-                "<head>\n" +
-                "    <meta charset=\"UTF-8\">\n" +
-                "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
-                "    <title>Order Notification</title>\n" +
-                "    <style>\n" +
-                "        h1 {\n" +
-                "            text-align: center;\n" +
-                "        }\n" +
-                "        th, td {\n" +
-                "            text-align: center;\n" +
-                "            font-size: 14px;\n" +
-                "            padding: 10px;\n" +
-                "            width: 300px;\n" +
-                "        }\n" +
-                "        tbody tr:nth-child(odd) {\n" +
-                "            background-color: #f0f0f0;\n" +
-                "        }\n" +
-                "        tbody tr:nth-child(even) {\n" +
-                "            background-color: #c6ced1;\n" +
-                "        }\n" +
-                "    </style>\n" +
-                "</head>\n" +
-                "<body>\n" +
-                "    <div class=\"container\">\n" +
-                "        <h2>Order Notification</h2>\n" +
-                "        <p>Hello Seller,</p>\n" +
-                "        <p>You have received a new order. Details are as follows:</p>\n" +
-                "        <table>\n" +
-                "            <thead>\n" +
-                "                <tr>\n" +
-                "                    <th>Item Name</th>\n" +
-                "                    <th>Quantity</th>\n" +
-                "                </tr>\n" +
-                "            </thead>\n" +
-                "            <tbody>\n" +
-                                itemsHtml.toString() +
-                "            </tbody>\n" +
-                "        </table>\n" +
-                "        <p>Thank you for your attention.</p>\n" +
-                "    </div>\n" +
-                "</body>\n" +
-                "</html>";
+    public void sendEmail(String email, String subject, String body) {
+        // Send email
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(senderEmail);
+        message.setTo(email);
+        message.setSubject(subject);
+        message.setText(body);
+        javaMailSender.send(message);
     }
 
 }
