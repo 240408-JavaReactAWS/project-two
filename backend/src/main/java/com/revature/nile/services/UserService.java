@@ -1,13 +1,14 @@
 package com.revature.nile.services;
 
+import com.revature.nile.models.Item;
 import com.revature.nile.models.User;
 import com.revature.nile.repositories.UserRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.naming.AuthenticationException;
+import java.util.List;
 import java.util.Optional;
 import java.util.List;
 
@@ -64,4 +65,5 @@ public class UserService {
     public User updateUser(User user) {
         return ur.save(user);
     }
+
 }

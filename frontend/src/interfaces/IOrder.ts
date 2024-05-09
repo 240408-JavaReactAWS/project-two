@@ -1,8 +1,11 @@
+import { IOrderItem } from "./IOrderItem";
+
 export interface IOrder {
     id: number,
-    buyerId: number,
+    userId: number,
+    status: string, 
     shipToAddress: string,
-    billingAddress: string,
+    billAddress: string,
     dateOrdered: string,
-    status: string   
+    orderItemsList: IOrderItem[]    
 }
