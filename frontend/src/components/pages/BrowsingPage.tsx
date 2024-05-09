@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import 'bootstrap/dist/js/bootstrap.bundle.min'; // Import Bootstrap JS
@@ -6,6 +6,7 @@ import ItemCard, { DisplayType } from '../common/ItemCard';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { IItem } from '../../interfaces/IItem';
+
 // const itemsOk: IItem[] = [{
 //   itemId: 1,
 //   name: 'Item 1',
@@ -97,6 +98,8 @@ function BrowsingPage() {
   const [items, setItems] = useState<IItem[]>([]);
     const navigate = useNavigate();
     const [error, setError] = useState<string>('');
+
+    
     function compare(a: IItem, b: IItem) {
         if (a.name < b.name) {
             return -1;
