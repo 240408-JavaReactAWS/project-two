@@ -241,4 +241,20 @@ public class UserController  {
         }
         return new ResponseEntity<>(items, OK);
     }
+
+    @GetMapping("{userId}/orders")
+    public ResponseEntity<List<Order>> viewOrderHistory(@PathVariable int userId, @RequestHeader(name="userId") int userIdHeader) {
+        User user;
+        List<Order> orders;
+        try {
+            if (userIdHeader != userId) {
+                return new ResponseEntity<>(FORBIDDEN);
+            }
+            user = us.getUserById(userId);
+            orders = us.viewOrderHistory(user.getUserId());
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+        return new ResponseEntity<>(orders, OK);
+    }
 }

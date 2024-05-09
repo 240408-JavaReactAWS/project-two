@@ -82,6 +82,14 @@ public class UserService {
         return ur.save(user);
     }
 
+    public List<Order> viewOrderHistory(int userId) throws EntityNotFoundException {
+        Optional<User> user = ur.findById(userId);
+        if (user.isPresent()) {
+            return user.get().getOrders();
+        }
+        throw new EntityNotFoundException("User with id: " + userId + " doesn't exist");
+    }
+
     /**
      * EDIT CART ITEM QUANTITY
      * */
