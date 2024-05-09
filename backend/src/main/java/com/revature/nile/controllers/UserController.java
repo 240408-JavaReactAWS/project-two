@@ -29,6 +29,14 @@ public class UserController  {
         this.is = is;
     }
 
+    /*
+     * Story ID 1: User registers for an account.
+     * This function creates a new User and stores it in the database.
+     * The function takes in the User object.
+     * The function handles an EntityExistsException from the UserService by returning a BAD_REQUEST status.
+     * The function handles a UserAlreadyExistsException from the UserService by returning a CONFLICT status.
+     * On success, the function returns a CREATED status and the created User.
+     */
     @PostMapping("register")
     public ResponseEntity<User> registerNewUserHandler(@RequestBody User newUser) {
         User registerUser;
@@ -43,6 +51,13 @@ public class UserController  {
         return new ResponseEntity<>(newUser, CREATED);
     }
 
+    /*
+     * Story ID 2: User logs in using email and password
+     * This function logs in a User and returns the User object.
+     * The function takes in the User object.
+     * The function handles an AuthenticationException from the UserService by returning an UNAUTHORIZED status.
+     * On success, the function returns an OK status and the User object.
+     */
     @PostMapping("login")
     public ResponseEntity<User> loginHandler(@RequestBody User loginAttempt) {
         User user;
@@ -54,6 +69,13 @@ public class UserController  {
         return new ResponseEntity<>(user, OK);
     }
 
+    /*
+     * This function logs out a User.
+     * The function takes in the User object.
+     * The function handles an EntityNotFoundException from the UserService by returning a NOT_FOUND status.
+     * On success, the function returns an OK status.
+     * TO-DO: This function is currently not used to satisfy any user stories. Consider removing it.
+     */
     @GetMapping("logout")
     public ResponseEntity<User> logoutHandler(@RequestBody User logoutAttempt) {
         try {
@@ -64,6 +86,9 @@ public class UserController  {
         return new ResponseEntity<>(OK);
     }
 
+    /*
+     * 
+     */
     @GetMapping("{userId}")
     public ResponseEntity<User> getUserByIdHandler(@PathVariable int userId) {
         User user;
@@ -152,6 +177,7 @@ public class UserController  {
     //     return new ResponseEntity<>("Quantity Updated", OK);
     // }
 
+    //Story ID 14: User Gets All of Their Items For Sale
     // This function retrieves all items for a specific user
     @GetMapping("{userId}/items")
     public ResponseEntity<List<Item>> getItemsByUserIdHandler(@PathVariable int userId, @RequestHeader("userId") int userIdHeader) {

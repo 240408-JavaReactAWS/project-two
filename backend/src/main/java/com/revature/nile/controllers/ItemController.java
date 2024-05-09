@@ -32,9 +32,13 @@ public class ItemController {
         this.reviewService = reviewService;
     }
 
-    /*This function creates a new Item
-     * This is passing the seller ID as a request parameter for now.
-     * In actual implementation, the sellerId should be retrieved from the header.
+    /*
+     * Story ID 15: User adds a new item for sale
+     * This function creates a new Item and stores it in the database.
+     * The function takes in the Item object and the user ID from the header for authorization.
+     * The function handles an ItemNotCreatedException by returning a BAD_REQUEST status.
+     * The function handles an EntityNotFoundException by returning a NOT_FOUND status.
+     * On success, the function returns a CREATED status and the created Item.
      */
     @PostMapping
     public ResponseEntity<Item> addNewItemHandler(@RequestBody Item item, @RequestHeader(name="userId") int userId) {
@@ -49,6 +53,13 @@ public class ItemController {
         return new ResponseEntity<>(newItem, CREATED);
     }
 
+    /*
+     * Story ID 4: User views an item
+     * This function returns an item by its ID.
+     * This function does not require authorization.
+     * This function handles an EntityNotFoundException by returning a NOT_FOUND status.
+     * On success, the function returns an OK Status with the Item.
+     */
     @GetMapping("{itemId}")
     public ResponseEntity<Item> getItemById(@PathVariable int itemId) {
         Item item;
@@ -60,15 +71,26 @@ public class ItemController {
         return new ResponseEntity<>(item, OK);
     }
 
+    /*
+     * Story ID 3: User views all items
+     * This function returns all items in the database.
+     * This function does not require authorization.
+     * On success, the function returns an OK Status with a list of Items.
+     */
     @GetMapping
     public ResponseEntity<List<Item>> getAllItems() {
         return ResponseEntity.ok(itemService.getAllItems());
     }
 
-    /*This function creates a new Review
-     * This is passing the reviewer ID as a request parameter for now.
-     * In actual implementation, the reviewerId should be retrieved from the header.
-     * We're not worrying about matching item IDs for now.
+    /*
+     * Story ID 13: User makes a review on an Item
+     * This function creates a new Review.
+     * The function takes in the item ID and the Review object.
+     * Additionally, the function takes in the user ID from the header for authorization.
+     * The function returns a BAD_REQUEST if the rating is not between 1 and 5.
+     * The function returns a BAD_REQUEST if the text is null or empty.
+     * The function handles an AuthenticationException from the itemService by returning a FORBIDDEN status.
+     * On success, the function returns an OK status with the created Review.
      */
     @PostMapping("{itemId}/reviews")
     public ResponseEntity<Review> addReviewToItem(@PathVariable int itemId, @RequestHeader(name="userId") int userId, @RequestBody Review review) {
@@ -87,6 +109,16 @@ public class ItemController {
         }
     }
 
+    /*
+     * Story ID 14: User Deletes One Of Their Items For Sale
+     * This function deletes an item for sale
+     * The function takes in the item ID
+     * Additionally, the function takes in the user ID from the header for authorization.
+     * The function returns a FORBIDDEN status if the user is not the seller of the item.
+     * The function handles an EntityNotFoundException by returning a NOT_FOUND status.
+     * On success, the function returns an OK status with the deleted item ID.
+     * TO-DO: Delete requests should be idempotent, so any successful delete request should return a 200 status code.
+     */
     @DeleteMapping("{itemId}")
     public ResponseEntity<Integer> deleteItemByHandler(@PathVariable int itemId, @RequestHeader("userId") int id) {
         try {
@@ -102,14 +134,41 @@ public class ItemController {
         }
     }
     
+    /*
+     * Story ID 14: User Updates One Of Their Items For Sale
+     * This function updates an item for sale
+     * The function takes in the item ID and the updated item object.
+     * Additionally, the function takes in the user ID from the header for authorization.
+     * The function returns a FORBIDDEN status if the user is not the seller of the item.
+     * The function handles an EntityNotFoundException by returning a NOT_FOUND status.
+     * On success, the function returns an OK status.
+     * TO-DO: The function should return the updated item object.
+     * 
+     * NOTE: At present, front end should only pass the stock field of the Item, as it is the only thing we are updating.
+     * Example JSON body:
+     * {
+     *    "stock": 10
+     * }
+     */
     @PatchMapping("{itemId}")
-    public ResponseEntity<Item> patchItemByHandler(@PathVariable int itemId, @RequestBody Item item) {
+    public ResponseEntity<Item> patchItemByHandler(@PathVariable int itemId, @RequestBody Item item, @RequestHeader("userId") int userId) {
+        // Make sure the user is the seller of the item
+        Item oldItem;
+        try{
+            oldItem = itemService.getItemById(itemId);
+        }
+        catch(EntityNotFoundException e){
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+        if (userId != oldItem.getUser().getUserId()) {
+            return new ResponseEntity<>(FORBIDDEN);
+        }
         int stock = item.getStock();
         try {
-            itemService.pathItem(itemId, stock);
+            //itemService.pathItem(itemId, stock);
+            return new ResponseEntity<Item>(itemService.patchItemStockById(itemId, stock), HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(NOT_FOUND);
         }
-        return new ResponseEntity<>(OK);
     }
 }
