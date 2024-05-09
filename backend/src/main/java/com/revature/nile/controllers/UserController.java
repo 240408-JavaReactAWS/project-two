@@ -1,9 +1,11 @@
 package com.revature.nile.controllers;
 
+import com.revature.nile.exceptions.ItemNotFoundExceptions;
 import com.revature.nile.models.Item;
 import com.revature.nile.models.Order;
 import com.revature.nile.models.OrderItem;
 import com.revature.nile.models.User;
+import com.revature.nile.services.ItemService;
 import com.revature.nile.services.OrderService;
 import com.revature.nile.services.UserService;
 import jakarta.persistence.EntityExistsException;
@@ -11,12 +13,8 @@ import jakarta.persistence.EntityNotFoundException;
 import javax.naming.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
+
 import static org.springframework.http.HttpStatus.*;
 
 import java.util.ArrayList;
@@ -27,11 +25,13 @@ import java.util.List;
 public class UserController  {
     private final UserService us;
     private final OrderService os;
+    private final ItemService is;
 
     @Autowired
-    public UserController(UserService us, OrderService os) {
+    public UserController(UserService us, OrderService os, ItemService is) {
         this.us = us;
         this.os = os;
+        this.is = is;
     }
 
     @PostMapping("register")
@@ -119,5 +119,26 @@ public class UserController  {
 
         return new ResponseEntity<Order>(os.getOrderById(currOrder.getOrderId()), CREATED);
     }
+
+    // This function retrieves all items for a specific user
+    @GetMapping("/{userId}/items")
+    public ResponseEntity<List<Item>> getItemsByUserIdHandler(@PathVariable int userId, @RequestHeader("userId") int userIdHeader) {
+        User user;
+        List<Item> items;
+        try {
+
+            if (userIdHeader != userId) {
+                return new ResponseEntity<>(FORBIDDEN);
+            }
+            user = us.getUserById(userId);
+            items = is.getItemsByUserId(user.getUserId());
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(FORBIDDEN);
+        }catch (ItemNotFoundExceptions e) {
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+        return new ResponseEntity<>(items, OK);
+    }
+
 
 }
