@@ -1,20 +1,18 @@
 package com.revature.nile.services;
 
 import com.revature.nile.exceptions.ItemNotCreatedException;
+import com.revature.nile.exceptions.ItemNotFoundExceptions;
 import com.revature.nile.models.Item;
 import com.revature.nile.models.User;
 import com.revature.nile.repositories.ItemRepository;
 import com.revature.nile.repositories.OrderItemRepository;
-
 import com.revature.nile.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
-
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
@@ -62,5 +60,14 @@ public class ItemService {
 
     public List<Item> getAllItems() {
         return itemRepository.findAll();
+    }
+
+    // This function retrieves all items for a specific user
+    public List<Item> getItemsByUserId(int userId) {
+        Optional<List<Item>> items = itemRepository.findAllByUserUserId(userId);
+        if(!items.isPresent() || items.get().isEmpty()) {
+            throw new ItemNotFoundExceptions("No items found for user with id: " + userId);
+        }
+        return items.get();
     }
 }

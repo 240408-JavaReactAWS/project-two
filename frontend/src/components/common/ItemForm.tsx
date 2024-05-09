@@ -1,14 +1,18 @@
 // Do we want this form to be a new page, or a modal that pops up when the user clicks "Sell Item"?
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { UserContext } from '../../App';
 import { Button, InputGroup, Form, FormControl, FormGroup, FormLabel, FormText } from 'react-bootstrap';
 import './ItemForm.css';
+import { IItem } from '../../interfaces/IItem';
 
 interface IItemFormProps {
-  itemId?: number;
+  itemId?: number,
+  addToItems?:(item: IItem) => void
 }
 
-const ItemForm: React.FC<IItemFormProps> = ({ itemId }) => {
+const ItemForm: React.FC<IItemFormProps> = ({ itemId, addToItems }) => {
+  const { userId } = useContext(UserContext);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
@@ -26,7 +30,13 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId }) => {
   // Check if item already exists
   useEffect(() => {
     if (itemId) {
-      axios.get(`${process.env.BACKEND_URL}/items/${itemId}`)
+      axios.get(`${process.env.REACT_APP_API_URL}/items/${itemId}`, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'userId': userId
+        }
+      })
         .then(response => {
           const { name, description, price, stock, datePosted, image } = response.data;
           setName(name);
@@ -40,7 +50,7 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId }) => {
           console.log(`Failed to fetch item with id ${itemId}: ${error}`);
         });
     }
-  }, [itemId]);
+  }, [itemId, userId]);
 
   // Validate each input
   const validateForm = () => {
@@ -77,13 +87,23 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId }) => {
         price: parseFloat(price.replace(/,/g, '')),
         stock,
         image,
-        datePosted,
       };
       const axiosMethod = itemId ? axios.patch : axios.post;
-      const url = itemId ? `${process.env.BACKEND_URL}/items/${itemId}` : `${process.env.BACKEND_URL}/items`;
+      const url = itemId ? `${process.env.REACT_APP_API_URL}/items/${itemId}` : `${process.env.REACT_APP_API_URL}/items`;
 
-      axiosMethod(url, itemData)
-        .then(response => console.log(response))
+      axiosMethod(url, itemData, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'userId': userId
+        }
+      })
+        .then(response =>{
+           console.log(response)
+           if(response.status==201){
+             addToItems && addToItems(response.data)
+           }
+          })
         .catch(error => console.log(error));
     } else {
       document.getElementById('formContainer')?.classList.add('shake');
