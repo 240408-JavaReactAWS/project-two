@@ -5,6 +5,7 @@ import axios from 'axios';
 import StarRating from './StarRating';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../../App';
+import ItemForm from '../../common/ItemForm';
 
 interface Props {
   item: IItem | null;
@@ -12,6 +13,7 @@ interface Props {
 
 const ItemDetails: React.FC<Props> = ({ item }) => {
     const [quantity, setQuantity] = useState(1);
+    const [showForm, setShowForm] = useState(false);
     const navigate = useNavigate();
     const { userId } = useContext(UserContext)
 
@@ -37,21 +39,20 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
     };
 
     const handleUpdateItem = () => {
-      if (item === null) {
-          navigate('/');
+      if (item) {
+        setShowForm(true);
       } else {
-        navigate('/itemForm/'+item.id);
+        navigate('/');
       }
 
     };
 
     const handleViewRelatedOrders = () => {
-      if (item === null) {
+      if (item !== null) {
+        navigate(`/orders/${item.id}`);
+      } else {
         navigate('/');
-    } else {
-      /* Navigate to the related orders page */
-      // navigate('/itemForm/'+item.id);
-    }
+      }
     };
 
 
@@ -69,7 +70,7 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
               <Col>
                 <h2>{item.name}</h2>
                 {/* If item's seller ID matches the current user's ID */}
-                {item.sellerId === contextUserId && (
+                {item.sellerId === userId && (
                   <>
                     <Button onClick={handleUpdateItem} variant="secondary" className="mr-2">Update Item</Button>
                     <Button onClick={handleViewRelatedOrders} variant="info">View Related Orders</Button>
@@ -104,6 +105,7 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
           </Col>
         </Row>
       )}
+      {showForm && <ItemForm itemId={item?.id} />}
     </Col>
   );
 };
