@@ -1,5 +1,6 @@
 package com.revature.nile.services;
 
+import com.revature.nile.exceptions.UserAlreadyExistsException;
 import com.revature.nile.models.Item;
 import com.revature.nile.models.User;
 import com.revature.nile.repositories.UserRepository;
@@ -32,9 +33,15 @@ public class UserService {
     }
 
     public User registerUser(User user) throws EntityExistsException {
+        //Checking that a user with the same Username does not already exist; throw an exception if one does
         Optional<User> optionalUser = ur.findByUserName(user.getUserName());
         if (optionalUser.isPresent()) {
-            throw new EntityExistsException(user.getUserName() + " already exists");
+            throw new UserAlreadyExistsException(user.getUserName() + " already exists");
+        }
+        //Checking that a user with the same email does not already exist; throw an exception if one does
+        Optional<User> userWithEmail = ur.findByEmail(user.getEmail());
+        if (userWithEmail.isPresent()) {
+            throw new UserAlreadyExistsException("User with email " + user.getEmail() + " already exists");
         }
         return ur.save(user);
     }

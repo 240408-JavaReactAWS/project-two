@@ -9,6 +9,7 @@ interface Props {
   itemId: number | null;
   onClose: () => void;
   reviews: IReview[];
+  userId:number;
   setReviews: React.Dispatch<React.SetStateAction<IReview[]>>;
 }
 
@@ -25,7 +26,7 @@ const ReviewForm: React.FC<Props> = ({ itemId, onClose, reviews, setReviews }) =
     /* Add review to the database */
 
 
-    axios.post(`${process.env.REACT_APP_API_URL}/items/{itemId}/reviews`, { rating, text }, {
+    axios.post(`${process.env.REACT_APP_API_URL}/items/${itemId}/reviews`, { rating, text }, {
       withCredentials: true,
       headers: {
         'userId': userId
