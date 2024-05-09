@@ -5,8 +5,12 @@ import axios from 'axios'
 import OrderCard from '../common/OrderCard'
 import { IOrder } from '../../interfaces/IOrder'
 
+interface Props {
+    itemid?: number
+}
 
-function OrderHistoryPage(itemid?: number) {
+
+function OrderHistoryPage(props: Props) {
     const context = useContext(UserContext)
     const navigate = useNavigate()
 
@@ -14,7 +18,7 @@ function OrderHistoryPage(itemid?: number) {
 
     let getRelatedOrders = async () => {
         try {
-            let response = await axios.get(`${process.env.REACT_APP_API_URL}/items/${itemid}/orders`, 
+            let response = await axios.get(`${process.env.REACT_APP_API_URL}/items/${props.itemid}/orders`, 
             {withCredentials: true, 
                 headers:{'userId': context.userId}
             })
@@ -42,7 +46,7 @@ function OrderHistoryPage(itemid?: number) {
         if (!context.userId) {
             navigate('/login')
         }   
-        if (itemid) {
+        if (props.itemid) {
             // if itemid exists show orders for that item
             // axios.get(`${process.env.REACT_APP_API_URL}/items/${itemid}/orders`)
             getRelatedOrders()
@@ -60,7 +64,7 @@ return (
     <div>
             <h1>Order History</h1>
             {orders.map((order: IOrder) => (
-                    <OrderCard order={order} user={""} orderedItems={[]}/>
+                    <OrderCard {...order} />
             ))}
             </div>
 )
