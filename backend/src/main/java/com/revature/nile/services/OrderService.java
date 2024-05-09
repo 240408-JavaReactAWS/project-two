@@ -110,16 +110,15 @@ public class OrderService {
 
             Optional<Order> findOrder = orderRepository.findByUserIdAndStatus(userId, "PENDING");
             if(findOrder.isPresent()){
-                  /*for (OrderItem orderItem : findOrder.get().getOrderItems()) {
-                        if (orderItem.getQuantity() > orderItem.getItem().getStock()) {
-                              throw new EntityNotFoundException("Not enough stock for item: " + orderItem.getItem().getItemId());
-                       }
-                  }*/
+                  if (findInvalidOrderItem(userId) == null) {
 
-                  findOrder.get().setStatus(Order.StatusEnum.APPROVED);
-                  findOrder.get().setShipToAddress(order.getShipToAddress());
-                  findOrder.get().setBillAddress(order.getBillAddress());
-                  findOrder.get().setDateOrdered(new Date());
+                        findOrder.get().setStatus(Order.StatusEnum.APPROVED);
+                        findOrder.get().setShipToAddress(order.getShipToAddress());
+                        findOrder.get().setBillAddress(order.getBillAddress());
+                        findOrder.get().setDateOrdered(new Date());
+
+                        orderRepository.save(findOrder.get());
+                  }
 
                   return findOrder.get();
             }
@@ -128,10 +127,12 @@ public class OrderService {
 
       public OrderItem findInvalidOrderItem(int userId) {
             Optional<Order> findOrder = orderRepository.findByUserIdAndStatus(userId, "PENDING");
-            for (OrderItem orderItem : findOrder.get().getOrderItems()) {
-                  if (orderItem.getQuantity() > orderItem.getItem().getStock()) {
-                        return orderItem;
-                 }
+            if (findOrder.isPresent()) {
+                  for (OrderItem orderItem : findOrder.get().getOrderItems()) {
+                        if (orderItem.getQuantity() > orderItem.getItem().getStock()) {
+                              return orderItem;
+                        }
+                  }
             }
             return null;
       }
