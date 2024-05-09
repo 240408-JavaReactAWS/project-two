@@ -1,5 +1,6 @@
 package com.revature.nile.controllers;
 
+import com.revature.nile.exceptions.ItemNotFoundException;
 import com.revature.nile.exceptions.ItemNotCreatedException;
 import com.revature.nile.models.Item;
 import com.revature.nile.models.Review;
@@ -7,15 +8,12 @@ import com.revature.nile.models.User;
 import com.revature.nile.services.ItemService;
 import com.revature.nile.services.ReviewService;
 import com.revature.nile.services.UserService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import static org.springframework.http.HttpStatus.*;
 import jakarta.persistence.EntityNotFoundException;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -50,7 +48,6 @@ public class ItemController {
         return new ResponseEntity<>(newItem, CREATED);
     }
 
-
     @GetMapping("{itemId}")
     public ResponseEntity<Item> getItemById(@PathVariable int itemId) {
         Item item;
@@ -61,8 +58,6 @@ public class ItemController {
         }
         return new ResponseEntity<>(item, OK);
     }
-
-
 
     @GetMapping
     public ResponseEntity<List<Item>> getAllItems() {
@@ -75,7 +70,7 @@ public class ItemController {
      * We're not worrying about matching item IDs for now.
      */
     @PostMapping("{id}/reviews")
-    public ResponseEntity<Review> addReview(@RequestBody Review review, @PathVariable int id, @RequestParam int reviewerId) {
+    public ResponseEntity<Review> addReview(@PathVariable int id, @RequestBody Review review, @RequestParam int reviewerId) {
         try {
             Review toAdd = review;
             toAdd.setItem(itemService.getItemById(id));
@@ -86,9 +81,22 @@ public class ItemController {
         }
     }
 
+    @DeleteMapping("{itemId}")
+    public ResponseEntity<Integer> deleteItemByHandler(@PathVariable int itemId, @RequestHeader("userId") int id) {
+    try {
+        Item item = itemService.getItemById(itemId);
+        int sellerId = item.getUser().getUserId();
+        if (sellerId != id) {
+            return new ResponseEntity<>(FORBIDDEN);
+        }
+        itemService.deleteItemOnSale(itemId);
+        return ResponseEntity.ok(itemId);
+    } catch (EntityNotFoundException e) {
+        return new ResponseEntity<>(NOT_FOUND);
+    }
 
     @PatchMapping("{itemId}")
-    public ResponseEntity<Item> patchItemByHandler(@RequestBody Item item, @PathVariable int itemId) {
+    public ResponseEntity<Item> patchItemByHandler(@PathVariable int itemId, @RequestBody Item item) {
         int stock = item.getStock();
         try {
             itemService.pathItem(itemId, stock);

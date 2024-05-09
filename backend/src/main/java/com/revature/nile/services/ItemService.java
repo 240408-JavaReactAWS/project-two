@@ -2,6 +2,7 @@ package com.revature.nile.services;
 
 import com.revature.nile.exceptions.ItemNotCreatedException;
 import com.revature.nile.exceptions.ItemNotFoundExceptions;
+import com.revature.nile.exceptions.ItemNotFoundException;
 import com.revature.nile.models.Item;
 import com.revature.nile.models.User;
 import com.revature.nile.repositories.ItemRepository;
@@ -17,7 +18,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 public class ItemService {
-
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final OrderItemRepository orderItemRepository;
@@ -58,9 +58,6 @@ public class ItemService {
         throw new EntityNotFoundException("Item with id: " + itemId + " doesn't exist");
     }
 
-
-
-
     public void pathItem(int itemId, int stock) throws EntityNotFoundException {
         Optional<Item> itemOptional = itemRepository.findById(itemId);
         if (itemOptional.isPresent()) {
@@ -71,11 +68,17 @@ public class ItemService {
         throw new EntityNotFoundException("Item with id: " + itemId + " doesn't exist");
     }
 
-
     public List<Item> getAllItems() {
         return itemRepository.findAll();
     }
 
+    public void deleteItemOnSale(int itemId) {
+        if (!itemRepository.existsById(itemId)) {
+            throw new ItemNotFoundException("Item not found with id: " + itemId);
+        }
+        itemRepository.deleteById(itemId);
+    }
+  
     // This function retrieves all items for a specific user
     public List<Item> getItemsByUserId(int userId) {
         Optional<List<Item>> items = itemRepository.findAllByUserUserId(userId);
