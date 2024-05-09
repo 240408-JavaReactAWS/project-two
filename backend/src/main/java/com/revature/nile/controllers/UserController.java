@@ -180,24 +180,21 @@ public class UserController  {
         return new ResponseEntity<Order>(os.getOrderById(currentOrder.getOrderId()), CREATED);
     }
 
-/* Donald-Ihtheram-view-current-order
-//    User loggedInUser;
-//try {
-//        loggedInUser = us.getUserById(userId);
-//        if(loggedInUser.getUserId() != userId){
-//            throw new EntityExistsException("User ID and logged-in user ID mismatch");
-//        }
-//    } catch (EntityNotFoundException e) {
-//        return new ResponseEntity<>(FORBIDDEN); // Logged-in user ID and path parameter ID mismatch: Return 403 (Forbidden)
-//    }
-
 
     @GetMapping("{userId}/orders/current")
-    public ResponseEntity<Order> viewCurrentOrdersHandler(@PathVariable int userId, @RequestHeader(name="username") String username) {
+    public ResponseEntity<Order> viewCurrentOrdersHandler(@PathVariable int targetUserId, @RequestHeader(name="userId") int userId) {
         User loggedInUser;
         try {
             loggedInUser = us.getUserById(userId);
- Donald-Ihtheram-view-current-order */
+            if(loggedInUser.getUserId() != targetUserId){
+                    throw new EntityExistsException("User ID and logged-in user ID mismatch");
+                }
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(FORBIDDEN); // Logged-in user ID and path parameter ID mismatch: Return 403 (Forbidden)
+        }
+
+        return new ResponseEntity<>(os.getCurrentOrderByUserId(userId), OK);
+   }
   
   /* main
     /**
@@ -227,21 +224,6 @@ public class UserController  {
         User loggedInUser;
         try {
             loggedInUser = us.getUserById(userId);
-            
-main */
-            if(loggedInUser.getUserId() != userId){
-                throw new EntityExistsException("User ID and logged-in user ID mismatch");
-            }
-        } catch (EntityNotFoundException e) {
-/* Donald-Ihtheram-view-current-order
-            return new ResponseEntity<>(FORBIDDEN);
-        }
-        return new ResponseEntity<>(os.getCurrentOrderByUserId(userId), OK);
-    }
-
-Donald-Ihtheram-view-current-order*/
-  
-  //main
             return new ResponseEntity<>(FORBIDDEN); // Logged-in user ID and path parameter ID mismatch: Return 403 (Forbidden)
         }
         OrderItem updatedOrderItem /** Update the quantity of the order item */
