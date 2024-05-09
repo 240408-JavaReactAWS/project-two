@@ -140,6 +140,7 @@ function CartPage() {
     useEffect(() => {
         getCart();
     }, []);
+    
   return (
     <>
     <header style={{paddingBottom:"40px"}}>
