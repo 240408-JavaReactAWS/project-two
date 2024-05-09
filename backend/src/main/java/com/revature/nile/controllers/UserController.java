@@ -180,18 +180,23 @@ public class UserController {
                 return new ResponseEntity<>(FORBIDDEN);
             }
 
-//            OrderItem invalidItem = os.findInvalidOrderItem(order);
-//            if (invalidItem != null) {
-//                String errorMessage = "Requested quantity for " + invalidItem.getItem().getName() + " is higher than current stock. Current stock: " + invalidItem.getItem().getStock();
-//                return ResponseEntity.badRequest().body(errorMessage);
-//            }
 
+            Order approveOrder = os.cartCheckout(userId, order, loggedInUser);
+            OrderItem invalidItem = os.findInvalidOrderItem(userId);
 
-                Order approveOrder = os.cartCheckout(userId, order, loggedInUser);
-                return ResponseEntity.ok(approveOrder);
-            } catch(NullAddressException e){
+            if (invalidItem != null) {
+                //approveOrder.setStatus(Order.StatusEnum.PENDING);
+                return ResponseEntity.badRequest().body("Requested quantity for " + invalidItem.getItem().getName() + " higher than current stock. " +
+                                                        "Current stock: "  + invalidItem.getItem().getStock());
+            }
+               
+
+            return ResponseEntity.ok(approveOrder);
+            }
+            catch(NullAddressException e){
                 return new ResponseEntity<>(BAD_REQUEST);
             } catch(UserNotFoundException e){
+                System.out.println("user not found?");
                 return ResponseEntity.notFound().build();
             }
         }

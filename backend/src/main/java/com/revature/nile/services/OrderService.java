@@ -110,23 +110,29 @@ public class OrderService {
 
             Optional<Order> findOrder = orderRepository.findByUserIdAndStatus(userId, "PENDING");
             if(findOrder.isPresent()){
+                  /*for (OrderItem orderItem : findOrder.get().getOrderItems()) {
+                        if (orderItem.getQuantity() > orderItem.getItem().getStock()) {
+                              throw new EntityNotFoundException("Not enough stock for item: " + orderItem.getItem().getItemId());
+                       }
+                  }*/
+
                   findOrder.get().setStatus(Order.StatusEnum.APPROVED);
                   findOrder.get().setShipToAddress(order.getShipToAddress());
                   findOrder.get().setBillAddress(order.getBillAddress());
                   findOrder.get().setDateOrdered(new Date());
 
-                  orderRepository.save(findOrder.get());
                   return findOrder.get();
             }
             return null;
       }
 
-//      public OrderItem findInvalidOrderItem(Order order) {
-//            for (OrderItem orderItem : order.getOrderItems()) {
-//                  if (orderItem.getQuantity() > orderItem.getItem().getStock()) {
-//                        return orderItem;
-//                  }
-//            }
-//            return null;
-//      }
+      public OrderItem findInvalidOrderItem(int userId) {
+            Optional<Order> findOrder = orderRepository.findByUserIdAndStatus(userId, "PENDING");
+            for (OrderItem orderItem : findOrder.get().getOrderItems()) {
+                  if (orderItem.getQuantity() > orderItem.getItem().getStock()) {
+                        return orderItem;
+                 }
+            }
+            return null;
+      }
 }
