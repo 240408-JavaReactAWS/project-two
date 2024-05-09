@@ -1,21 +1,28 @@
 package com.revature.nile.controllers;
 
 import com.revature.nile.exceptions.ItemNotFoundExceptions;
+import com.revature.nile.exceptions.NullAddressException;
+import com.revature.nile.exceptions.UserNotFoundException;
 import com.revature.nile.models.*;
 import com.revature.nile.services.*;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+
 import javax.naming.AuthenticationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+
 import static org.springframework.http.HttpStatus.*;
+
 import java.util.ArrayList;
 
 @RestController
 @RequestMapping("users")
-public class UserController  {
+public class UserController {
     private final UserService us;
     private final OrderService os;
     private final ItemService is;
@@ -85,7 +92,7 @@ public class UserController  {
      * Currently, we have to have the entire Item object in the orderItem.
      */
     @PostMapping("{id}/orders/current")
-    public ResponseEntity<Order> addItemToOrderHandler(@PathVariable("id") int id, @RequestHeader(name="userId") int userId, @RequestBody OrderItem orderItem) {
+    public ResponseEntity<Order> addItemToOrderHandler(@PathVariable("id") int id, @RequestHeader(name = "userId") int userId, @RequestBody OrderItem orderItem) {
         if (id != userId)
             return new ResponseEntity<>(FORBIDDEN);
         User user;
@@ -121,7 +128,7 @@ public class UserController  {
 
     /**
      * UPDATE ORDER ITEM QUANTITY
-     * */
+     */
     // @PatchMapping("{userId}/orders/current")
     // public ResponseEntity<String> updateOrderItemHandler(@PathVariable("userId") int userId, @RequestHeader(name="username") String username, @RequestBody OrderItem orderItem) {
 
@@ -165,4 +172,27 @@ public class UserController  {
         }
         return new ResponseEntity<>(items, OK);
     }
-}
+
+    @PatchMapping("/{userId}/orders/checkout")
+    public ResponseEntity<?> cartCheckout(@PathVariable int userId, @RequestBody Order order, @RequestHeader int loggedInUser) {
+        try {
+            if (loggedInUser != userId) {
+                return new ResponseEntity<>(FORBIDDEN);
+            }
+
+//            OrderItem invalidItem = os.findInvalidOrderItem(order);
+//            if (invalidItem != null) {
+//                String errorMessage = "Requested quantity for " + invalidItem.getItem().getName() + " is higher than current stock. Current stock: " + invalidItem.getItem().getStock();
+//                return ResponseEntity.badRequest().body(errorMessage);
+//            }
+
+
+                Order approveOrder = os.cartCheckout(userId, order, loggedInUser);
+                return ResponseEntity.ok(approveOrder);
+            } catch(NullAddressException e){
+                return new ResponseEntity<>(BAD_REQUEST);
+            } catch(UserNotFoundException e){
+                return ResponseEntity.notFound().build();
+            }
+        }
+    }
