@@ -9,9 +9,8 @@ import {
     MDBCardBody,
     MDBInput
 } from 'mdb-react-ui-kit';
-import { useNavigate } from 'react-router-dom';
 import './RegistrationPage.css';
-
+import { useNavigate } from 'react-router-dom';
 
 
 function RegistrationPage() {
@@ -58,7 +57,7 @@ function RegistrationPage() {
         try {
             const fullAddress = `${formData.address}, ${formData.city}, ${formData.state}, ${formData.zipCode}, ${formData.country}`
 
-            let response = await axios.post('http://localhost:8080/users/register', {
+            let response = await axios.post('${process.env.REACT_APP_API_URL}/users/register', {
                 email: formData.email,
                 userName: formData.userName,
                 password: formData.password,

@@ -70,7 +70,6 @@ const ItemPage = () => {
           {showReviewForm ? (
             <ReviewForm
               itemId={itemId ? parseInt(itemId) : null}
-              userId={123} // Set the userId here
               onClose={handleCloseReviewForm}
               reviews={reviews}
               setReviews={setReviews}
