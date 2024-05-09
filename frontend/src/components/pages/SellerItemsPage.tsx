@@ -11,6 +11,7 @@ export default function SellerItemsPage() {
     const[loading,setLoading]=useState(true);
     const seller=useContext(UserContext)
     const [addItem,setAddItem]=useState(false);
+    /*
     const items:IItem[]=[
     {
         id: 1,
@@ -45,8 +46,8 @@ export default function SellerItemsPage() {
         datePosted: "2022-01-03",
         rating: 4.2
     }]
-    
-    const [sellersItems,setSellersItems]=useState<IItem[]>(items);
+    */
+    const [sellersItems,setSellersItems]=useState<IItem[]>([]);
 
     const navigate = useNavigate()
     useEffect(()=>{
@@ -66,10 +67,15 @@ export default function SellerItemsPage() {
           if(response.status==403){
             navigate("/")
           }
+          if(response.status == 404){
+            setSellersItems([])
+            setLoading(false)
+          }
 
         }catch(error){
           console.error(error)
-          navigate("/login")
+          //navigate("/login")
+          setLoading(false)
       }}
         
       getSellersItems()    
@@ -95,7 +101,7 @@ export default function SellerItemsPage() {
         {addItem &&< button className='btn btn-primary' onClick={formToggle}>Collapse</button>}
         {sellersItems.map((item:IItem)=>{
           return(
-            <div className='sellersItems' key={item.id}>
+            <div className='sellersItems' key={item.itemId}>
               <ItemCard item={item} type={DisplayType.OWNED} setSellersItems={setSellersItems}  />
             </div>
           )}) }

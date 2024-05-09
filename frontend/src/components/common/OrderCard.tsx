@@ -1,46 +1,70 @@
 import axios from 'axios'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { IOrder } from '../../interfaces/IOrder'
 import { IOrderItem } from '../../interfaces/IOrderItem'
+import { UserContext } from '../../App'
+import { IItem } from '../../interfaces/IItem'
 
-interface IOrderCardProps {
-    order: IOrder
-    user:string
-    orderedItems:IOrderItemDisplay[]
-}
+
 interface IOrderItemDisplay {
-    id: number,
-    quantity: number,
-    name: string,
-    price: number
+    item: IItem,
+    quantity: number
 }
 
-function OrderCard(props: IOrderCardProps) {
-    let total = 0
-    for(let i = 0; i < props.orderedItems.length; i++) {
-        total += props.orderedItems[i].price * props.orderedItems[i].quantity
+function OrderCard(props: IOrder) {
+
+    let userId = useContext(UserContext).userId
+    const [orderedItems, setOrderedItems] = useState<IOrderItemDisplay[]>([])
+    const [total, setTotal] = useState(0)
+    
+
+    function totalUp() {
+        for(let i = 0; i < orderedItems.length; i++) {
+           setTotal(orderedItems[i].item.price * orderedItems[i].quantity + total)
+        }
     }
 
-  return (
+    useEffect(() => {
+        
+        let getItems = async() => {
+            let orderItems: IOrderItemDisplay[] = []
+            props.orderItemsList.forEach(async(orderItem) => {
+                try {
+                    let res = await axios.get<IItem>(`${process.env.REACT_APP_API_URL}/items/${orderItem.itemId}`)
+                    if (res.status === 200) {
+                        orderItems.push({item: res.data, quantity: orderItem.quantity})
+                    }
+                } catch (error) {
+                    console.log(error)
+                }
+            })
+            setOrderedItems(orderItems)
+        }
+
+        getItems()
+        totalUp()
+    },[])
+
+    return (
     <div className="container">
         <div className="row align-items-start">
             <div className='col'>
-                <p>{props.user}'s Info:</p>
-                <p> Shipping Address: {props.order.shipToAddress}</p>
-                <p> Billing Address: {props.order.billAddress}</p>
-                <p> Order Status: {props.order.status}</p>
-                <p> Date Ordered: {props.order.dateOrdered}</p>
+                <p>Buyer's Info:</p>
+                <p> Shipping Address: {props.shipToAddress}</p>
+                <p> Billing Address: {props.billAddress}</p>
+                <p> Order Status: {props.status}</p>
+                <p> Date Ordered: {props.dateOrdered}</p>
                 <p>Total Price: {total}</p>
             </div>
             <div className='col'>
                 <p>Items:</p>
                 <ul className='list-group'>
-                    {props.orderedItems.map((item) => {
+                    {orderedItems.map((orderedItem) => {
                     return (
-                        <li className="list-group-item" key={item.id}>
-                        <p>{item.name}</p>
-                        <p>Quantity: {item.quantity}</p>
-                        <p>Price: {item.price *item.quantity}</p>
+                        <li className="list-group-item" key={orderedItem.item.itemId}>
+                        <p>{orderedItem.item.name}</p>
+                        <p>Quantity: {orderedItem.quantity}</p>
+                        <p>Price: {orderedItem.item.price * orderedItem.quantity}</p>
                         </li>
                     )
                     })}
@@ -50,7 +74,7 @@ function OrderCard(props: IOrderCardProps) {
       
       
     </div>
-  )
+    )
 }
 
 export default OrderCard
