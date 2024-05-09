@@ -1,12 +1,14 @@
 package com.revature.nile.controllers;
 
 import com.revature.nile.exceptions.ItemNotFoundExceptions;
+import com.revature.nile.exceptions.UserAlreadyExistsException;
 import com.revature.nile.models.*;
 import com.revature.nile.services.*;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import javax.naming.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -35,6 +37,9 @@ public class UserController  {
         } catch (EntityExistsException e) {
             return new ResponseEntity<>(BAD_REQUEST);
         }
+            catch(UserAlreadyExistsException e) {
+                return new ResponseEntity<>(HttpStatus.CONFLICT);
+            }
         return new ResponseEntity<>(newUser, CREATED);
     }
 
