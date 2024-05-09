@@ -11,12 +11,8 @@ import jakarta.persistence.EntityNotFoundException;
 import javax.naming.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
+
 import static org.springframework.http.HttpStatus.*;
 
 import java.util.ArrayList;
@@ -118,6 +114,31 @@ public class UserController  {
         currOrder.getOrderItems().add(orderItem);
 
         return new ResponseEntity<Order>(os.getOrderById(currOrder.getOrderId()), CREATED);
+    }
+
+//    User loggedInUser;
+//try {
+//        loggedInUser = us.getUserById(userId);
+//        if(loggedInUser.getUserId() != userId){
+//            throw new EntityExistsException("User ID and logged-in user ID mismatch");
+//        }
+//    } catch (EntityNotFoundException e) {
+//        return new ResponseEntity<>(FORBIDDEN); // Logged-in user ID and path parameter ID mismatch: Return 403 (Forbidden)
+//    }
+
+
+    @GetMapping("{userId}/orders/current")
+    public ResponseEntity<Order> viewCurrentOrdersHandler(@PathVariable int userId, @RequestHeader(name="username") String username) {
+        User loggedInUser;
+        try {
+            loggedInUser = us.getUserById(userId);
+            if(loggedInUser.getUserId() != userId){
+                throw new EntityExistsException("User ID and logged-in user ID mismatch");
+            }
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(FORBIDDEN);
+        }
+        return new ResponseEntity<>(os.getCurrentOrderByUserId(userId), OK);
     }
 
 }

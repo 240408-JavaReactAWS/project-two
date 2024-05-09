@@ -6,5 +6,5 @@ import com.revature.nile.models.OrderItem;
 
 public interface OrderItemRepository extends JpaRepository<OrderItem, Integer>{
 
-    
+
 }
