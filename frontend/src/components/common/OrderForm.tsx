@@ -46,8 +46,10 @@ const OrderForm: React.FC = () => {
       shipToAddress,
       billAddress
     }, {
+      withCredentials: true,
       headers: {
-        userId
+        'Content-Type': 'application/json',
+        'userId': userId
       }
     })
       .then(response => { console.log('Completed order!'); })
