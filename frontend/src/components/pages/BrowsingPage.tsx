@@ -110,7 +110,7 @@ function BrowsingPage() {
         return 0;
     }
     let getItems = async () => {
-        let response = await axios.get("${process.env.REACT_APP_API_URL}/items", {
+        let response = await axios.get(`${process.env.REACT_APP_API_URL}/items`, {
             withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': userId}
         }).then((response) => {
             setItems(response.data);
