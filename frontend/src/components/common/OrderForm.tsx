@@ -43,12 +43,11 @@ const OrderForm: React.FC = () => {
     }
 
     axios.patch(`${process.env.REACT_APP_API_URL})/users/${userId}/orders/checkout`, {
-      status: 'Approved',
       shipToAddress,
       billAddress
     })
-      .then(response => { console.log(response); })
-      .catch(error => { alert(error) });
+      .then(response => { console.log('Completed order!'); })
+      .catch(error => { alert('Failed to complete order') });
 }
 
   return (
