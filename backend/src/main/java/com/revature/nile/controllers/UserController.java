@@ -122,12 +122,12 @@ public class UserController  {
 
     // This function retrieves all items for a specific user
     @GetMapping("/{userId}/items")
-    public ResponseEntity<List<Item>> getItemsByUserIdHandler(@PathVariable int userId, @RequestHeader("userId") String userIdHeader) {
+    public ResponseEntity<List<Item>> getItemsByUserIdHandler(@PathVariable int userId, @RequestHeader("userId") int userIdHeader) {
         User user;
         List<Item> items;
         try {
-            int userIdInt = Integer.parseInt(userIdHeader);
-            if (userIdInt != userId) {
+
+            if (userIdHeader != userId) {
                 return new ResponseEntity<>(FORBIDDEN);
             }
             user = us.getUserById(userId);
