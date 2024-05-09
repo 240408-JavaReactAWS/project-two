@@ -8,118 +8,6 @@ import ReviewCard from './ReviewCard';
 import ReviewForm from './ReviewForm';
 import axios from 'axios';
 
-// Dummy data
-const dummyItem: IItem = {
-  id: 1,
-  sellerId: 123,
-  name: 'Dummy Item',
-  description: 'This is a dummy item for testing purposes',
-  price: 19.99,
-  stock: 10,
-  image: 'https://m.media-amazon.com/images/I/71VxfcpYsqL._AC_UF894,1000_QL80_.jpg',
-  datePosted: '2024-05-10',
-  rating: 4.5 // Assuming the rating is out of 5
-};
-
-const dummyReviews: IReview[] = [
-  {
-    id: 1,
-    userId: 456,
-    itemId: 1,
-    rating: 4,
-    reviewText: 'Great product!',
-    reviewDate: '2024-05-11'
-  },
-  {
-    id: 2,
-    userId: 789,
-    itemId: 1,
-    rating: 5,
-    reviewText: 'Amazing quality!',
-    reviewDate: '2024-05-12'
-  },
-  {
-    id: 1,
-    userId: 456,
-    itemId: 1,
-    rating: 4,
-    reviewText: 'Great product!',
-    reviewDate: '2024-05-11'
-  },
-  {
-    id: 2,
-    userId: 789,
-    itemId: 1,
-    rating: 5,
-    reviewText: 'Amazing quality!',
-    reviewDate: '2024-05-12'
-  },
-  {
-    id: 1,
-    userId: 456,
-    itemId: 1,
-    rating: 4,
-    reviewText: 'Great product!',
-    reviewDate: '2024-05-11'
-  },
-  {
-    id: 2,
-    userId: 789,
-    itemId: 1,
-    rating: 5,
-    reviewText: 'Amazing quality!',
-    reviewDate: '2024-05-12'
-  },
-  {
-    id: 1,
-    userId: 456,
-    itemId: 1,
-    rating: 4,
-    reviewText: 'Great product!',
-    reviewDate: '2024-05-11'
-  },
-  {
-    id: 2,
-    userId: 789,
-    itemId: 1,
-    rating: 5,
-    reviewText: 'Amazing quality!',
-    reviewDate: '2024-05-12'
-  },
-  {
-    id: 1,
-    userId: 456,
-    itemId: 1,
-    rating: 4,
-    reviewText: 'Great product!',
-    reviewDate: '2024-05-11'
-  },
-  {
-    id: 2,
-    userId: 789,
-    itemId: 1,
-    rating: 5,
-    reviewText: 'Amazing quality!',
-    reviewDate: '2024-05-12'
-  },
-  {
-    id: 1,
-    userId: 456,
-    itemId: 1,
-    rating: 4,
-    reviewText: 'Great product!',
-    reviewDate: '2024-05-11'
-  },
-  {
-    id: 2,
-    userId: 789,
-    itemId: 1,
-    rating: 5,
-    reviewText: 'Amazing quality!',
-    reviewDate: '2024-05-12'
-  },
-];
-
 const ItemPage = () => {
   const { itemId } = useParams();
   const [item, setItem] = useState<IItem | null>(null);
@@ -129,41 +17,30 @@ const ItemPage = () => {
   const [reviewsToLoad, setReviewsToLoad] = useState(6); // Number of reviews to load each time
   const navigate = useNavigate();
 
-  /* Testing Purpose */
   useEffect(() => {
-    // Set dummy item data
-    setItem(dummyItem);
+    /* Route Back if no itemId */
+    if (!itemId) {
+          navigate('/');
+    }
 
-    // Set dummy review data
-    setReviews(dummyReviews);
+    // Fetch item data
+    axios.get(`${process.env.REACT_APP_API_URL}/items/${itemId}`)
+      .then(response => {
+        setItem(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching item data:', error);
+      });
 
-  }, []);
-
-  // Fetch data
-  // useEffect(() => {
-  //   /* Route Back if no itemId */
-  //   if (!itemId) {
-  //         navigate('/');
-  //   }
-
-  //   // Fetch item data
-  //   axios.get(`${process.env.BACKEND_URL}/items/${itemId}`)
-  //     .then(response => {
-  //       setItem(response.data);
-  //     })
-  //     .catch(error => {
-  //       console.error('Error fetching item data:', error);
-  //     });
-
-  //   // Fetch reviews data
-  //   axios.get(`${process.env.BACKEND_URL}/items/${itemId}/reviews`)
-  //     .then(response => {
-  //       setReviews(response.data);
-  //     })
-  //     .catch(error => {
-  //       console.error('Error fetching reviews:', error);
-  //     });
-  // },);
+    // Fetch reviews data
+    axios.get(`${process.env.REACT_APP_API_URL}/items/${itemId}/reviews`)
+      .then(response => {
+        setReviews(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching reviews:', error);
+      });
+  },);
 
 
   // Function to handle leaving a review
