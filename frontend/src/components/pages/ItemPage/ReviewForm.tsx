@@ -67,12 +67,9 @@ const ReviewForm: React.FC<Props> = ({ itemId, onClose, reviews, setReviews }) =
           as="textarea"
           rows={3}
           value={text}
-          onChange={(e) => setText(e.target.value.slice(0, 255))}
+          onChange={(e) => setText(e.target.value)}
           required
         />
-        <Form.Text className="text-muted text-right">
-          {text.length}/255
-        </Form.Text>
       </Form.Group>
       {/* Submit and close buttons */}
       <div className="d-flex justify-content-between">
