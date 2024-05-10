@@ -2,6 +2,7 @@ import React, {SyntheticEvent, useState, useEffect, useContext} from 'react';
 import { UserContext } from '../../App';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import './LoginPage.css';
 
 
 function LoginPage() {
@@ -67,18 +68,19 @@ function LoginPage() {
   }
   
   return (
-    <div className="loginPage">
-      <h1>Login Page</h1>
-      <div className="loginBody">
+    // <div className="loginPage">
+    <div className="container">
+      <h1 className="loginFont">Login Page</h1>
+      <div className="form">
         
         {showError ? <p className="errorMessage">Email or Password Incorrect!</p> : null}
 
-        <input type="text" value={email} placeholder="Email Address" onChange={changeEmail} />
-        <input type="password" value={password} placeholder="Password" onChange={changePassword} />
+        <input className="input" type="text" value={email} placeholder="Email Address" onChange={changeEmail} />
+        <input className="input" type="password" value={password} placeholder="Password" onChange={changePassword} />
 
-        <div className="buttonSet">
-          <button className="loginButton" onClick={login}>Login</button>
-          <button className="loginButton" onClick={() => navigate('/register')}>Create New Account</button>
+        <div className="button">
+          <button className="LoginButton" onClick={login}>Login</button>
+          <button className="CreateAccountButton" onClick={() => navigate('/register')}>New? Create an account</button>
         </div>
       </div>
     </div>

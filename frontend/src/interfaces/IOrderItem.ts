@@ -1,6 +1,8 @@
+import { IItem } from "./IItem";
+
 export interface IOrderItem {
-    id: number,
+    orderItemId: number,
     orderId: number,
-    itemId: number,
+    item: IItem,
     quantity: number
 }

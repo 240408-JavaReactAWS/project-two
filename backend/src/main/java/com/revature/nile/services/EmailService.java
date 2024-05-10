@@ -13,8 +13,13 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 
 import java.text.DecimalFormat;
 import java.util.List;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 @Configuration
+@Service
 public class EmailService {
     private final JavaMailSender javaMailSender;
 
@@ -26,6 +31,7 @@ public class EmailService {
         this.javaMailSender = javaMailSender;
     }
 
+    //Email to be send to seller
     public void sendNotificationToSeller(User user, Order order) {
         // Send email
         String email = user.getEmail();
@@ -56,14 +62,33 @@ public class EmailService {
 
     }
 
+    //Email to be sent to buyer
+    public void prepareCheckoutEmail(User user, Order order) {
+        // Send email
+        String email = user.getEmail();
+        String subject = "Order Confirmation for Order #" + order.getOrderId();
+        String body = "Thank you for shopping with Nile! Your order is being processed and will be shipped soon.\n\n";
+        double total = 0;
+        DecimalFormat df = new DecimalFormat("#.00");
+        for(OrderItem orderItem : order.getOrderItems()) {
+            body = body.concat(orderItem.getItem().getName() + " x" + orderItem.getQuantity() + ": $"+ df.format(orderItem.getQuantity() * orderItem.getItem().getPrice()) + "\n");
+            total += orderItem.getItem().getPrice() * orderItem.getQuantity();
+        }
+        body += "\nTotal: $" + df.format(total) + "\n\n";
+        body += "Shipping address:" + order.getShipToAddress() + "\n";
+        body += "Billing address:" + order.getBillAddress() + "\n";
+        this.sendEmail(email, subject, body);
+    }
+
+
     public void sendEmail(String email, String subject, String body) {
         // Send email
         SimpleMailMessage message = new SimpleMailMessage();
+        //This was previously hardcoded to nileshoppingapp@gmail.com. Change it back if need be!
         message.setFrom(senderEmail);
         message.setTo(email);
         message.setSubject(subject);
         message.setText(body);
         javaMailSender.send(message);
     }
-
 }
