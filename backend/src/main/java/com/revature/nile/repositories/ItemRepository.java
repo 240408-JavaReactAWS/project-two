@@ -14,9 +14,27 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
     Optional<List<Item>> findAllByUserUserId(int userId);
 
 
-    @Query(value = "select getStockByItemId(?1, ?2)", nativeQuery = true)
-    Integer queryGetStockByItemId(int itemId, int quantity, int stock);
+    // We can call the function in the database to update the stock of an item, and return the new stock,
+    // with either a query or a procedure.
+    @Query(value = "select update_stock(?1, ?2)", nativeQuery = true)
+    Integer queryGetStockByItemId(int itemId, int quantity);
 
-    @Procedure(procedureName = "getStockByItemId")
-    Integer procGetStockByItemId(int itemId, int quantity, int stock);
+    @Procedure(procedureName = "update_stock")
+    Integer procGetStockByItemId(int itemId, int quantity);
+
+
+//    The stored procedure below is to be stored in the database (I think).
+
+//    CREATE OR REPLACE PROCEDURE public.update_stock(id integer, quantity integer, out remainingstock integer)
+//    returns integer
+//    LANGUAGE plpgsql
+//    AS $procedure$
+//    BEGIN
+//    update items SET stock = stock - quantity WHERE id = itemId;
+//    SELECT stock FROM items WHERE id = itemId into remainingstock;
+//    RETURN remainingstock;
+//
+//    commit;
+//    END;
+//    $procedure$
 }

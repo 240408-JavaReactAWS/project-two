@@ -28,6 +28,7 @@ import java.util.ArrayList;
 //TO-DO: Update Cross-Origin to our S3 bucket before deploying!
 @CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.PATCH})
 public class UserController  {
+
     private final UserService us;
     private final OrderService os;
     private final ItemService is;
@@ -287,18 +288,18 @@ public class UserController  {
                 return ResponseEntity.badRequest().body("Requested quantity for " + invalidItem.getItem().getName() + " higher than current stock. " +
                                                         "Current stock: "  + invalidItem.getItem().getStock());
             }
-               
 
             return ResponseEntity.ok(approveOrder);
-            }
-            catch(NullAddressException e){
-                return new ResponseEntity<>(BAD_REQUEST);
-            } catch(UserNotFoundException e){
-                System.out.println("user not found?");
-                return ResponseEntity.notFound().build();
-            }
+        }
+        catch(NullAddressException e){
+            return new ResponseEntity<>(BAD_REQUEST);
+        }
+        catch(UserNotFoundException e){
+            System.out.println("user not found?");
+            return ResponseEntity.notFound().build();
         }
     }
+
   /*
   * Merged in to handle in IDE
   * TO-DO: The request body should be an Item, not an OrderItem
