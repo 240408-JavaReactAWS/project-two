@@ -92,22 +92,6 @@ public class UserService {
         throw new EntityNotFoundException("User with id: " + userId + " doesn't exist");
     }
 
-
-    /**
-     * EDIT CART ITEM QUANTITY
-     * */
-    // public OrderItem editCartItemQuantity(int userId, int itemId, int quantity){
-    //     Optional<Order> orderOptional = orderRepository.findByUserIdAndStatus(userId, "PENDING");
-    //     if (orderOptional.isPresent()) {
-    //         Order order = orderOptional.get();
-    //         OrderItem orderItem = orderItemRepository.findByItemIdAndOrder(itemId, order);
-    //         orderItem.setQuantity(quantity);
-    //         return orderItemRepository.save(orderItem);
-    //     }
-    //     return null;
-    // }
-
-
     @Transactional
     public OrderItem removeItemFromPendingOrder(int userId, int itemId, int itemQuantity) throws OrderProcessingException {
         Optional<OrderItem> orderItemOpt = orderItemRepository.findByItemItemIdAndOrderUserUserId(itemId, userId);

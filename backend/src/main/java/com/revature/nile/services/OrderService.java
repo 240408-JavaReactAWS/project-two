@@ -54,6 +54,13 @@ public class OrderService {
             return orderItemRepository.save(orderItem);
       }
 
+      public void deleteOrderItem(int orderItemId) {
+            Optional<OrderItem> orderItem = orderItemRepository.findById(orderItemId);
+            if (orderItem.isPresent()) {
+                  orderItemRepository.delete(orderItem.get());
+            }
+      }
+
       public User getUserByOrderId(int orderId) {
             Optional<Order> order = orderRepository.findById(orderId);
             if (order.isPresent()) {
