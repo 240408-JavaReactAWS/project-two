@@ -137,4 +137,10 @@ public class ItemService {
         }
         return orders;
     }
+
+
+     // Stored Procedure, calling function in ItemRepository
+//    public int queryGetStockByItemId(int itemId, int quantity) {
+//        return itemRepository.queryGetStockByItemId(itemId, quantity);
+//    }
 }
