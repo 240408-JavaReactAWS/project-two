@@ -34,7 +34,7 @@ function CheckoutPage() {
       <h1>Checkout</h1>
       <OrderForm />
       <h1>Order Summary</h1>
-      {order?.orderItemsList.map((item, index) => (
+      {order?.orderItems.map((item, index) => (
         <SummaryRow key={index} item={item} total={total} setTotal={setTotal}/>
       ))}
       <h1>Total: ${total}</h1>

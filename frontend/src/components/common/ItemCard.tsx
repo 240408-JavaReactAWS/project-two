@@ -69,7 +69,7 @@ function ItemCard(props : IItemCardProps ) {
     const deleteItem = async (e:React.SyntheticEvent) => {
         e.preventDefault()
         try{
-            let response = await axios.delete(process.env.REACT_APP_API_URL + `items/${props.item.itemId}`, {
+            let response = await axios.delete(process.env.REACT_APP_API_URL + `/items/${props.item.itemId}`, {
                 withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': user.userId} 
 
               })
@@ -77,17 +77,17 @@ function ItemCard(props : IItemCardProps ) {
 
               }
               if(response.status==200){
-               
+                props.setSellersItems && props.setSellersItems((sellersItem:IItem[]) => {
+                    return sellersItem.filter((item) => {
+                        return item.itemId !== props.item.itemId;
+                    });
+                })
               }
         }catch(error){
             console.error(error)
         }
 
-        props.setSellersItems && props.setSellersItems((sellersItem:IItem[]) => {
-            return sellersItem.filter((item) => {
-                return item.itemId !== props.item.itemId;
-            });
-        })
+        
     }
 
     // const addToCart = (e:React.SyntheticEvent) => {

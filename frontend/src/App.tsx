@@ -39,6 +39,7 @@ function App() {
             <Route path="/item/:itemId" element={<ItemPage />} />
             <Route path="/listings" element={<SellerItemsPage />} />
             <Route path="/orders" element={<OrderHistoryPage />} />
+            <Route path="/orders/:itemId" element={<OrderHistoryPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             {/* <Route path="/order-review" element={<AfterOrderPage />} /> */}

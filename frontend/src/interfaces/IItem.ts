@@ -1,6 +1,8 @@
+import { IUser } from "./IUser"
+
 export interface IItem {
     itemId: number,
-    sellerId: number,
+    user: IUser,
     name: string,
     description: string,
     price: number,

@@ -7,5 +7,5 @@ export interface IOrder {
     shipToAddress: string,
     billAddress: string,
     dateOrdered: string,
-    orderItemsList: IOrderItem[]    
+    orderItems: IOrderItem[]    
 }
