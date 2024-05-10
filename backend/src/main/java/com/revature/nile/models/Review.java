@@ -24,7 +24,7 @@ public class Review {
     @Column(name = "rating")
     private int rating;
 
-    @Column(name = "text")
+    @Column(name = "text", columnDefinition="TEXT")
     private String text;
 
     @Column(name = "datePosted")
