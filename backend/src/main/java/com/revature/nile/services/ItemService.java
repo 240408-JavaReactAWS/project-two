@@ -137,4 +137,8 @@ public class ItemService {
         }
         return orders;
     }
+
+    public int queryGetStockByItemId(int itemId, int quantity, int stock) {
+        return itemRepository.queryGetStockByItemId(itemId, quantity, stock);
+    }
 }

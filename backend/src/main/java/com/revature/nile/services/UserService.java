@@ -90,6 +90,7 @@ public class UserService {
         throw new EntityNotFoundException("User with id: " + userId + " doesn't exist");
     }
 
+
     /**
      * EDIT CART ITEM QUANTITY
      * */
