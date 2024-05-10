@@ -17,6 +17,10 @@ const OrderForm: React.FC = () => {
   const [shippingState, setShippingState] = useState('');
   const [shippingZipCode, setShippingZipCode] = useState('');
   const [shippingCountry, setShippingCountry] = useState('');
+  const [CardName, setCardName] = useState('');
+  const [CardNumber, setCardNumber] = useState('');
+  const [CardExpiration, setCardExpiration] = useState('');
+  const [CardCVV, setCardCVV] = useState('');
   const [billingStreetAddress, setBillingStreetAddress] = useState('');
   const [billingCity, setBillingCity] = useState('');
   const [billingState, setBillingState] = useState('');
@@ -35,7 +39,9 @@ const OrderForm: React.FC = () => {
     e.preventDefault();
 
     const shipToAddress = [shippingStreetAddress, shippingCity, shippingState, shippingZipCode, shippingCountry].join(', ');
-    const billAddress = [billingStreetAddress, billingCity, billingState, billingZipCode, billingCountry].join(', ');
+    const billAddress = [billingStreetAddress, billingCity, billingState, billingZipCode, billingCountry,CardName,CardNumber,CardExpiration,CardCVV].join(', ');
+    // console.log(shipToAddress);
+    // console.log(billAddress);
 
     if (shipToAddress.length > 255 || billAddress.length > 255) {
       alert("Address too long. Please make sure the address is less than 255 characters.");
@@ -118,6 +124,42 @@ return (
     </FormGroup>
     <FormGroup>
       <FormLabel>Billing Information</FormLabel>
+      <InputGroup className="mb-3">
+        <FormControl
+          placeholder="Name on Card"
+          aria-label="Name on Card"
+          value={CardName}
+          onChange={(e) => setCardName(e.target.value)}
+        />
+      </InputGroup>
+      <InputGroup className="mb-3">
+        <FormControl
+          placeholder="Card Number"
+          aria-label="Card Number"
+          maxLength={16}
+          value={CardNumber}
+          onChange={(e) => setCardNumber(e.target.value)}
+        />
+      </InputGroup>
+      <InputGroup className="mb-3">
+        <FormControl
+          placeholder="Expiration Date"
+          aria-label="Expiration Date"
+          type="date"
+          value={CardExpiration}
+          onChange={(e) => setCardExpiration(e.target.value)}
+        />
+      </InputGroup>
+      <InputGroup className="mb-3">
+        <FormControl
+          placeholder="CVV"
+          aria-label="CVV"
+          type='password'
+          maxLength={3}
+          value={CardCVV}
+          onChange={(e) => setCardCVV(e.target.value)}
+        />
+      </InputGroup>
       <InputGroup className="mb-3">
         <FormControl
           placeholder="Street Address"
