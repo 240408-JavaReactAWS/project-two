@@ -55,8 +55,8 @@ const ReviewForm: React.FC<Props> = ({ itemId, onClose, reviews, setReviews }) =
         <div className="d-flex">
           <StarRating
             rating={rating || 0}
-            clickable={true} // Stars are clickable in ReviewForm
-            onStarClick={(newRating: number) => setRating(newRating)}
+            clickable={true}
+            onStarClick={setRating}
           />
         </div>
       </Form.Group>
@@ -67,9 +67,12 @@ const ReviewForm: React.FC<Props> = ({ itemId, onClose, reviews, setReviews }) =
           as="textarea"
           rows={3}
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={(e) => setText(e.target.value.slice(0, 255))}
           required
         />
+        <Form.Text className="text-muted text-right">
+          {text.length}/255
+        </Form.Text>
       </Form.Group>
       {/* Submit and close buttons */}
       <div className="d-flex justify-content-between">
