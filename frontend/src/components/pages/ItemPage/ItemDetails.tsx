@@ -18,7 +18,7 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
     const [quantity, setQuantity] = useState(1);
     const [showForm, setShowForm] = useState(false);
     const navigate = useNavigate();
-    const { userId } = useContext(UserContext)
+    const { userId, cartItems, setCartItems } = useContext(UserContext)
 
     const handleChangeQuantity = (e: React.ChangeEvent<HTMLInputElement>) => {
         setQuantity(parseInt(e.target.value));
@@ -36,6 +36,7 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
                 .then(response => {
                     // Handle success
                     console.log('Item added to cart:', response.data);
+                    setCartItems([...cartItems, item.itemId]);
                 })
                 .catch(error => {
                     // Handle error

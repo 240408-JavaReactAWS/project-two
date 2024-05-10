@@ -101,8 +101,8 @@ const itemsOk: IItem[] = [{
 function CartPage() {
 
 
-  let context = useContext(UserContext);
-  const [cart, setCart] = useState<IOrder>();
+    let context = useContext(UserContext);
+    const [cart, setCart] = useState<IOrder>();
     const navigate = useNavigate();
     const [error, setError] = useState<string>('');
     function compare(a: IItem, b: IItem) {
@@ -137,8 +137,21 @@ function CartPage() {
         });}
     // get Items out of Order
 
+    let storeCart = () => {
+      // generate array of itemIds for Items in Cart
+      let itemIds: number[] = [];
+      if (cart) {
+        cart.orderItems.forEach((orderItem) => {
+          itemIds.push(orderItem.item.itemId);
+        });
+      }
+      // store in context
+      context.setCartItems(itemIds);
+    }
+
     useEffect(() => {
         getCart();
+        storeCart();
     }, []);
     
   return (
