@@ -30,7 +30,7 @@ const dummyReviews: IReview[] = [
     userId: 456,
     itemId: 1,
     rating: 4,
-    text: 'Great123 product!',
+    text: 'Great123 productlshjdfkljsdkljdlfkgjsdlfjkgsdklfjgklsdfhklj kjsdhfgkhsdf  sdhjg jh dfsjhgh jk sdfhgsdfhg  df sdfjksdgf k jhgsdfjkh gsdfjk hsdfg jkhsdfjkh gsdfjkh sdf gjhdsf jkghdjkh  hjk sdf jkhds fgjh!',
     datePosted: '2024-05-11'
   },
   {
