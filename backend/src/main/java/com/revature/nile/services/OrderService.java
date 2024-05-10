@@ -1,6 +1,7 @@
 package com.revature.nile.services;
 
 import com.revature.nile.exceptions.NullAddressException;
+import com.revature.nile.exceptions.OrderProcessingException;
 import com.revature.nile.exceptions.UserIdMissMatchException;
 import com.revature.nile.exceptions.UserNotFoundException;
 import com.revature.nile.models.Item;
@@ -114,49 +115,60 @@ public class OrderService {
       }
 
       public Order cartCheckout(int userId, Order order, int loggedInUser){
+            //Can't checkout if the User ID doesn't match the logged in User
             if(userId != loggedInUser){
                   throw new UserIdMissMatchException("USER ID MISMATCH");
             }
-
+            //Make sure the user exists!
             if (!userRepository.existsById(userId) || !userRepository.existsById(loggedInUser)){
                   throw new UserNotFoundException("NO SUCH USER");
             }
-
+            //Make sure the Order's shipping and billing addresses are not empty
             if(order.getShipToAddress()==null || order.getShipToAddress().isEmpty() || order.getBillAddress()==null || order.getBillAddress().isEmpty()){
                   throw new NullAddressException("Shipping or Billing address is Empty");
             }
+            //Check to make sure that the Order has no OrderItems with a quantity greater than the Item's stock
+            List<OrderItem> invalidOrderItems = findInvalidOrderItem(userId);
+            if (invalidOrderItems.isEmpty()) {
 
-            Optional<Order> findOrder = orderRepository.findByUserIdAndStatus(userId, "PENDING");
-            if(findOrder.isPresent()){
-                  if (findInvalidOrderItem(userId) == null) {
-
-                        findOrder.get().setStatus(Order.StatusEnum.APPROVED);
-                        findOrder.get().setShipToAddress(order.getShipToAddress());
-                        findOrder.get().setBillAddress(order.getBillAddress());
-                        findOrder.get().setDateOrdered(new Date());
-                        for(OrderItem orderItem : findOrder.get().getOrderItems()){ // update stock
-                              Item item = orderItem.getItem();
-                              item.setStock(item.getStock() - orderItem.getQuantity());
-                              itemRepository.save(item);
-                        }
-
-                        orderRepository.save(findOrder.get());
+                  order.setStatus(Order.StatusEnum.APPROVED);
+                  order.setDateOrdered(new Date());
+                  for(OrderItem orderItem : order.getOrderItems()){ // update stock
+                        Item item = orderItem.getItem();
+                        item.setStock(item.getStock() - orderItem.getQuantity());
+                        itemRepository.save(item);
                   }
 
-                  return findOrder.get();
+                  orderRepository.save(order);
+                  return order;
             }
-            return null;
+            else{
+                  String errorMessage = "Not enough stock for item(s):";
+                  for(OrderItem orderItem : invalidOrderItems){
+                        errorMessage += " " + orderItem.getItem().getName() + ": " +
+                                    orderItem.getQuantity() + " in cart, " +
+                                    orderItem.getItem().getStock() + " in stock.";
+                  }
+                  throw new OrderProcessingException(errorMessage);
+            }
       }
 
-      public OrderItem findInvalidOrderItem(int userId) {
+      /*
+       * This method searches a User's current Order for any OrderItems that have a quantity greater than the Item's stock.
+       * If it finds one, it returns that OrderItem. Otherwise, it returns null.
+       */
+      public List<OrderItem> findInvalidOrderItem(int userId) {
+            List<OrderItem> invalidOrderItems = new ArrayList<OrderItem>();
             Optional<Order> findOrder = orderRepository.findByUserIdAndStatus(userId, "PENDING");
             if (findOrder.isPresent()) {
+                  //For each of the items in the order...
                   for (OrderItem orderItem : findOrder.get().getOrderItems()) {
+                        //If the quantity of the OrderItem is greater than the Item's stock, return the OrderItem
                         if (orderItem.getQuantity() > orderItem.getItem().getStock()) {
-                              return orderItem;
+                              invalidOrderItems.add(orderItem);
                         }
                   }
             }
-            return null;
+            return invalidOrderItems;
       }
 }

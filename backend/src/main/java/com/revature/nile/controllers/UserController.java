@@ -203,7 +203,7 @@ public class UserController  {
 
 
     /*
-     * TO-DO: This function returns 200 with an empty reponse body if the user doesn't have a cart yet.
+     * TO-DO: This function returns 200 with an empty response body if the user doesn't have a cart yet.
      */
     @GetMapping("{id}/orders/current")
     public ResponseEntity<Order> viewCurrentOrdersHandler(@PathVariable int id, @RequestHeader(name="userId") int userId) {
@@ -325,29 +325,38 @@ public class UserController  {
         return new ResponseEntity<>(items, OK);
     }
 
-  //TO-DO: Check this code in an IDE
+    /*
+     * The front-end will be passing in an incomplete Order object with shipping and billing address information.
+     */
     @PatchMapping("/{userId}/orders/checkout")
-    public ResponseEntity<?> cartCheckout(@PathVariable int userId, @RequestBody Order order, @RequestHeader("userId") int loggedInUser) {
+    public ResponseEntity<?> cartCheckout(@PathVariable int userId, @RequestBody Order addressDetails, @RequestHeader("userId") int loggedInUser) {
+        //You can't checkout another user's order!
         try {
             if (loggedInUser != userId) {
                 return new ResponseEntity<>(FORBIDDEN);
             }
             User user;
+            //Get the user by ID. If the user does not exist, return a 404 (Not Found) status.
             try {
                 user = us.getUserById(loggedInUser);
             } catch (EntityNotFoundException e) {
                 return new ResponseEntity<>(NOT_FOUND);
             }
+            //If the passed-in Prder's shipToAddress or billAddress is not null, update the ShipToAddress and BillAddress with the order's values
             String newShipToAddress = "";
             String newBillAddress = "";
-            if(order.getShipToAddress() != null) {
-                newShipToAddress = order.getShipToAddress();
+            if(addressDetails.getShipToAddress() != null) {
+                newShipToAddress = addressDetails.getShipToAddress();
             }
-            if(order.getBillAddress() != null) {
-                newBillAddress = order.getBillAddress();
+            if(addressDetails.getBillAddress() != null) {
+                newBillAddress = addressDetails.getBillAddress();
             }
+            //Grab the user's current order
+            Order order;
             try {
-                order = os.getOrderById(order.getOrderId());
+                order = os.getCurrentOrderByUserId(user.getUserId());
+
+                //Update the ShipToAddress and BillAddress with the new values if they exist
                 if(!newShipToAddress.isEmpty()) {
                     order.setShipToAddress(newShipToAddress);
                 }
@@ -357,31 +366,31 @@ public class UserController  {
             } catch (EntityNotFoundException e) {
                 return new ResponseEntity<>(NOT_FOUND);
             }
+            //Make sure the user is checking out their own cart
             if(user.getUserId() != order.getUser().getUserId()) { // user cant check out anothers cart
                 return new ResponseEntity<>(FORBIDDEN);
             }
+            //Can't checkout an order that's not pending!
             if(order.getStatus() != Order.StatusEnum.PENDING) { // only pending orders can be checked out
                 return new ResponseEntity<>(BAD_REQUEST);
             }
-
-            Order approveOrder = os.cartCheckout(userId, order, loggedInUser);
-            OrderItem invalidItem = os.findInvalidOrderItem(userId);
-
-            if (invalidItem != null) {
-                //approveOrder.setStatus(Order.StatusEnum.PENDING);
-                return ResponseEntity.badRequest().body("Requested quantity for " + invalidItem.getItem().getName() + " higher than current stock. " +
-                                                        "Current stock: "  + invalidItem.getItem().getStock());
+            Order approvedOrder;
+            try{
+                approvedOrder = os.cartCheckout(userId, order, loggedInUser);
             }
-
-
-            es.prepareCheckoutEmail(user, approveOrder);
+            catch(OrderProcessingException e)
+            {
+                return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
+            }
+            //Send an email to the user who bought the items and the seller(s) who sold them
+            es.prepareCheckoutEmail(user, approvedOrder);
             User seller;
             List<User> notifiedSellers= new ArrayList<>();
-            for(OrderItem orderItem : approveOrder.getOrderItems()){
+            for(OrderItem orderItem : approvedOrder.getOrderItems()){
                 try{
                     seller = orderItem.getItem().getUser();
                     if(!notifiedSellers.contains(seller)) { // prevent sending multiple emails if more than 1 item from
-                        es.sendNotificationToSeller(seller, approveOrder); // same seller in order
+                        es.sendNotificationToSeller(seller, approvedOrder); // same seller in order
                     }
                     notifiedSellers.add(seller);
                 } catch (EntityNotFoundException e){
@@ -389,7 +398,7 @@ public class UserController  {
                 }
             }
 
-            return ResponseEntity.ok(approveOrder);
+            return ResponseEntity.ok(approvedOrder);
         }
         catch(NullAddressException e){
             return new ResponseEntity<>(BAD_REQUEST);
