@@ -96,18 +96,24 @@ export default function SellerItemsPage() {
     <div>
       {loading && <div>...loading</div>}
       {!loading && <div >
-        {!addItem &&< button className='btn btn-primary' onClick={formToggle}>Add Item</button>}
+        <div className="container w-90 h-100 d-flex align-items-center justify-content-center" style={{backgroundColor: "#fcead6"}}>
+
+        {!addItem &&< button className='btn btn-primary' z-index={3} onClick={formToggle}>Add Item</button>}<br/>
         {addItem && <ItemForm addToItems={addToItems}/>}
-        {addItem &&< button className='btn btn-primary' onClick={formToggle}>Collapse</button>}
+        {addItem &&< button className='btn btn-primary' z-index={3} onClick={formToggle}>Collapse</button>}<br/>
+        
+        <div  className="row row-cols-1 row-cols-md-3 g-4 d-flex align-items-center justify-content-center flex-wrap" style={{ width: '80%'}}>
+      
         {sellersItems.map((item:IItem)=>{
           return(
             <div className='sellersItems' key={item.itemId}>
               <ItemCard item={item} type={DisplayType.OWNED} setSellersItems={setSellersItems}  />
             </div>
           )}) }
+          </div>
       </div> 
+      </div>
        } 
-      
      </div>
   )
 }
