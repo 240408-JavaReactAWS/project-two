@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Col, Button, Row, Form } from 'react-bootstrap';
+import { Col, Button, Row, Form, Container } from 'react-bootstrap';
 import { IItem } from '../../../interfaces/IItem';
 import axios from 'axios';
 import StarRating from './StarRating';
@@ -57,7 +57,7 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
 
 
   return (
-    <Col>
+    <Container>
     {item && (
         <Row>
           <Col lg={6}>
@@ -68,7 +68,7 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
             {/* Item details */}
             <Row>
               <Col>
-                <h2>{item.name}</h2>
+                <h1><strong>{item.name}</strong></h1>
                 {/* If item's seller ID matches the current user's ID */}
                 {item.sellerId === userId && (
                   <>
@@ -81,16 +81,20 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
 
             <Row>
               <Col>
-                <p>Price: ${item.price}</p>
-                <p>Stock Available: {item.stock}</p>
-                <p>Average Rating: <StarRating rating={item.rating}  clickable={false} /></p>
-                <p>Description: {item.description}</p>
+                <h3>${item.price}</h3>
+                <p>{item.stock} currently available</p>
+                <br/>
+                <p>Average Rating of <strong>{item.rating}</strong></p>
+                <h3><StarRating rating={item.rating}  clickable={false} /></h3>
+                <br/>
+                <h5>Description</h5>
+                <p>{item.description}</p>
                 <Form className="mb-3">
                   <Row>
                     {/* Quantity input */}
                     <Col xs={6}>
                       <Form.Group>
-                        <Form.Label>Quantity:</Form.Label>
+                        <Form.Label>Quantity</Form.Label>
                         <Form.Control type="number" value={quantity} onChange={handleChangeQuantity} min={1}  max={item.stock}/>
                       </Form.Group>
                     </Col>
@@ -106,7 +110,7 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
         </Row>
       )}
       {showForm && <ItemForm itemId={item?.itemId} />}
-    </Col>
+    </Container>
   );
 };
 

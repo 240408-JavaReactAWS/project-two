@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Montserrat', sans-serif;
+  height: auto;
+}
+
+.reviews-summary .text-center .btn {
+  width: 500px;
+}
+
+.review-row {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.review-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: nowrap;
+  width: 60%;
+}
+
+.review-nav button {
+  width: 5%;
+  background-color: transparent;
+  border-color: transparent;
+  color: black;
+  border-width: 1px;
+  padding: 1px 1px;
+  margin: 0 10px;
+  cursor: pointer;
+}
+
+.review-nav span {
+  width: 15%;
+  text-align: center;
+}
