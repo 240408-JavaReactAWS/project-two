@@ -57,7 +57,7 @@ function RegistrationPage() {
         try {
             const fullAddress = `${formData.address}, ${formData.city}, ${formData.state}, ${formData.zipCode}, ${formData.country}`
 
-            let response = await axios.post(`${process.env.REACT_APP_API_URL}/users/register`, {
+            let response = await axios.post(`${process.env.REACT_APP_API_URL}/users`, {
                 email: formData.email,
                 userName: formData.userName,
                 password: formData.password,
