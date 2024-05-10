@@ -9,7 +9,6 @@ interface Props {
   itemId: number | null;
   onClose: () => void;
   reviews: IReview[];
-  userId:number;
   setReviews: React.Dispatch<React.SetStateAction<IReview[]>>;
 }
 

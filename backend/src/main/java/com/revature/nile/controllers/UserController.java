@@ -1,32 +1,44 @@
 package com.revature.nile.controllers;
 
 import com.revature.nile.exceptions.ItemNotFoundExceptions;
+import com.revature.nile.exceptions.NullAddressException;
+import com.revature.nile.exceptions.UserNotFoundException;
+import com.revature.nile.exceptions.OrderProcessingException;
 import com.revature.nile.exceptions.UserAlreadyExistsException;
 import com.revature.nile.models.*;
 import com.revature.nile.services.*;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+
 import javax.naming.AuthenticationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+
 import static org.springframework.http.HttpStatus.*;
+
 import java.util.ArrayList;
 
 @RestController
 @RequestMapping("users")
+//TO-DO: Update Cross-Origin to our S3 bucket before deploying!
+@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.PATCH})
 public class UserController  {
     private final UserService us;
     private final OrderService os;
     private final ItemService is;
+    private final EmailService es;
 
     @Autowired
-    public UserController(UserService us, OrderService os, ItemService is) {
+    public UserController(UserService us, OrderService os, ItemService is, EmailService es) {
         this.us = us;
         this.os = os;
         this.is = is;
+        this.es = es;
     }
 
     /*
@@ -121,6 +133,9 @@ public class UserController  {
      * The other fields will be populated when the OrderItem is added to the database.
      */
     @PostMapping("{id}/orders/current")
+/*<<<<<<< Cart-Checkout
+    public ResponseEntity<Order> addItemToOrderHandler(@PathVariable("id") int id, @RequestHeader(name = "userId") int userId, @RequestBody OrderItem orderItem) {
+=======*/
     public ResponseEntity<Order> addItemToOrderHandler(@PathVariable("id") int id, @RequestHeader(name="userId") int userId, 
         @RequestBody Item itemToItemOrderize) {
             
@@ -133,6 +148,7 @@ public class UserController  {
             return new ResponseEntity<>(NOT_FOUND);
         }
         //You can't put an item in a cart if the cart isn't yours!
+/*>>>>>>> main*/
         if (id != userId)
             return new ResponseEntity<>(FORBIDDEN);
         User user;
@@ -179,8 +195,26 @@ public class UserController  {
         return new ResponseEntity<Order>(os.getOrderById(currentOrder.getOrderId()), CREATED);
     }
 
+
+    @GetMapping("{userId}/orders/current")
+    public ResponseEntity<Order> viewCurrentOrdersHandler(@PathVariable int targetUserId, @RequestHeader(name="userId") int userId) {
+        User loggedInUser;
+        try {
+            loggedInUser = us.getUserById(userId);
+            if(loggedInUser.getUserId() != targetUserId){
+                    throw new EntityExistsException("User ID and logged-in user ID mismatch");
+                }
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(FORBIDDEN); // Logged-in user ID and path parameter ID mismatch: Return 403 (Forbidden)
+        }
+
+        return new ResponseEntity<>(os.getCurrentOrderByUserId(userId), OK);
+   }
+  
+  /* main
     /**
      * UPDATE ORDER ITEM QUANTITY
+
      * */
     /* 
     @PatchMapping("{id}/orders/current")
@@ -195,7 +229,6 @@ public class UserController  {
             return new ResponseEntity<>(NOT_FOUND);
         }
 
-
         if (itemToUpdateQuantity.getStock() < 0){ //Quantity less than 0: Return 400 (Bad Request) with information “Can’t have a quantity less than zero!” in the response body.
             return new ResponseEntity<>("Can’t have a quantity less than zero!", BAD_REQUEST);
         } else if (itemToUpdateQuantity.getStock() > theRealItem.getStock()){ // Quantity greater than Item.stock: Return 400 (Bad Request) with information "Requested quantity higher than current stock." in the response body.
@@ -206,11 +239,6 @@ public class UserController  {
         User loggedInUser;
         try {
             loggedInUser = us.getUserById(userId);
-            
-            if(loggedInUser.getUserId() != userId){
-                throw new EntityExistsException("User ID and logged-in user ID mismatch");
-            }
-        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(FORBIDDEN); // Logged-in user ID and path parameter ID mismatch: Return 403 (Forbidden)
         }
         OrderItem updatedOrderItem /** Update the quantity of the order item */
@@ -240,6 +268,57 @@ public class UserController  {
             return new ResponseEntity<>(NOT_FOUND);
         }
         return new ResponseEntity<>(items, OK);
+    }
+
+  //TO-DO: Check this code in an IDE
+    @PatchMapping("/{userId}/orders/checkout")
+    public ResponseEntity<?> cartCheckout(@PathVariable int userId, @RequestBody Order order, @RequestHeader int loggedInUser) {
+        try {
+            if (loggedInUser != userId) {
+                return new ResponseEntity<>(FORBIDDEN);
+            }
+
+
+            Order approveOrder = os.cartCheckout(userId, order, loggedInUser);
+            OrderItem invalidItem = os.findInvalidOrderItem(userId);
+
+            if (invalidItem != null) {
+                //approveOrder.setStatus(Order.StatusEnum.PENDING);
+                return ResponseEntity.badRequest().body("Requested quantity for " + invalidItem.getItem().getName() + " higher than current stock. " +
+                                                        "Current stock: "  + invalidItem.getItem().getStock());
+            }
+               
+
+            return ResponseEntity.ok(approveOrder);
+            }
+            catch(NullAddressException e){
+                return new ResponseEntity<>(BAD_REQUEST);
+            } catch(UserNotFoundException e){
+                System.out.println("user not found?");
+                return ResponseEntity.notFound().build();
+            }
+        }
+    }
+  /*
+  * Merged in to handle in IDE
+  * TO-DO: The request body should be an Item, not an OrderItem
+  * This is to allow the front end to pass in an itemID and a stock for use in updating the orderItem.
+  */
+    @PatchMapping("/{userId}/orders/current")
+    public ResponseEntity<Order> updateOrderStatusHandler(
+            @PathVariable int userId,
+            @RequestBody OrderItem orderItem,
+            @RequestHeader("userId") int userIdHeader) {
+        OrderItem updatedOrderItem;
+        try {
+            if (userIdHeader != userId) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            updatedOrderItem = us.removeItemFromPendingOrder(userId, orderItem.getItem().getItemId(), orderItem.getQuantity());
+            return ResponseEntity.status(HttpStatus.OK).body(updatedOrderItem.getOrder());
+        } catch (OrderProcessingException e) {
+            return ResponseEntity.status(NOT_FOUND).build();
+        }
     }
 
     @GetMapping("{userId}/orders")

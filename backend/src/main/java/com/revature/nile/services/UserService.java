@@ -1,5 +1,6 @@
 package com.revature.nile.services;
 
+import com.revature.nile.exceptions.OrderProcessingException;
 import com.revature.nile.exceptions.UserAlreadyExistsException;
 import com.revature.nile.models.Item;
 import com.revature.nile.models.User;
@@ -11,6 +12,7 @@ import com.revature.nile.repositories.OrderItemRepository;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.naming.AuthenticationException;
@@ -104,4 +106,27 @@ public class UserService {
     //     }
     //     return null;
     // }
+
+
+    @Transactional
+    public OrderItem removeItemFromPendingOrder(int userId, int itemId, int itemQuantity) throws OrderProcessingException {
+        Optional<OrderItem> orderItemOpt = orderItemRepository.findByItemItemIdAndOrderUserUserId(itemId, userId);
+        //check if the order item exists
+        if (orderItemOpt.isPresent()) {
+            OrderItem orderItem = orderItemOpt.get();
+            String orderStatus = String.valueOf(orderItem.getOrder().getStatus());
+            if (itemQuantity == 0 && "PENDING".equals(orderStatus)) {
+                //if both condition are true, delete the order item
+                orderItemRepository.deleteByItemItemId(itemId);
+            } else {
+                //if either condition is false, update the quantity of the order item
+                orderItem.setQuantity(itemQuantity);
+                orderItemRepository.save(orderItem);
+            }
+            return orderItemOpt.get();
+        } else {
+            //if the order item does not exist, throw an exception
+            throw new OrderProcessingException("Order item not found for userId: " + userId + " and itemId: " + itemId);
+        }
+    }
 }
