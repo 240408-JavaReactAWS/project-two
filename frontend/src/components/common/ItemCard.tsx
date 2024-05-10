@@ -113,38 +113,39 @@ function ItemCard(props : IItemCardProps ) {
     
     return (
         props.type === DisplayType.OWNED ? 
-        <Link style={{textDecoration:'none', color:'black'}} to={`/item/${props.item.itemId}`}>
-            <div className="card" style={{width: '18rem'}}>
-                <img className="card-img-top" src={props.item.image} alt="Card image cap"/>
-                <div className="card-body">
-                    <h5 className="card-title">{props.item.name}</h5>
-                    <p className="card-text">Price: {props.item.price}</p>
-                    <p className="card-text">Rating: {props.item.rating}</p>
-                    <p className="card-text">Stock: {props.item.stock}</p>
-                    <button className="btn btn-primary" onClick={deleteItem}>Delete</button>
-                    </div>
-                </div>
-        </Link>
-        : props.type === DisplayType.NONOWNED ?
-        <Link style={{textDecoration:'none', color:'black'}}to={`/item/${props.item.itemId}`}>
+       
             <div className="card" style={{maxWidth: '18rem'}}>
-                <img className="card-img-top" src={props.item.image} alt="Card image cap"/>
-                <div className="card-body">
-                    <h5 className="card-title">{props.item.name}</h5>
-                    <p className="card-text">Price: {props.item.price}</p>
-                    <p className="card-text">Rating: {props.item.rating}</p>
-                    <p className="card-text">Quantity: {props.item.stock}</p>
-                    {!cart && <AddToCartButton setDisplayQuantity={setCart} orderItem={
-                        {itemId : props.item.itemId, stock:1}}/>}
-                    {cart && 
-                    <>
-                        <button className="btn btn-primary" onClick={minusQuantity}>-</button>
-                        {quantity}
-                        <button className="btn btn-primary" onClick={plusQuantity}>+</button>
-                    </>}
+                 <Link style={{textDecoration:'none', color:'black'}} to={`/item/${props.item.itemId}`}>
+                    <img className="card-img-top "  height={"200px"} src={props.item.image} alt="Card image cap"/>
+                    <div className="card-body">
+                        <h5 className="card-title">{props.item.name}</h5>
+                        <p className="card-text">Price: {props.item.price}</p>
+                        <p className="card-text">Rating: {props.item.rating}</p>
+                        <p className="card-text">Stock: {props.item.stock}</p>
+                        <button className="btn btn-primary" onClick={deleteItem}>Delete</button>
+                        </div>
+                </Link>
                 </div>
+        : props.type === DisplayType.NONOWNED ?
+            <div className="card" style={{maxWidth: '18rem'}}>
+                <Link style={{textDecoration:'none', color:'black'}}to={`/item/${props.item.itemId}`}>
+                    <img className="card-img-top" height={"200px"}  src={props.item.image} alt="Card image cap"/>
+                    <div className="card-body">
+                        <h5 className="card-title">{props.item.name}</h5>
+                        <p className="card-text">Price: {props.item.price}</p>
+                        <p className="card-text">Rating: {props.item.rating}</p>
+                        <p className="card-text">Quantity: {props.item.stock}</p>
+                        {!cart && <AddToCartButton setDisplayQuantity={setCart} orderItem={
+                            {itemId : props.item.itemId, stock:1}}/>}
+                        {cart && 
+                        <>
+                            <button className="btn btn-primary" onClick={minusQuantity}>-</button>
+                            {quantity}
+                            <button className="btn btn-primary" onClick={plusQuantity}>+</button>
+                        </>}
+                    </div>
+            </Link>
             </div>
-        </Link>
             :
             <tr>
                 <td><img  style={{height: "100px"}} src={props.item.image} alt="Card image cap"/></td>
