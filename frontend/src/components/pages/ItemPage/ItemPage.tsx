@@ -165,9 +165,9 @@ const ItemPage: React.FC = () => {
     <Container className="mt-5">
       <ItemDetails item={item} />
       <br/>
-      <Row className="reviews-summary">
-        <Col md={6} className="text-center">
-          <Button onClick={toggleReviewForm} variant="secondary">
+      <Row className="review-row">
+        <h4 className="total-rev">{reviews.length} reviews</h4>
+        <Button onClick={toggleReviewForm} variant="secondary">
             {showReviewForm ? 'Hide Review Form' : 'Leave a Review'}
           </Button>
           {showReviewForm && <ReviewForm
@@ -176,12 +176,6 @@ const ItemPage: React.FC = () => {
               reviews={reviews}
               setReviews={setReviews}
             />}
-        </Col>
-      </Row>
-      <br/>
-      <br/>
-      <Row className="review-row">
-        <h4 className="total-rev">{reviews.length} reviews</h4>
         {reviews.slice((currentPage - 1) * 3, currentPage * 3).map((review, index) => (
           <ReviewCard key={index} review={review} />
         ))}
