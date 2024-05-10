@@ -1,24 +1,31 @@
 package com.revature.nile.controllers;
 
 import com.revature.nile.exceptions.ItemNotFoundExceptions;
+import com.revature.nile.exceptions.NullAddressException;
+import com.revature.nile.exceptions.UserNotFoundException;
 import com.revature.nile.exceptions.OrderProcessingException;
 import com.revature.nile.exceptions.UserAlreadyExistsException;
 import com.revature.nile.models.*;
 import com.revature.nile.services.*;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+
 import javax.naming.AuthenticationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+
 import static org.springframework.http.HttpStatus.*;
+
 import java.util.ArrayList;
 
 @RestController
 @RequestMapping("users")
-public class UserController  {
+public class UserController {
     private final UserService us;
     private final OrderService os;
     private final ItemService is;
@@ -124,6 +131,9 @@ public class UserController  {
      * The other fields will be populated when the OrderItem is added to the database.
      */
     @PostMapping("{id}/orders/current")
+/*<<<<<<< Cart-Checkout
+    public ResponseEntity<Order> addItemToOrderHandler(@PathVariable("id") int id, @RequestHeader(name = "userId") int userId, @RequestBody OrderItem orderItem) {
+=======*/
     public ResponseEntity<Order> addItemToOrderHandler(@PathVariable("id") int id, @RequestHeader(name="userId") int userId, 
         @RequestBody Item itemToItemOrderize) {
             
@@ -136,6 +146,7 @@ public class UserController  {
             return new ResponseEntity<>(NOT_FOUND);
         }
         //You can't put an item in a cart if the cart isn't yours!
+/*>>>>>>> main*/
         if (id != userId)
             return new ResponseEntity<>(FORBIDDEN);
         User user;
@@ -201,6 +212,7 @@ public class UserController  {
   /* main
     /**
      * UPDATE ORDER ITEM QUANTITY
+
      * */
     /* 
     @PatchMapping("{id}/orders/current")
@@ -214,7 +226,6 @@ public class UserController  {
         catch(EntityNotFoundException e){
             return new ResponseEntity<>(NOT_FOUND);
         }
-
 
         if (itemToUpdateQuantity.getStock() < 0){ //Quantity less than 0: Return 400 (Bad Request) with information “Can’t have a quantity less than zero!” in the response body.
             return new ResponseEntity<>("Can’t have a quantity less than zero!", BAD_REQUEST);
@@ -257,6 +268,35 @@ public class UserController  {
         return new ResponseEntity<>(items, OK);
     }
 
+  //TO-DO: Check this code in an IDE
+    @PatchMapping("/{userId}/orders/checkout")
+    public ResponseEntity<?> cartCheckout(@PathVariable int userId, @RequestBody Order order, @RequestHeader int loggedInUser) {
+        try {
+            if (loggedInUser != userId) {
+                return new ResponseEntity<>(FORBIDDEN);
+            }
+
+
+            Order approveOrder = os.cartCheckout(userId, order, loggedInUser);
+            OrderItem invalidItem = os.findInvalidOrderItem(userId);
+
+            if (invalidItem != null) {
+                //approveOrder.setStatus(Order.StatusEnum.PENDING);
+                return ResponseEntity.badRequest().body("Requested quantity for " + invalidItem.getItem().getName() + " higher than current stock. " +
+                                                        "Current stock: "  + invalidItem.getItem().getStock());
+            }
+               
+
+            return ResponseEntity.ok(approveOrder);
+            }
+            catch(NullAddressException e){
+                return new ResponseEntity<>(BAD_REQUEST);
+            } catch(UserNotFoundException e){
+                System.out.println("user not found?");
+                return ResponseEntity.notFound().build();
+            }
+        }
+    }
   /*
   * Merged in to handle in IDE
   * TO-DO: The request body should be an Item, not an OrderItem
@@ -294,5 +334,4 @@ public class UserController  {
         }
         return new ResponseEntity<>(orders, OK);
     }
-//main
 }

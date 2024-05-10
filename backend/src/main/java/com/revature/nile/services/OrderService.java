@@ -1,5 +1,8 @@
 package com.revature.nile.services;
 
+import com.revature.nile.exceptions.NullAddressException;
+import com.revature.nile.exceptions.UserIdMissMatchException;
+import com.revature.nile.exceptions.UserNotFoundException;
 import com.revature.nile.models.Item;
 import com.revature.nile.models.Order;
 import com.revature.nile.models.OrderItem;
@@ -11,6 +14,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,5 +101,47 @@ public class OrderService {
             currOrder.getOrderItems().add(orderItem);
             //Return the current order
             return currOrder;
+      }
+
+      public Order cartCheckout(int userId, Order order, int loggedInUser){
+            if(userId != loggedInUser){
+                  throw new UserIdMissMatchException("USER ID MISMATCH");
+            }
+
+            if (!userRepository.existsById(userId) || !userRepository.existsById(loggedInUser)){
+                  throw new UserNotFoundException("NO SUCH USER");
+            }
+
+            if(order.getShipToAddress()==null || order.getShipToAddress().isEmpty() || order.getBillAddress()==null || order.getBillAddress().isEmpty()){
+                  throw new NullAddressException("Shipping or Billing address is Empty");
+            }
+
+            Optional<Order> findOrder = orderRepository.findByUserIdAndStatus(userId, "PENDING");
+            if(findOrder.isPresent()){
+                  if (findInvalidOrderItem(userId) == null) {
+
+                        findOrder.get().setStatus(Order.StatusEnum.APPROVED);
+                        findOrder.get().setShipToAddress(order.getShipToAddress());
+                        findOrder.get().setBillAddress(order.getBillAddress());
+                        findOrder.get().setDateOrdered(new Date());
+
+                        orderRepository.save(findOrder.get());
+                  }
+
+                  return findOrder.get();
+            }
+            return null;
+      }
+
+      public OrderItem findInvalidOrderItem(int userId) {
+            Optional<Order> findOrder = orderRepository.findByUserIdAndStatus(userId, "PENDING");
+            if (findOrder.isPresent()) {
+                  for (OrderItem orderItem : findOrder.get().getOrderItems()) {
+                        if (orderItem.getQuantity() > orderItem.getItem().getStock()) {
+                              return orderItem;
+                        }
+                  }
+            }
+            return null;
       }
 }
