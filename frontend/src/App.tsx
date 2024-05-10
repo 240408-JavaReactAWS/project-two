@@ -15,21 +15,27 @@ import CheckoutPage from './components/pages/CheckoutPage/CheckoutPage';
 
 interface contextInterface {
   userId: any,
-  setUserId: React.Dispatch<React.SetStateAction<any>>
+  setUserId: React.Dispatch<React.SetStateAction<any>>,
+  cartItems: number[],
+  setCartItems: React.Dispatch<React.SetStateAction<number[]>>,
 }
 
 export const UserContext = createContext<contextInterface>(
   {userId: null, 
-  setUserId: () => {}})
+  setUserId: () => {},
+  cartItems: [],
+  setCartItems: () => {}
+})
 
 function App() {
 
   const [userId, setUserId] = useState<any>(null)
+  const [cartItems, setCartItems] = useState<any>([])
 
   return (
     <div className="content">
       <header className="header"></header>
-      <UserContext.Provider value={{userId, setUserId}}>
+      <UserContext.Provider value={{userId, setUserId, cartItems, setCartItems}}>
         <BrowserRouter>
         <Nav/>
           <Routes>

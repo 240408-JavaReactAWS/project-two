@@ -24,8 +24,9 @@ export default function AddToCartButton(props:ICartProps) {
             orderItem, {
               withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': user.userId} 
             })
-            if(res.status==200){
+            if(res.status==201){
               props.setDisplayQuantity && props.setDisplayQuantity(false)
+              user.setCartItems([...user.cartItems, orderItem.itemId])
             }
 
       }catch(error){console.error(error)}
