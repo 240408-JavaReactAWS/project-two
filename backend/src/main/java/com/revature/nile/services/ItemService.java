@@ -87,6 +87,9 @@ public class ItemService {
         }
         Item item = optionalItem.get();
         User user = optionalUser.get();
+        if (user.getItems().contains(item)) {
+            throw new AuthenticationException("User cannot review their own item");
+        }
         boolean hasOrdered = false;
         List<Order> userOrders = user.getOrders();
         for(Order order : userOrders) {
@@ -108,6 +111,14 @@ public class ItemService {
         }
         review.setItem(item);
         review.setUser(user);
+        List<Review> itemReviews = item.getReviews();
+        itemReviews.add(review);
+        int totalRating = 0;
+        for (Review itemReview : itemReviews) {
+            totalRating += itemReview.getRating();
+        }
+        item.setRating((double) totalRating / itemReviews.size());
+        itemRepository.save(item);
         return reviewRepository.save(review);
     }
 
