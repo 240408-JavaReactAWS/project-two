@@ -48,6 +48,9 @@ public class User {
     @Column(nullable = false)
     private String lastName;
 
+    @Column
+    private byte[] salt;
+
     //A user can have multiple orders (but only one pending at a given time!)
     @JsonIgnore
     @OneToMany(mappedBy = "user")
