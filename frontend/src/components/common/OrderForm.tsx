@@ -40,8 +40,8 @@ const OrderForm: React.FC = () => {
 
     const shipToAddress = [shippingStreetAddress, shippingCity, shippingState, shippingZipCode, shippingCountry].join(', ');
     const billAddress = [billingStreetAddress, billingCity, billingState, billingZipCode, billingCountry,CardName,CardNumber,CardExpiration,CardCVV].join(', ');
-    console.log(shipToAddress);
-    console.log(billAddress);
+    // console.log(shipToAddress);
+    // console.log(billAddress);
 
     if (shipToAddress.length > 255 || billAddress.length > 255) {
       alert("Address too long. Please make sure the address is less than 255 characters.");
