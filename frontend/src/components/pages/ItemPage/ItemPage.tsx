@@ -24,8 +24,8 @@ const ItemPage: React.FC = () => {
     const fetchItemAndReviews = async () => {
       try {
         const itemResponse = await axios.get(`${process.env.REACT_APP_API_URL}/items/${itemId}`);
-        const reviewsResponse = await axios.get(`${process.env.REACT_APP_API_URL}/items/${itemId}/reviews`);
         setItem(itemResponse.data);
+        const reviewsResponse = await axios.get(`${process.env.REACT_APP_API_URL}/items/${itemId}/reviews`); 
         setReviews(reviewsResponse.data);
         setTotalPages(Math.ceil(reviewsResponse.data.length / 3));
       } catch (error) {
