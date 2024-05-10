@@ -202,16 +202,19 @@ public class UserController  {
     }
 
 
-    @GetMapping("{userId}/orders/current")
-    public ResponseEntity<Order> viewCurrentOrdersHandler(@PathVariable int targetUserId, @RequestHeader(name="userId") int userId) {
+    /*
+     * TO-DO: This function returns 200 with an empty reponse body if the user doesn't have a cart yet.
+     */
+    @GetMapping("{id}/orders/current")
+    public ResponseEntity<Order> viewCurrentOrdersHandler(@PathVariable int id, @RequestHeader(name="userId") int userId) {
         User loggedInUser;
         try {
             loggedInUser = us.getUserById(userId);
-            if(loggedInUser.getUserId() != targetUserId){
-                    throw new EntityExistsException("User ID and logged-in user ID mismatch");
+            if(loggedInUser.getUserId() != id){
+                    return new ResponseEntity<>(FORBIDDEN); // Logged-in user ID and path parameter ID mismatch: Return 403 (Forbidden)
                 }
         } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(FORBIDDEN); // Logged-in user ID and path parameter ID mismatch: Return 403 (Forbidden)
+            return new ResponseEntity<>(NOT_FOUND); 
         }
 
         return new ResponseEntity<>(os.getCurrentOrderByUserId(userId), OK);
