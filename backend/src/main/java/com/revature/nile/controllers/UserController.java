@@ -53,17 +53,22 @@ public class UserController  {
      * On success, the function returns a CREATED status and the created User.
      */
     @PostMapping
-    public ResponseEntity<User> registerNewUserHandler(@RequestBody User newUser) {
+    public ResponseEntity<?> registerNewUserHandler(@RequestBody User newUser) {
+        if(newUser == null || newUser.getEmail() == null || newUser.getEmail().isEmpty()
+                || newUser.getUserName() == null || newUser.getUserName().isEmpty()
+                || newUser.getPassword() == null || newUser.getPassword().isEmpty()
+                || newUser.getAddress() == null || newUser.getAddress().isEmpty()
+                || newUser.getFirstName() == null || newUser.getFirstName().isEmpty()
+                || newUser.getLastName() == null ||  newUser.getLastName().isEmpty()) { //If any of the fields are empty, return a 400 (Bad Request) status
+            return new ResponseEntity<>("Please fill out all fields", BAD_REQUEST);
+        }
         User registerUser;
         try {
             registerUser = us.registerUser(newUser);
-        } catch (EntityExistsException e) {
-            return new ResponseEntity<>(BAD_REQUEST);
+        } catch(UserAlreadyExistsException e) {
+            return new ResponseEntity<>(e.getMessage(), CONFLICT);
         }
-            catch(UserAlreadyExistsException e) {
-                return new ResponseEntity<>(HttpStatus.CONFLICT);
-            }
-        return new ResponseEntity<>(newUser, CREATED);
+        return new ResponseEntity<>(registerUser, CREATED);
     }
 
     /*
@@ -74,12 +79,14 @@ public class UserController  {
      * On success, the function returns an OK status and the User object.
      */
     @PostMapping("login")
-    public ResponseEntity<User> loginHandler(@RequestBody User loginAttempt) {
+    public ResponseEntity<?> loginHandler(@RequestBody User loginAttempt) {
         User user;
         try {
             user = us.loginUser(loginAttempt);
         } catch (AuthenticationException e) {
-            return new ResponseEntity<>(UNAUTHORIZED);
+            return new ResponseEntity<>(e.getMessage(), UNAUTHORIZED);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
         }
         return new ResponseEntity<>(user, OK);
     }
