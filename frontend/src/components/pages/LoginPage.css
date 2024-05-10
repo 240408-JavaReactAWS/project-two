@@ -1,0 +1,60 @@
+/* LoginPage.css */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+
+    text-shadow: 2px 2px 4px rgb(255, 255, 255);
+}
+
+
+
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 300px;
+    padding: 20px;
+    border: 3px solid #ffffff;
+    border-radius: 5px;
+    background-color: #e0f6ff;
+
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.form input {
+    margin-bottom: 10px;
+    padding: 10px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.LoginButton {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.CreateAccountButton {
+    padding: 10px 20px;
+    background-color: #ffffff;
+    color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.form button:hover {
+    background-color: #0056b3;
+}
+
+.loginFont {
+    font: 60px 'Lobster', cursive;
+}

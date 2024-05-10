@@ -14,32 +14,19 @@ interface IProps {
 function SummaryRow({item, total, setTotal}: IProps) {
 
     const { userId } = useContext(UserContext);
-    const [itemData, setItemData] = useState<IItem>();
+    const [itemData, setItemData] = useState<IItem>(item.item);
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get(`${process.env.REACT_APP_API_URL}/items/${item.itemId}`, {
-            withCredentials: true,
-            headers: {
-                'Content-Type': 'application/json',
-                'userId': userId
-            }
-        })
-        .then(response => {
-            setItemData(response.data);
-            if (item.quantity > response.data.stock) {
-                alert("Sorry, we don't have that many " + response.data.name + " in stock!");
-                setTimeout(() => navigate('/CartPage'), 1000);
-            }
-            setTotal(total + (response.data.price * item.quantity));
-        })
-        .catch(error => {
-            console.log(error);
-        })
+        
+        if (item.quantity > itemData.stock) {
+            alert("Sorry, we don't have that many " + itemData.name + " in stock!");
+            setTimeout(() => navigate('/CartPage'), 1000);
+        }
 
-    }
+        setTotal(total + (itemData.price * item.quantity));
 
-    ,[]);
+    },[]);
 
     return (
         <>

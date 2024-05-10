@@ -1,5 +1,7 @@
 package com.revature.nile.services;
 
+import com.revature.nile.exceptions.OrderProcessingException;
+import com.revature.nile.exceptions.UserAlreadyExistsException;
 import com.revature.nile.models.Item;
 import com.revature.nile.models.User;
 import com.revature.nile.repositories.UserRepository;
@@ -10,6 +12,7 @@ import com.revature.nile.repositories.OrderItemRepository;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.naming.AuthenticationException;
@@ -32,9 +35,15 @@ public class UserService {
     }
 
     public User registerUser(User user) throws EntityExistsException {
+        //Checking that a user with the same Username does not already exist; throw an exception if one does
         Optional<User> optionalUser = ur.findByUserName(user.getUserName());
         if (optionalUser.isPresent()) {
-            throw new EntityExistsException(user.getUserName() + " already exists");
+            throw new UserAlreadyExistsException(user.getUserName() + " already exists");
+        }
+        //Checking that a user with the same email does not already exist; throw an exception if one does
+        Optional<User> userWithEmail = ur.findByEmail(user.getEmail());
+        if (userWithEmail.isPresent()) {
+            throw new UserAlreadyExistsException("User with email " + user.getEmail() + " already exists");
         }
         return ur.save(user);
     }
@@ -75,6 +84,14 @@ public class UserService {
         return ur.save(user);
     }
 
+    public List<Order> viewOrderHistory(int userId) throws EntityNotFoundException {
+        Optional<User> user = ur.findById(userId);
+        if (user.isPresent()) {
+            return user.get().getOrders();
+        }
+        throw new EntityNotFoundException("User with id: " + userId + " doesn't exist");
+    }
+
     /**
      * EDIT CART ITEM QUANTITY
      * */
@@ -88,4 +105,27 @@ public class UserService {
     //     }
     //     return null;
     // }
+
+
+    @Transactional
+    public OrderItem removeItemFromPendingOrder(int userId, int itemId, int itemQuantity) throws OrderProcessingException {
+        Optional<OrderItem> orderItemOpt = orderItemRepository.findByItemItemIdAndOrderUserUserId(itemId, userId);
+        //check if the order item exists
+        if (orderItemOpt.isPresent()) {
+            OrderItem orderItem = orderItemOpt.get();
+            String orderStatus = String.valueOf(orderItem.getOrder().getStatus());
+            if (itemQuantity == 0 && "PENDING".equals(orderStatus)) {
+                //if both condition are true, delete the order item
+                orderItemRepository.deleteByItemItemId(itemId);
+            } else {
+                //if either condition is false, update the quantity of the order item
+                orderItem.setQuantity(itemQuantity);
+                orderItemRepository.save(orderItem);
+            }
+            return orderItemOpt.get();
+        } else {
+            //if the order item does not exist, throw an exception
+            throw new OrderProcessingException("Order item not found for userId: " + userId + " and itemId: " + itemId);
+        }
+    }
 }
