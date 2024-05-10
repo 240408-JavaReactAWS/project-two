@@ -10,119 +10,6 @@ import StarRating from './StarRating';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import './ItemPage.css';
 
-// Dummy data
-const dummyItem: IItem = {
-  itemId: 1,
-  sellerId: 123,
-  name: 'Dummy Item',
-  description: 'This is a dummy item for testing purposes',
-  price: 19.99,
-  stock: 10,
-  image: 'https://m.media-amazon.com/images/I/71VxfcpYsqL._AC_UF894,1000_QL80_.jpg',
-  datePosted: '2024-05-10',
-  rating: 3.5 // Assuming the rating is out of 5
-};
-
-
-const dummyReviews: IReview[] = [
-  {
-    reviewId: 1,
-    userId: 456,
-    itemId: 1,
-    rating: 4,
-    text: 'Great123 productlshjdfkljsdkljdlfkgjsdlfjkgsdklfjgklsdfhklj kjsdhfgkhsdf  sdhjg jh dfsjhgh jk sdfhgsdfhg  df sdfjksdgf k jhgsdfjkh gsdfjk hsdfg jkhsdfjkh gsdfjkh sdf gjhdsf jkghdjkh  hjk sdf jkhds fgjh!',
-    datePosted: '2024-05-11'
-  },
-  {
-    reviewId: 2,
-    userId: 789,
-    itemId: 1,
-    rating: 5,
-    text: 'Amazing31254525 quality!',
-    datePosted: '2024-05-12'
-  },
-  {
-    reviewId: 1,
-    userId: 456,
-    itemId: 1,
-    rating: 4,
-    text: 'Great pro36456456duct!',
-    datePosted: '2024-05-11'
-  },
-  {
-    reviewId: 2,
-    userId: 789,
-    itemId: 1,
-    rating: 5,
-    text: 'Amazing27568568 quality!',
-    datePosted: '2024-05-12'
-  },
-  {
-    reviewId: 1,
-    userId: 456,
-    itemId: 1,
-    rating: 4,
-    text: 'Great prodfgdfgduct!',
-    datePosted: '2024-05-11'
-  },
-  {
-    reviewId: 2,
-    userId: 789,
-    itemId: 1,
-    rating: 5,
-    text: 'Amazing q2367hdfdgfuality!',
-    datePosted: '2024-05-12'
-  },
-  {
-    reviewId: 1,
-    userId: 456,
-    itemId: 1,
-    rating: 4,
-    text: 'Gr2316457457eat product!',
-    datePosted: '2024-05-11'
-  },
-  {
-    reviewId: 2,
-    userId: 789,
-    itemId: 1,
-    rating: 5,
-    text: 'Ama756889678978zing quality!',
-    datePosted: '2024-05-12'
-  },
-  {
-    reviewId: 1,
-    userId: 456,
-    itemId: 1,
-    rating: 4,
-    text: 'Great pvsdfsdvdfhfjfjroduct!',
-    datePosted: '2024-05-11'
-  },
-  {
-    reviewId: 2,
-    userId: 789,
-    itemId: 1,
-    rating: 5,
-    text: 'Amazing q7474574uality!',
-    datePosted: '2024-05-12'
-  },
-  {
-    reviewId: 1,
-    userId: 456,
-    itemId: 1,
-    rating: 4,
-    text: 'Great product!',
-    datePosted: '2024-05-11'
-  },
-  {
-    reviewId: 2,
-    userId: 789,
-    itemId: 1,
-    rating: 5,
-    text: 'Amazing 11111111quality!',
-    datePosted: '2024-05-12'
-  },
-];
-
 const ItemPage: React.FC = () => {
   const { itemId } = useParams();
   const [item, setItem] = useState<IItem | null>(null);
@@ -133,22 +20,19 @@ const ItemPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setItem(dummyItem);
-    setReviews(dummyReviews);
-    setTotalPages(Math.ceil(dummyReviews.length / 3));
-    // if (!itemId) navigate('/');
-    // const fetchItemAndReviews = async () => {
-    //   try {
-    //     const itemResponse = await axios.get(`${process.env.REACT_APP_API_URL}/items/${itemId}`);
-    //     const reviewsResponse = await axios.get(`${process.env.REACT_APP_API_URL}/items/${itemId}/reviews`);
-    //     setItem(itemResponse.data);
-    //     setReviews(reviewsResponse.data);
-    //     setTotalPages(Math.ceil(reviewsResponse.data.length / 3));
-    //   } catch (error) {
-    //     console.error('Error fetching data:', error);
-    //   }
-    // };
-    // fetchItemAndReviews();
+    if (!itemId) navigate('/');
+    const fetchItemAndReviews = async () => {
+      try {
+        const itemResponse = await axios.get(`${process.env.REACT_APP_API_URL}/items/${itemId}`);
+        const reviewsResponse = await axios.get(`${process.env.REACT_APP_API_URL}/items/${itemId}/reviews`);
+        setItem(itemResponse.data);
+        setReviews(reviewsResponse.data);
+        setTotalPages(Math.ceil(reviewsResponse.data.length / 3));
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchItemAndReviews();
   }, [itemId, navigate]);
 
   // Leave a review
