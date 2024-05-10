@@ -297,6 +297,8 @@ public class UserController  {
                 System.out.println("user not found?");
                 return ResponseEntity.notFound().build();
             }
+        }
+    
     }
   /*
   * Merged in to handle in IDE
