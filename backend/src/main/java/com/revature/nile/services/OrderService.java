@@ -7,6 +7,7 @@ import com.revature.nile.models.Item;
 import com.revature.nile.models.Order;
 import com.revature.nile.models.OrderItem;
 import com.revature.nile.models.User;
+import com.revature.nile.repositories.ItemRepository;
 import com.revature.nile.repositories.OrderItemRepository;
 import com.revature.nile.repositories.OrderRepository;
 import com.revature.nile.repositories.UserRepository;
@@ -23,12 +24,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class OrderService {
       private final OrderRepository orderRepository;
       private final UserRepository userRepository;
+      private final ItemRepository itemRepository;
       private final OrderItemRepository orderItemRepository;
 
       @Autowired
-      public OrderService(OrderRepository orderRepository, UserRepository userRepository, OrderItemRepository orderItemRepository) {
+      public OrderService(OrderRepository orderRepository, UserRepository userRepository, ItemRepository itemRepository, OrderItemRepository orderItemRepository) {
             this.orderRepository = orderRepository;
             this.userRepository = userRepository;
+            this.itemRepository = itemRepository;
             this.orderItemRepository = orderItemRepository;
       }
 
@@ -124,6 +127,11 @@ public class OrderService {
                         findOrder.get().setShipToAddress(order.getShipToAddress());
                         findOrder.get().setBillAddress(order.getBillAddress());
                         findOrder.get().setDateOrdered(new Date());
+                        for(OrderItem orderItem : findOrder.get().getOrderItems()){ // update stock
+                              Item item = orderItem.getItem();
+                              item.setStock(item.getStock() - orderItem.getQuantity());
+                              itemRepository.save(item);
+                        }
 
                         orderRepository.save(findOrder.get());
                   }

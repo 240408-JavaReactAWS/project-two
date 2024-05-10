@@ -275,12 +275,28 @@ public class UserController  {
 
   //TO-DO: Check this code in an IDE
     @PatchMapping("/{userId}/orders/checkout")
-    public ResponseEntity<?> cartCheckout(@PathVariable int userId, @RequestBody Order order, @RequestHeader int loggedInUser) {
+    public ResponseEntity<?> cartCheckout(@PathVariable int userId, @RequestBody Order order, @RequestHeader("userId") int loggedInUser) {
         try {
             if (loggedInUser != userId) {
                 return new ResponseEntity<>(FORBIDDEN);
             }
-
+            User user;
+            try {
+                user = us.getUserById(loggedInUser);
+            } catch (EntityNotFoundException e) {
+                return new ResponseEntity<>(NOT_FOUND);
+            }
+            try {
+                order = os.getOrderById(order.getOrderId());
+            } catch (EntityNotFoundException e) {
+                return new ResponseEntity<>(NOT_FOUND);
+            }
+            if(user.getUserId() != order.getUser().getUserId()) { // user cant check out anothers cart
+                return new ResponseEntity<>(FORBIDDEN);
+            }
+            if(order.getStatus() != Order.StatusEnum.PENDING) { // only pending orders can be checked out
+                return new ResponseEntity<>(BAD_REQUEST);
+            }
 
             Order approveOrder = os.cartCheckout(userId, order, loggedInUser);
             OrderItem invalidItem = os.findInvalidOrderItem(userId);
@@ -289,6 +305,22 @@ public class UserController  {
                 //approveOrder.setStatus(Order.StatusEnum.PENDING);
                 return ResponseEntity.badRequest().body("Requested quantity for " + invalidItem.getItem().getName() + " higher than current stock. " +
                                                         "Current stock: "  + invalidItem.getItem().getStock());
+            }
+
+
+            es.prepareCheckoutEmail(user, approveOrder);
+            User seller;
+            List<User> notifiedSellers= new ArrayList<>();
+            for(OrderItem orderItem : approveOrder.getOrderItems()){
+                try{
+                    seller = orderItem.getItem().getUser();
+                    if(!notifiedSellers.contains(seller)) { // prevent sending multiple emails if more than 1 item from
+                        es.sendNotificationToSeller(seller, approveOrder); // same seller in order
+                    }
+                    notifiedSellers.add(seller);
+                } catch (EntityNotFoundException e){
+                    return new ResponseEntity<>(NOT_FOUND);
+                }
             }
 
             return ResponseEntity.ok(approveOrder);
