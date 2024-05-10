@@ -164,6 +164,7 @@ const ItemPage: React.FC = () => {
   return (
     <Container className="mt-5">
       <ItemDetails item={item} />
+      <br/>
       <Row className="reviews-summary">
         <Col md={6} className="text-center">
           <Button onClick={toggleReviewForm} variant="secondary">
@@ -177,12 +178,15 @@ const ItemPage: React.FC = () => {
             />}
         </Col>
       </Row>
+      <br/>
+      <br/>
       <Row className="review-row">
         <h4 className="total-rev">{reviews.length} reviews</h4>
         {reviews.slice((currentPage - 1) * 3, currentPage * 3).map((review, index) => (
           <ReviewCard key={index} review={review} />
         ))}
       </Row>
+      <br/>
       <Row className="review-nav">
         <Button onClick={() => handlePageChange(1)} disabled={currentPage === 1}>{"<<"}</Button>
         <Button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>{"<"}</Button>
