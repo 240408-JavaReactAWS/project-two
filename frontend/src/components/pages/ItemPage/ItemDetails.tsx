@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Col, Button, Row, Form } from 'react-bootstrap';
+import { Col, Button, Row, Form, Container } from 'react-bootstrap';
 import { IItem } from '../../../interfaces/IItem';
 import axios from 'axios';
 import StarRating from './StarRating';
@@ -57,7 +57,7 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
 
 
   return (
-    <Col>
+    <Container>
     {item && (
         <Row>
           <Col lg={6}>
@@ -110,7 +110,7 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
         </Row>
       )}
       {showForm && <ItemForm itemId={item?.itemId} />}
-    </Col>
+    </Container>
   );
 };
 

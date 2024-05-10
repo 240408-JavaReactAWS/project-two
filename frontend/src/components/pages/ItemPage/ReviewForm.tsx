@@ -71,10 +71,12 @@ const ReviewForm: React.FC<Props> = ({ itemId, onClose, reviews, setReviews }) =
           required
         />
       </Form.Group>
+      <br/>
       {/* Submit and close buttons */}
       <div className="d-flex justify-content-between">
         <Button type="submit" variant="primary">Submit Review</Button>
       </div>
+      <br/>
     </Form>
   );
 };
