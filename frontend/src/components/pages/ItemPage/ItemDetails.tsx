@@ -12,6 +12,9 @@ interface Props {
 }
 
 const ItemDetails: React.FC<Props> = ({ item }) => {
+
+    console.log(item)
+
     const [quantity, setQuantity] = useState(1);
     const [showForm, setShowForm] = useState(false);
     const navigate = useNavigate();
@@ -73,7 +76,7 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
               <Col>
                 <h2>{item.name}</h2>
                 {/* If item's seller ID matches the current user's ID */}
-                {item.sellerId === userId && (
+                {item.user.userId === userId && (
                   <>
                     <Button onClick={handleUpdateItem} variant="secondary" className="mr-2">Update Item</Button>
                     <Button onClick={handleViewRelatedOrders} variant="info">View Related Orders</Button>
