@@ -26,7 +26,10 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
             return;
         } else {
             // Make a POST request to add item to cart
-            axios.post(`${process.env.REACT_APP_API_URL}/users/${userId}/orders/current`, { itemId: item.itemId, quantity: quantity })
+            axios.post(`${process.env.REACT_APP_API_URL}/users/${userId}/orders/current`, { itemId: item.itemId, stock: quantity }, 
+            {
+              withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': userId} 
+            })
                 .then(response => {
                     // Handle success
                     console.log('Item added to cart:', response.data);

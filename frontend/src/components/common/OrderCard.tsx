@@ -25,10 +25,11 @@ function OrderCard(props: IOrder) {
     }
 
     useEffect(() => {
-        
+        console.log(props)
+
         let getItems = () => {
             let orderItems: IOrderItemDisplay[] = []
-            props.orderItemsList.forEach((orderItem) => {
+            props.orderItems.forEach((orderItem) => {
                 orderItems.push({item: orderItem.item, quantity: orderItem.quantity})
             })
             setOrderedItems(orderItems)
@@ -42,7 +43,7 @@ function OrderCard(props: IOrder) {
     <div className="container">
         <div className="row align-items-start">
             <div className='col'>
-                <p>Buyer's Info:</p>
+                <h3>Buyer's Info:</h3>
                 <p> Shipping Address: {props.shipToAddress}</p>
                 <p> Billing Address: {props.billAddress}</p>
                 <p> Order Status: {props.status}</p>
@@ -50,7 +51,7 @@ function OrderCard(props: IOrder) {
                 <p>Total Price: {total}</p>
             </div>
             <div className='col'>
-                <p>Items:</p>
+                <h3>Items:</h3>
                 <ul className='list-group'>
                     {orderedItems.map((orderedItem) => {
                     return (
