@@ -1,0 +1,21 @@
+/* CSS for ReviewForm component */
+.review-form {
+  width: 500px; /* Set the width of the form */
+  margin: 0 auto; /* Center the form horizontally in its parent container */
+}
+
+.review-form .form-group {
+  display: flex; /* Use flexbox for layout */
+  flex-direction: column; /* Stack children vertically */
+  align-items: center; /* Center children horizontally */
+  margin-bottom: 20px; /* Add some space between form groups */
+}
+
+.review-form textarea {
+  width: 100%; /* Ensure textarea takes full width of form-group */
+}
+
+.review-form .d-flex {
+  width: 100%; /* Ensure div with d-flex class takes full width */
+  justify-content: center; /* Center content horizontally */
+}
