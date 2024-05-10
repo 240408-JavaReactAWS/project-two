@@ -286,8 +286,22 @@ public class UserController  {
             } catch (EntityNotFoundException e) {
                 return new ResponseEntity<>(NOT_FOUND);
             }
+            String newShipToAddress = "";
+            String newBillAddress = "";
+            if(order.getShipToAddress() != null) {
+                newShipToAddress = order.getShipToAddress();
+            }
+            if(order.getBillAddress() != null) {
+                newBillAddress = order.getBillAddress();
+            }
             try {
                 order = os.getOrderById(order.getOrderId());
+                if(!newShipToAddress.isEmpty()) {
+                    order.setShipToAddress(newShipToAddress);
+                }
+                if(!newBillAddress.isEmpty()) {
+                    order.setBillAddress(newBillAddress);
+                }
             } catch (EntityNotFoundException e) {
                 return new ResponseEntity<>(NOT_FOUND);
             }
