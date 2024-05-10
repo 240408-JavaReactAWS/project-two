@@ -84,7 +84,7 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
                 <h3>${item.price}</h3>
                 <p>{item.stock} currently available</p>
                 <br/>
-                <p>Average Rating of {item.rating}</p>
+                <p>Average Rating of <strong>{item.rating}</strong></p>
                 <h3><StarRating rating={item.rating}  clickable={false} /></h3>
                 <br/>
                 <h5>Description</h5>
