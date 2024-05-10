@@ -22,6 +22,7 @@ import javax.naming.AuthenticationException;
 
 @RestController
 @RequestMapping("items")
+@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.PATCH})
 public class ItemController {
     private final ItemService itemService;
     private final UserService userService;

@@ -25,7 +25,9 @@ import java.util.ArrayList;
 
 @RestController
 @RequestMapping("users")
-public class UserController {
+//TO-DO: Update Cross-Origin to our S3 bucket before deploying!
+@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.PATCH})
+public class UserController  {
     private final UserService us;
     private final OrderService os;
     private final ItemService is;
