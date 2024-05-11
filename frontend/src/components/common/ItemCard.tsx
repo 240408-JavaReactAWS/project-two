@@ -21,14 +21,14 @@ interface IItemCardProps {
 
 }
 function ItemCard(props : IItemCardProps ) {
-
+    const user=useContext(UserContext)
     const [quantity, setQuantity] = useState(!!props.itemQuantity ? props.itemQuantity:1)
-    const [cart,setCart] = useState(!!props.isInCart)
+    const [cart,setCart] = useState(user.cartItems.includes(props.item.itemId))
     
     const plusQuantity = async (e:React.SyntheticEvent) => {
         e.preventDefault()
         try{
-            let response=await axios.patch(process.env.REACT_APP_API_URL + `users/${user.userId}/orders/current`, 
+            let response=await axios.patch(process.env.REACT_APP_API_URL + `/users/${user.userId}/orders/current`, 
              {quantity: quantity + 1, itemId: props.item.itemId},
              {withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': user.userId}})
             if(response.status==403){
@@ -37,6 +37,7 @@ function ItemCard(props : IItemCardProps ) {
             if(response.status==200){
                 setQuantity(quantity + 1)
             }
+            console.log('Item added to cart:', response)
         } catch(error){
             console.error(error)
         }
@@ -45,7 +46,7 @@ function ItemCard(props : IItemCardProps ) {
     const minusQuantity = async (e:React.SyntheticEvent) => {
         e.preventDefault()
         try{
-            let response=await axios.patch(process.env.REACT_APP_API_URL + `users/${user.userId}/orders/current`, 
+            let response=await axios.patch(process.env.REACT_APP_API_URL + `/users/${user.userId}/orders/current`, 
             {quantity: quantity - 1, itemId: props.item.itemId}, {
                 withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': user.userId} 
             })
@@ -63,7 +64,7 @@ function ItemCard(props : IItemCardProps ) {
         }
     }
 
-    const user=useContext(UserContext)
+    
     const navigate=useNavigate()
 
     const deleteItem = async (e:React.SyntheticEvent) => {
