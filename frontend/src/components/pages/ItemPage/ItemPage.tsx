@@ -12,7 +12,7 @@ import './ItemPage.css';
 
 const ItemPage: React.FC = () => {
   const { itemId } = useParams();
-  const [item, setItem] = useState<IItem | null>(null);
+  const [item, setItem] = useState<IItem>();
   const [reviews, setReviews] = useState<IReview[]>([]);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,6 +25,8 @@ const ItemPage: React.FC = () => {
       try {
         const itemResponse = await axios.get(`${process.env.REACT_APP_API_URL}/items/${itemId}`);
         setItem(itemResponse.data);
+        console.log(item)
+
         const reviewsResponse = await axios.get(`${process.env.REACT_APP_API_URL}/items/${itemId}/reviews`); 
         setReviews(reviewsResponse.data);
         setTotalPages(Math.ceil(reviewsResponse.data.length / 3));
@@ -47,7 +49,7 @@ const ItemPage: React.FC = () => {
 
   return (
     <Container className="mt-5">
-      <ItemDetails item={item} />
+      {item && <ItemDetails item={item} setItem={setItem} />}
       <br/>
       <Row className="review-row">
         <h4 className="total-rev">{reviews.length} reviews</h4>

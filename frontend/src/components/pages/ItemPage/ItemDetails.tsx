@@ -8,12 +8,11 @@ import { UserContext } from '../../../App';
 import ItemForm from '../../common/ItemForm';
 
 interface Props {
-  item: IItem | null;
+  item: IItem;
+  setItem: React.Dispatch<React.SetStateAction<IItem | undefined>>;
 }
 
-const ItemDetails: React.FC<Props> = ({ item }) => {
-
-    console.log(item)
+const ItemDetails: React.FC<Props> = ( props ) => {
 
     const [quantity, setQuantity] = useState(1);
     const [showForm, setShowForm] = useState(false);
@@ -25,19 +24,20 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
     };
 
     const handleAddToCart = () => {
-        if (item === null) {
+        if (props.item === null) {
             return;
         } else {
             // Make a POST request to add item to cart
             const axiosMethod = cartItems.includes(item.itemId)? axios.patch : axios.post;
-            axiosMethod(`${process.env.REACT_APP_API_URL}/users/${userId}/orders/current`, { itemId: item.itemId, stock: quantity }, 
+            axiosMethod(`${process.env.REACT_APP_API_URL}/users/${userId}/orders/current`, { itemId: props.item.itemId, stock: quantity }, 
+
             {
               withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': userId} 
             })
                 .then(response => {
                     // Handle success
                     console.log('Item added to cart:', response.data);
-                    setCartItems([...cartItems, item.itemId]);
+                    setCartItems([...cartItems, props.item.itemId]);
                 })
                 .catch(error => {
                     // Handle error
@@ -47,8 +47,8 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
     };
 
     const handleUpdateItem = () => {
-      if (item) {
-        setShowForm(true);
+      if (props.item) {
+        setShowForm(!showForm);
       } else {
         navigate('/');
       }
@@ -56,8 +56,8 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
     };
 
     const handleViewRelatedOrders = () => {
-      if (item !== null) {
-        navigate(`/orders/${item.itemId}`);
+      if (props.item !== null) {
+        navigate(`/orders/${props.item.itemId}`);
       } else {
         navigate('/');
       }
@@ -66,19 +66,19 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
 
   return (
     <Container>
-    {item && (
+    {props.item && (
         <Row>
           <Col lg={6}>
             {/* Item image */}
-            <img src={item.image} className="img-fluid" alt="Item Image" />
+            <img src={props.item.image} className="img-fluid" alt="Item Image" />
           </Col>
           <Col lg={6}>
             {/* Item details */}
             <Row>
               <Col>
-                <h1><strong>{item.name}</strong></h1>
+                <h1><strong>{props.item.name}</strong></h1>
                 {/* If item's seller ID matches the current user's ID */}
-                {item.user.userId === userId && (
+                {props.item.user.userId === userId && (
                   <>
                     <Button onClick={handleUpdateItem} variant="secondary" className="mr-2">Update Item</Button>
                     <Button onClick={handleViewRelatedOrders} variant="info">View Related Orders</Button>
@@ -89,21 +89,21 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
 
             <Row>
               <Col>
-                <h3>${item.price}</h3>
-                <p>{item.stock} currently available</p>
+                <h3>${props.item.price}</h3>
+                <p>{props.item.stock} currently available</p>
                 <br/>
-                <p>Average Rating of <strong>{item.rating}</strong></p>
-                <h3><StarRating rating={item.rating}  clickable={false} /></h3>
+                <p>Average Rating of <strong>{props.item.rating}</strong></p>
+                <h3><StarRating rating={props.item.rating}  clickable={false} /></h3>
                 <br/>
                 <h5>Description</h5>
-                <p>{item.description}</p>
+                <p>{props.item.description}</p>
                 <Form className="mb-3">
                   <Row>
                     {/* Quantity input */}
                     <Col xs={6}>
                       <Form.Group>
                         <Form.Label>Quantity</Form.Label>
-                        <Form.Control type="number" value={quantity} onChange={handleChangeQuantity} min={1}  max={item.stock}/>
+                        <Form.Control type="number" value={quantity} onChange={handleChangeQuantity} min={1}  max={props.item.stock}/>
                       </Form.Group>
                     </Col>
                     {/* Add to cart button */}
@@ -117,7 +117,7 @@ const ItemDetails: React.FC<Props> = ({ item }) => {
           </Col>
         </Row>
       )}
-      {showForm && <ItemForm itemId={item?.itemId} />}
+      {showForm && <ItemForm item={props.item} setItem={props.setItem} handleUpdateItem={handleUpdateItem} />}
     </Container>
   );
 };
