@@ -21,14 +21,14 @@ interface IItemCardProps {
 
 }
 function ItemCard(props : IItemCardProps ) {
-
+    const user=useContext(UserContext)
     const [quantity, setQuantity] = useState(!!props.itemQuantity ? props.itemQuantity:1)
-    const [cart,setCart] = useState(!!props.isInCart)
+    const [cart,setCart] = useState(user.cartItems.includes(props.item.itemId))
     
     const plusQuantity = async (e:React.SyntheticEvent) => {
         e.preventDefault()
         try{
-            let response=await axios.patch(process.env.REACT_APP_API_URL + `users/${user.userId}/orders/current`, 
+            let response=await axios.patch(process.env.REACT_APP_API_URL + `/users/${user.userId}/orders/current`, 
              {quantity: quantity + 1, itemId: props.item.itemId},
              {withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': user.userId}})
             if(response.status==403){
@@ -37,6 +37,7 @@ function ItemCard(props : IItemCardProps ) {
             if(response.status==200){
                 setQuantity(quantity + 1)
             }
+            console.log('Item added to cart:', response)
         } catch(error){
             console.error(error)
         }
@@ -45,7 +46,7 @@ function ItemCard(props : IItemCardProps ) {
     const minusQuantity = async (e:React.SyntheticEvent) => {
         e.preventDefault()
         try{
-            let response=await axios.patch(process.env.REACT_APP_API_URL + `users/${user.userId}/orders/current`, 
+            let response=await axios.patch(process.env.REACT_APP_API_URL + `/users/${user.userId}/orders/current`, 
             {quantity: quantity - 1, itemId: props.item.itemId}, {
                 withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': user.userId} 
             })
@@ -63,13 +64,13 @@ function ItemCard(props : IItemCardProps ) {
         }
     }
 
-    const user=useContext(UserContext)
+    
     const navigate=useNavigate()
 
     const deleteItem = async (e:React.SyntheticEvent) => {
         e.preventDefault()
         try{
-            let response = await axios.delete(process.env.REACT_APP_API_URL + `items/${props.item.itemId}`, {
+            let response = await axios.delete(process.env.REACT_APP_API_URL + `/items/${props.item.itemId}`, {
                 withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': user.userId} 
 
               })
@@ -77,17 +78,17 @@ function ItemCard(props : IItemCardProps ) {
 
               }
               if(response.status==200){
-               
+                props.setSellersItems && props.setSellersItems((sellersItem:IItem[]) => {
+                    return sellersItem.filter((item) => {
+                        return item.itemId !== props.item.itemId;
+                    });
+                })
               }
         }catch(error){
             console.error(error)
         }
 
-        props.setSellersItems && props.setSellersItems((sellersItem:IItem[]) => {
-            return sellersItem.filter((item) => {
-                return item.itemId !== props.item.itemId;
-            });
-        })
+        
     }
 
     // const addToCart = (e:React.SyntheticEvent) => {
@@ -113,38 +114,39 @@ function ItemCard(props : IItemCardProps ) {
     
     return (
         props.type === DisplayType.OWNED ? 
-        <Link style={{textDecoration:'none', color:'black'}} to={`/item/${props.item.itemId}`}>
-            <div className="card" style={{width: '18rem'}}>
-                <img className="card-img-top" src={props.item.image} alt="Card image cap"/>
-                <div className="card-body">
-                    <h5 className="card-title">{props.item.name}</h5>
-                    <p className="card-text">Price: {props.item.price}</p>
-                    <p className="card-text">Rating: {props.item.rating}</p>
-                    <p className="card-text">Stock: {props.item.stock}</p>
-                    <button className="btn btn-primary" onClick={deleteItem}>Delete</button>
-                    </div>
-                </div>
-        </Link>
-        : props.type === DisplayType.NONOWNED ?
-        <Link style={{textDecoration:'none', color:'black'}}to={`/item/${props.item.itemId}`}>
+       
             <div className="card" style={{maxWidth: '18rem'}}>
-                <img className="card-img-top" src={props.item.image} alt="Card image cap"/>
-                <div className="card-body">
-                    <h5 className="card-title">{props.item.name}</h5>
-                    <p className="card-text">Price: {props.item.price}</p>
-                    <p className="card-text">Rating: {props.item.rating}</p>
-                    <p className="card-text">Quantity: {props.item.stock}</p>
-                    {!cart && <AddToCartButton setDisplayQuantity={setCart} orderItem={
-                        {itemId : props.item.itemId, stock:1}}/>}
-                    {cart && 
-                    <>
-                        <button className="btn btn-primary" onClick={minusQuantity}>-</button>
-                        {quantity}
-                        <button className="btn btn-primary" onClick={plusQuantity}>+</button>
-                    </>}
+                 <Link style={{textDecoration:'none', color:'black'}} to={`/item/${props.item.itemId}`}>
+                    <img className="card-img-top "  height={"200px"} src={props.item.image} alt="Card image cap"/>
+                    <div className="card-body">
+                        <h5 className="card-title">{props.item.name}</h5>
+                        <p className="card-text">Price: {props.item.price}</p>
+                        <p className="card-text">Rating: {props.item.rating}</p>
+                        <p className="card-text">Stock: {props.item.stock}</p>
+                        <button className="btn btn-primary" onClick={deleteItem}>Delete</button>
+                        </div>
+                </Link>
                 </div>
+        : props.type === DisplayType.NONOWNED ?
+            <div className="card" style={{maxWidth: '18rem'}}>
+                <Link style={{textDecoration:'none', color:'black'}}to={`/item/${props.item.itemId}`}>
+                    <img className="card-img-top" height={"200px"}  src={props.item.image} alt="Card image cap"/>
+                    <div className="card-body">
+                        <h5 className="card-title">{props.item.name}</h5>
+                        <p className="card-text">Price: {props.item.price}</p>
+                        <p className="card-text">Rating: {props.item.rating}</p>
+                        <p className="card-text">Quantity: {props.item.stock}</p>
+                        {!cart && <AddToCartButton setDisplayQuantity={setCart} orderItem={
+                            {itemId : props.item.itemId, stock:1}}/>}
+                        {cart && 
+                        <>
+                            <button className="btn btn-primary" onClick={minusQuantity}>-</button>
+                            {quantity}
+                            <button className="btn btn-primary" onClick={plusQuantity}>+</button>
+                        </>}
+                    </div>
+            </Link>
             </div>
-        </Link>
             :
             <tr>
                 <td><img  style={{height: "100px"}} src={props.item.image} alt="Card image cap"/></td>

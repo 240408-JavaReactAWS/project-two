@@ -26,10 +26,11 @@ function OrderCard(props: IOrder) {
     }
 
     useEffect(() => {
-        
+        console.log(props)
+
         let getItems = () => {
             let orderItems: IOrderItemDisplay[] = []
-            props.orderItemsList.forEach((orderItem) => {
+            props.orderItems.forEach((orderItem) => {
                 orderItems.push({item: orderItem.item, quantity: orderItem.quantity})
             })
             setOrderedItems(orderItems)

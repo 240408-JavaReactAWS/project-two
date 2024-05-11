@@ -36,10 +36,10 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private StatusEnum status;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition="TEXT")
     private String shipToAddress;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition="TEXT")
     private String billAddress;
 
     @CreationTimestamp

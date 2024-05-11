@@ -1,0 +1,21 @@
+/* CSS for ReviewForm component */
+.review-form {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.review-form .form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.review-form textarea {
+  width: 100%;
+}
+
+.review-form .d-flex {
+  width: 100%;
+  justify-content: center;
+}

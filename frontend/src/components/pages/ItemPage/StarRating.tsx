@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import './StarRating.css';
 
 interface Props {
   rating: number;
@@ -7,39 +8,25 @@ interface Props {
 }
 
 const StarRating: React.FC<Props> = ({ rating, clickable, onStarClick }) => {
-  const handleClick = (newRating: number) => {
-    if (clickable && onStarClick) {
-      onStarClick(newRating);
-    }
-  };
-
+  const [hoverRating, setHoverRating] = useState<number>(0);
   const stars = [];
 
   for (let i = 0; i < 5; i++) {
-    if (i < rating) {
-      stars.push(
-        <span
-          key={i}
-          className={`text-warning ${clickable ? 'cursor-pointer' : ''} star`}
-          onClick={() => handleClick(i + 1)}
-        >
-          &#9733;
-        </span>
-      );
-    } else {
-      stars.push(
-        <span
-          key={i}
-          className={`text-secondary ${clickable ? 'cursor-pointer' : ''} star`}
-          onClick={() => handleClick(i + 1)}
-        >
-          &#9734;
-        </span>
-      );
-    }
+    const starColor = i < (hoverRating || rating) ? '#ffc107' : '#e4e5e9';
+    stars.push(
+      <span
+        key={i}
+        style={{ color: starColor, cursor: clickable ? 'pointer' : 'default' }}
+        onMouseEnter={() => clickable && setHoverRating(i + 1)}
+        onMouseLeave={() => clickable && setHoverRating(0)}
+        onClick={() => clickable && onStarClick && onStarClick(i + 1)}
+      >
+        {i < Math.floor(rating) || Math.ceil(rating) <= i ? '★' : '☆'}
+      </span>
+    );
   }
 
-  return <>{stars}</>;
+  return <div className="star-rating">{stars}</div>;
 };
 
 export default StarRating;

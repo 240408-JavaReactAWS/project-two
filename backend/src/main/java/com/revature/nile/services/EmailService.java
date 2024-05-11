@@ -26,6 +26,7 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String senderEmail;
 
+
     @Autowired
     public EmailService(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
@@ -47,13 +48,20 @@ public class EmailService {
         DecimalFormat df = new DecimalFormat("#.00");
         double totalAmount= 0.0;
         for(OrderItem orderitem : order.getOrderItems()){
-            Item item = orderitem.getItem();
-            body.append("Item: " + item.getName() + "\n\n");
-            body.append("Quantity: " + orderitem.getQuantity() + "\n\n");
-            body.append("Price: $" + item.getPrice() + "\n\n");
-            body.append("Total: $" + df.format(item.getPrice() * orderitem.getQuantity())+ "\n\n");
-            totalAmount += item.getPrice() * orderitem.getQuantity();
-            body.append("------------------------------------------------\n\n");
+            /*
+             * Check if the item belongs to the seller, since we only want to notify sellers
+             * about the items that they have sold, and not other sellers' items on the same Order.
+             */
+            if(orderitem.getItem().getUser() == user)
+            {
+                Item item = orderitem.getItem();
+                body.append("Item: " + item.getName() + "\n\n");
+                body.append("Quantity: " + orderitem.getQuantity() + "\n\n");
+                body.append("Price: $" + item.getPrice() + "\n\n");
+                body.append("Total: $" + df.format(item.getPrice() * orderitem.getQuantity())+ "\n\n");
+                totalAmount += item.getPrice() * orderitem.getQuantity();
+                body.append("------------------------------------------------\n\n");
+            }
         }
         body.append("Total Order Price: $" + df.format(totalAmount)+ "\n\n\n");
         body.append("Items will be shipped to the following address: " + order.getShipToAddress() + "\n\n\n");

@@ -101,8 +101,8 @@ const itemsOk: IItem[] = [{
 function CartPage() {
 
 
-  let context = useContext(UserContext);
-  const [cart, setCart] = useState<IOrder>();
+    let context = useContext(UserContext);
+    const [cart, setCart] = useState<IOrder>();
     const navigate = useNavigate();
     const [error, setError] = useState<string>('');
     function compare(a: IItem, b: IItem) {
@@ -117,7 +117,7 @@ function CartPage() {
 
     let getTotal = (order: IOrder) => {
         let total = 0;
-        order.orderItemsList.forEach((orderItem) => {
+        order.orderItems.forEach((orderItem) => {
             let subtotal: number = orderItem.item.price * orderItem.quantity;
             total += subtotal;
         });
@@ -137,8 +137,21 @@ function CartPage() {
         });}
     // get Items out of Order
 
+    let storeCart = () => {
+      // generate array of itemIds for Items in Cart
+      let itemIds: number[] = [];
+      if (cart) {
+        cart.orderItems.forEach((orderItem) => {
+          itemIds.push(orderItem.item.itemId);
+        });
+      }
+      // store in context
+      context.setCartItems(itemIds);
+    }
+
     useEffect(() => {
         getCart();
+        storeCart();
     }, []);
     
   return (
@@ -147,12 +160,12 @@ function CartPage() {
       <h1 style={{fontSize:"5rem", textAlign:"center" }}>Items</h1>
     </header>
 
-    {cart?.orderItemsList.length != 0 ?
+    {cart?.orderItems.length != 0 ?
     <div className="cart-page w-90 container" style={{backgroundColor: "#fcead6"}}>
 
     <div  className="cart-container row row-cols-1" style={{ width: '80%'}}>
         
-        {cart?.orderItemsList.map((orderItemMap) => (
+        {cart?.orderItems.map((orderItemMap) => (
             <>
             <div className="col cart-item" style={{backgroundColor:"aliceblue"}}>
               <ItemCard key={`item${orderItemMap.item.itemId}`} item={orderItemMap.item} type={DisplayType.CART} itemQuantity={orderItemMap.quantity} isInCart={true} orderId={orderItemMap.orderId}></ItemCard>

@@ -4,6 +4,7 @@ import StarRating from './StarRating';
 import axios from 'axios';
 import { IReview } from '../../../interfaces/IReview';
 import { UserContext } from '../../../App';
+import './ReviewForm.css';
 
 interface Props {
   itemId: number | null;
@@ -47,18 +48,15 @@ const ReviewForm: React.FC<Props> = ({ itemId, onClose, reviews, setReviews }) =
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-        <div className="d-flex justify-content-end">
-        <Button variant="secondary" onClick={onClose}>x</Button>
-        </div>
+    <Form onSubmit={handleSubmit} className="review-form">
       {/* Star rating */}
       <Form.Group controlId="rating">
         <Form.Label>Rating</Form.Label>
         <div className="d-flex">
           <StarRating
             rating={rating || 0}
-            clickable={true} // Stars are clickable in ReviewForm
-            onStarClick={(newRating: number) => setRating(newRating)}
+            clickable={true}
+            onStarClick={setRating}
           />
         </div>
       </Form.Group>
@@ -73,10 +71,12 @@ const ReviewForm: React.FC<Props> = ({ itemId, onClose, reviews, setReviews }) =
           required
         />
       </Form.Group>
+      <br/>
       {/* Submit and close buttons */}
       <div className="d-flex justify-content-between">
         <Button type="submit" variant="primary">Submit Review</Button>
       </div>
+      <br/>
     </Form>
   );
 };

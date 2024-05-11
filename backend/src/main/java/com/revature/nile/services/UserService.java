@@ -16,6 +16,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.naming.AuthenticationException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 import java.util.List;
@@ -45,6 +48,15 @@ public class UserService {
         if (userWithEmail.isPresent()) {
             throw new UserAlreadyExistsException("User with email " + user.getEmail() + " already exists");
         }
+        //Hashing the password
+        try {
+            byte[] salt = new byte[16];
+            SecureRandom.getInstanceStrong().nextBytes(salt);
+            user.setSalt(salt);
+            user.setPassword(getHashedPassword(user.getPassword(), salt));
+        } catch (Exception e) {
+            throw new UserAlreadyExistsException("Error hashing password");
+        }
         return ur.save(user);
     }
 
@@ -52,8 +64,12 @@ public class UserService {
         Optional<User> optionalUser = ur.findByEmail(user.getEmail());
         if (optionalUser.isPresent()) {
             User u = optionalUser.get();
-            if(u.getPassword().equals(user.getPassword())) {
-                return u;
+            try {
+                if (validatePassword(user.getPassword(), u)) {
+                    return u;
+                }
+            } catch (NoSuchAlgorithmException e) {
+                throw new AuthenticationException("Error validating password");
             }
             throw new AuthenticationException("Incorrect Password");
         }
@@ -92,21 +108,6 @@ public class UserService {
         throw new EntityNotFoundException("User with id: " + userId + " doesn't exist");
     }
 
-    /**
-     * EDIT CART ITEM QUANTITY
-     * */
-    // public OrderItem editCartItemQuantity(int userId, int itemId, int quantity){
-    //     Optional<Order> orderOptional = orderRepository.findByUserIdAndStatus(userId, "PENDING");
-    //     if (orderOptional.isPresent()) {
-    //         Order order = orderOptional.get();
-    //         OrderItem orderItem = orderItemRepository.findByItemIdAndOrder(itemId, order);
-    //         orderItem.setQuantity(quantity);
-    //         return orderItemRepository.save(orderItem);
-    //     }
-    //     return null;
-    // }
-
-
     @Transactional
     public OrderItem removeItemFromPendingOrder(int userId, int itemId, int itemQuantity) throws OrderProcessingException {
         Optional<OrderItem> orderItemOpt = orderItemRepository.findByItemItemIdAndOrderUserUserId(itemId, userId);
@@ -127,5 +128,49 @@ public class UserService {
             //if the order item does not exist, throw an exception
             throw new OrderProcessingException("Order item not found for userId: " + userId + " and itemId: " + itemId);
         }
+    }
+
+    /*
+     * Validates a user's password
+     * @param password the password to validate
+     * @param user the user to validate the password for
+     * @return true if the password is correct, false otherwise
+     */
+    private static Boolean validatePassword(String password, User user) throws NoSuchAlgorithmException{
+        byte[] salt = user.getSalt();
+        byte[] passwordBytes = password.getBytes();
+        byte[] saltedPassword = new byte[salt.length + passwordBytes.length];
+        System.arraycopy(passwordBytes, 0, saltedPassword, 0, passwordBytes.length);
+        System.arraycopy(salt, 0, saltedPassword, passwordBytes.length, salt.length);
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        byte[] hash = md.digest(saltedPassword);
+        return user.getPassword().equals(bytesToHex(hash));
+    }
+
+    private static String getHashedPassword(String password, byte[] salt) throws NoSuchAlgorithmException {
+        byte[] passwordBytes = password.getBytes();
+        byte[] saltedPassword = new byte[salt.length + passwordBytes.length];
+        System.arraycopy(passwordBytes, 0, saltedPassword, 0, passwordBytes.length);
+        System.arraycopy(salt, 0, saltedPassword, passwordBytes.length, salt.length);
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        byte[] hash = md.digest(saltedPassword);
+        return bytesToHex(hash);
+    }
+
+    /*
+     * Converts a byte array to a hex string
+     * @param hash the byte array to convert
+     * @return the hex string
+     */
+    private static String bytesToHex(byte[] hash) {
+        StringBuilder hexString = new StringBuilder(2 * hash.length);
+        for (int i = 0; i < hash.length; i++) {
+            String hex = Integer.toHexString(0xff & hash[i]);
+            if(hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
     }
 }
