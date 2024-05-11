@@ -4,6 +4,7 @@ import { IOrder } from '../../interfaces/IOrder'
 import { IOrderItem } from '../../interfaces/IOrderItem'
 import { UserContext } from '../../App'
 import { IItem } from '../../interfaces/IItem'
+import { Card } from 'react-bootstrap'
 
 
 interface IOrderItemDisplay {
@@ -39,34 +40,40 @@ function OrderCard(props: IOrder) {
     },[])
 
     return (
-    <div className="container">
-        <div className="row align-items-start">
-            <div className='col'>
-                <p>Buyer's Info:</p>
-                <p> Shipping Address: {props.shipToAddress}</p>
-                <p> Billing Address: {props.billAddress}</p>
-                <p> Order Status: {props.status}</p>
-                <p> Date Ordered: {props.dateOrdered}</p>
-                <p>Total Price: {total}</p>
-            </div>
-            <div className='col'>
-                <p>Items:</p>
-                <ul className='list-group'>
-                    {orderedItems.map((orderedItem) => {
-                    return (
-                        <li className="list-group-item" key={orderedItem.item.itemId}>
-                        <p>{orderedItem.item.name}</p>
-                        <p>Quantity: {orderedItem.quantity}</p>
-                        <p>Price: {orderedItem.item.price * orderedItem.quantity}</p>
-                        </li>
-                    )
-                    })}
-                </ul>
+        <div className="container">
+            <div className="row align-items-start" >
+                <div className='col '>
+                    <Card >
+                        <Card.Body >
+                            <Card.Title>Buyer's Info:</Card.Title>
+                            <Card.Text>Shipping Address: {props.shipToAddress}</Card.Text>
+                            <Card.Text>Billing Address: {props.billAddress}</Card.Text>
+                            <Card.Text>Order Status: {props.status}</Card.Text>
+                            <Card.Text>Date Ordered: {props.dateOrdered}</Card.Text>
+                            <Card.Text>Total Price: {total}</Card.Text>
+                        </Card.Body>
+                    </Card>
+                </div>
+                <div className='col'>
+                    <Card >
+                        <Card.Body>
+                            <Card.Title>Items:</Card.Title>
+                            <ul className='list-group'>
+                                {orderedItems.map((orderedItem) => {
+                                    return (
+                                        <li className="list-group-item" key={orderedItem.item.itemId}>
+                                            <Card.Text>{orderedItem.item.name}</Card.Text>
+                                            <Card.Text>Quantity: {orderedItem.quantity}</Card.Text>
+                                            <Card.Text>Price: {orderedItem.item.price * orderedItem.quantity}</Card.Text>
+                                        </li>
+                                    )
+                                })}
+                            </ul>
+                        </Card.Body>
+                    </Card>
+                </div>
             </div>
         </div>
-      
-      
-    </div>
     )
 }
 
