@@ -7,11 +7,13 @@ import './ItemForm.css';
 import { IItem } from '../../interfaces/IItem';
 
 interface IItemFormProps {
-  itemId?: number,
+  item?: IItem,
+  setItem?: React.Dispatch<React.SetStateAction<IItem | undefined>>,
+  handleUpdateItem?: () => void,
   addToItems?:(item: IItem) => void
 }
 
-const ItemForm: React.FC<IItemFormProps> = ({ itemId, addToItems }) => {
+const ItemForm: React.FC<IItemFormProps> = ({ item, setItem, handleUpdateItem, addToItems }) => {
   const { userId } = useContext(UserContext);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -29,8 +31,8 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, addToItems }) => {
 
   // Check if item already exists
   useEffect(() => {
-    if (itemId) {
-      axios.get(`${process.env.REACT_APP_API_URL}/items/${itemId}`, {
+    if (item) {
+      axios.get(`${process.env.REACT_APP_API_URL}/items/${item.itemId}`, {
         withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
@@ -47,10 +49,10 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, addToItems }) => {
           setImage(image);
         })
         .catch(error => {
-          console.log(`Failed to fetch item with id ${itemId}: ${error}`);
+          console.log(`Failed to fetch item with id ${item.itemId}: ${error}`);
         });
     }
-  }, [itemId, userId]);
+  }, []);
 
   // Validate each input
   const validateForm = () => {
@@ -88,8 +90,8 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, addToItems }) => {
         stock,
         image,
       };
-      const axiosMethod = itemId ? axios.patch : axios.post;
-      const url = itemId ? `${process.env.REACT_APP_API_URL}/items/${itemId}` : `${process.env.REACT_APP_API_URL}/items`;
+      const axiosMethod = item ? axios.patch : axios.post;
+      const url = item ? `${process.env.REACT_APP_API_URL}/items/${item.itemId}` : `${process.env.REACT_APP_API_URL}/items`;
 
       axiosMethod(url, itemData, {
         withCredentials: true,
@@ -100,8 +102,9 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, addToItems }) => {
       })
         .then(response =>{
            console.log(response)
-           if(response.status==201){
+           if(response.status==200 || response.status==201){
              addToItems && addToItems(response.data)
+             setItem && setItem(response.data)
            }
           })
         .catch(error => console.log(error));
@@ -111,105 +114,132 @@ const ItemForm: React.FC<IItemFormProps> = ({ itemId, addToItems }) => {
         document.getElementById('formContainer')?.classList.remove('shake');
       }, 200);
     }
+    handleUpdateItem && handleUpdateItem();
   };
 
-  return (
-    <div id="formContainer">
-      <h1>Add more details</h1>
-      <h6>Add a photo and some details about your item. You will be able to edit this later.</h6>
-      <br/>
-      <br/>
-      <br/>
-      <Form onSubmit={handleSubmit}>
-        <FormGroup>
-          <FormLabel><h2>Item Name</h2></FormLabel>
-          <FormText className="text-muted">
-            Include keywords that buyers would use to search for this item.
-          </FormText>
-          <FormControl
-            className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-            type="text"
-            value={name}
-            onChange={e => {
-              setName(e.target.value);
-              setErrors(prev => ({ ...prev, name: false }));
-            }}
-            maxLength={140}
-          />
-          <FormText>{name.length}/140</FormText>
-        </FormGroup>
+  if (item === undefined) {
+    return (  
+      <div id="formContainer">
+        <h1>Add more details</h1>
+        <h6>Add a photo and some details about your item. You will be able to edit this later.</h6>
         <br/>
-        <FormGroup>
-          <FormLabel><h2>Description</h2></FormLabel>
-          <FormText className="text-muted">
-            What makes your item special? Buyers will only see the first few lines unless they expand the description.
-          </FormText>
-          <FormControl
-            className={`form-control ${errors.description ? 'is-invalid' : ''}`}
-            as="textarea"
-            value={description}
-            onChange={e => {
-              setDescription(e.target.value);
-              setErrors(prev => ({ ...prev, description: false }));
-            }}
-            style={{ resize: 'vertical' }}
-          />
-        </FormGroup>
         <br/>
-        <FormGroup>
-          <FormLabel><h2>Price</h2></FormLabel>
-          <InputGroup>
-            <InputGroup.Text>$</InputGroup.Text>
+        <br/>
+        <Form onSubmit={handleSubmit}>
+          <FormGroup>
+            <FormLabel><h2>Item Name</h2></FormLabel>
+            <FormText className="text-muted">
+              Include keywords that buyers would use to search for this item.
+            </FormText>
             <FormControl
-              className={`form-control ${errors.price ? 'is-invalid' : ''}`}
+              className={`form-control ${errors.name ? 'is-invalid' : ''}`}
               type="text"
-              value={price}
-              onChange={handlePriceChange}
-              placeholder="0.00"
+              value={name}
+              onChange={e => {
+                setName(e.target.value);
+                setErrors(prev => ({ ...prev, name: false }));
+              }}
+              maxLength={140}
             />
-            {errors.price && <FormText className="invalid-feedback">
-              Price must be between $0.01 and $50,000.00
-            </FormText>}
-          </InputGroup>
-        </FormGroup>
-        <br/>
-        <FormGroup>
-          <FormLabel><h2>Stock</h2></FormLabel>
-          <FormControl
-            className={`form-control ${errors.image ? 'is-invalid' : ''}`}
-            type="number"
-            value={stock}
-            onChange={e => {
-              setStock(parseInt(e.target.value));
-              setErrors(prev => ({ ...prev, stock: false }));
-            }}
-            placeholder="0"
-          />
-        </FormGroup>
-        <br/>
-        <FormGroup>
-          <FormLabel><h2>Image URL</h2></FormLabel>
-          <FormText className="text-muted">
-            Provide a link to a photo of your product for buyers to see
-          </FormText>
-          <FormControl
-            className={`form-control ${errors.image ? 'is-invalid' : ''}`}
-            type="text"
-            value={image}
-            onChange={e => {
-              setImage(e.target.value);
-              setErrors(prev => ({ ...prev, image: false }));
-            }}
-            placeholder="http://example.com/image.jpg"
-          />
-        </FormGroup>
-        <br/>
-        <br/>
-        <br/>
-        <Button type="submit" className="custom-button">Sell Item</Button>
-      </Form>
-    </div>
-  );
+            <FormText>{name.length}/140</FormText>
+          </FormGroup>
+          <br/>
+          <FormGroup>
+            <FormLabel><h2>Description</h2></FormLabel>
+            <FormText className="text-muted">
+              What makes your item special? Buyers will only see the first few lines unless they expand the description.
+            </FormText>
+            <FormControl
+              className={`form-control ${errors.description ? 'is-invalid' : ''}`}
+              as="textarea"
+              value={description}
+              onChange={e => {
+                setDescription(e.target.value);
+                setErrors(prev => ({ ...prev, description: false }));
+              }}
+              style={{ resize: 'vertical' }}
+            />
+          </FormGroup>
+          <br/>
+          <FormGroup>
+            <FormLabel><h2>Price</h2></FormLabel>
+            <InputGroup>
+              <InputGroup.Text>$</InputGroup.Text>
+              <FormControl
+                className={`form-control ${errors.price ? 'is-invalid' : ''}`}
+                type="text"
+                value={price}
+                onChange={handlePriceChange}
+                placeholder="0.00"
+              />
+              {errors.price && <FormText className="invalid-feedback">
+                Price must be between $0.01 and $50,000.00
+              </FormText>}
+            </InputGroup>
+          </FormGroup>
+          <br/>
+          <FormGroup>
+            <FormLabel><h2>Stock</h2></FormLabel>
+            <FormControl
+              className={`form-control ${errors.image ? 'is-invalid' : ''}`}
+              type="number"
+              value={stock}
+              onChange={e => {
+                setStock(parseInt(e.target.value));
+                setErrors(prev => ({ ...prev, stock: false }));
+              }}
+              placeholder="0"
+            />
+          </FormGroup>
+          <br/>
+          <FormGroup>
+            <FormLabel><h2>Image URL</h2></FormLabel>
+            <FormText className="text-muted">
+              Provide a link to a photo of your product for buyers to see
+            </FormText>
+            <FormControl
+              className={`form-control ${errors.image ? 'is-invalid' : ''}`}
+              type="text"
+              value={image}
+              onChange={e => {
+                setImage(e.target.value);
+                setErrors(prev => ({ ...prev, image: false }));
+              }}
+              placeholder="http://example.com/image.jpg"
+            />
+          </FormGroup>
+          <br/>
+          <br/>
+          <br/>
+          <Button type="submit" className="custom-button">Sell Item</Button>
+        </Form>
+      </div>
+    );
+  } else {
+    return (
+      <div id="formContainer">
+        <Form onSubmit={handleSubmit}>
+          <FormGroup>
+            <FormLabel><h2>Stock</h2></FormLabel>
+            <FormControl
+              className={`form-control ${errors.image ? 'is-invalid' : ''}`}
+              type="number"
+              value={stock}
+              onChange={e => {
+                setStock(parseInt(e.target.value));
+                setErrors(prev => ({ ...prev, stock: false }));
+              }}
+              placeholder="0"
+            />
+          </FormGroup>
+          <br/>
+          <br/>
+          <br/>
+          <Button type="submit" className="custom-button">Sell Item</Button>
+        </Form>
+      </div>
+    );
+  }
 }
 
 export default ItemForm;
