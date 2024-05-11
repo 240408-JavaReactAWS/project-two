@@ -102,7 +102,7 @@ const ItemForm: React.FC<IItemFormProps> = ({ item, setItem, handleUpdateItem, a
       })
         .then(response =>{
            console.log(response)
-           if(response.status==200){
+           if(response.status==200 || response.status==201){
              addToItems && addToItems(response.data)
              setItem && setItem(response.data)
            }
@@ -117,7 +117,7 @@ const ItemForm: React.FC<IItemFormProps> = ({ item, setItem, handleUpdateItem, a
     handleUpdateItem && handleUpdateItem();
   };
 
-  if (item === null) {
+  if (item === undefined) {
     return (  
       <div id="formContainer">
         <h1>Add more details</h1>
