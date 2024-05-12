@@ -31,9 +31,9 @@ function SummaryRow({item, total, setTotal}: IProps) {
     return (
         <>
         {itemData && <div>
-            <h3>{itemData.name}</h3>
+            {/* <h3>{itemData.name}</h3>
             <p>Quantity: {item.quantity}</p>
-            <p>Price: ${itemData.price * item.quantity}</p>
+            <p>Price: ${itemData.price * item.quantity}</p> */}
             <p>{itemData.name} x {item.quantity}    ${itemData.price * item.quantity}</p>
         </div>}
         </>

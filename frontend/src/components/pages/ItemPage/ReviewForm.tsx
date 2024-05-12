@@ -5,15 +5,16 @@ import axios from 'axios';
 import { IReview } from '../../../interfaces/IReview';
 import { UserContext } from '../../../App';
 import './ReviewForm.css';
+import { IItem } from '../../../interfaces/IItem';
 
 interface Props {
-  itemId: number | null;
+  item: IItem;
   onClose: () => void;
   reviews: IReview[];
   setReviews: React.Dispatch<React.SetStateAction<IReview[]>>;
 }
 
-const ReviewForm: React.FC<Props> = ({ itemId, onClose, reviews, setReviews }) => {
+const ReviewForm: React.FC<Props> = ({ item, onClose, reviews, setReviews }) => {
   const [rating, setRating] = useState<number | null>(null);
   const [text, setText] = useState('');
   const { userId } = useContext(UserContext)
@@ -21,12 +22,15 @@ const ReviewForm: React.FC<Props> = ({ itemId, onClose, reviews, setReviews }) =
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission
-    console.log('Rating:', rating);
-    console.log('Review Text:', text);
+    // console.log('Rating:', rating);
+    // console.log('Review Text:', text);
     /* Add review to the database */
+    if (!userId) {
+        alert('You must be logged in to leave a review.');
+        return;
+    }
 
-
-    axios.post(`${process.env.REACT_APP_API_URL}/items/${itemId}/reviews`, { rating, text }, {
+    axios.post(`${process.env.REACT_APP_API_URL}/items/${item.itemId}/reviews`, { rating, text }, {
       withCredentials: true,
       headers: {
         'userId': userId
@@ -35,12 +39,17 @@ const ReviewForm: React.FC<Props> = ({ itemId, onClose, reviews, setReviews }) =
         .then(response => {
             // Handle success
             console.log('Review added:', response.data);
+            
             setReviews([response.data, ...reviews]);
 
         })
         .catch(error => {
             // Handle error
+            if (error.response.status == 403) {
+              userId == item.user.userId ? alert('You cant leave a review cause you own this listing.'): alert('You can leave only 1 review after buying an item.');
+            }else{
             console.error('Error adding review:', error);
+            }
         });
 
     // Close the form
