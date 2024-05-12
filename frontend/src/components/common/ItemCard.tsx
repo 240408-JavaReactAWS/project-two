@@ -57,6 +57,7 @@ function ItemCard(props : IItemCardProps ) {
                 setQuantity(quantity - 1)
                 if (quantity - 1 === 0) {
                     setCart(false)
+                    user.setCartItems(user.cartItems.filter((itemId) => itemId !== props.item.itemId))
                 }
             }
         } catch(error){
