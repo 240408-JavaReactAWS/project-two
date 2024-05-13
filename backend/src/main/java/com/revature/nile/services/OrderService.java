@@ -1,9 +1,6 @@
 package com.revature.nile.services;
 
-import com.revature.nile.exceptions.NullAddressException;
-import com.revature.nile.exceptions.OrderProcessingException;
-import com.revature.nile.exceptions.UserIdMissMatchException;
-import com.revature.nile.exceptions.UserNotFoundException;
+import com.revature.nile.exceptions.*;
 import com.revature.nile.models.Item;
 import com.revature.nile.models.Order;
 import com.revature.nile.models.OrderItem;
@@ -127,6 +124,11 @@ public class OrderService {
             if(order.getShipToAddress()==null || order.getShipToAddress().isEmpty() || order.getBillAddress()==null || order.getBillAddress().isEmpty()){
                   throw new NullAddressException("Shipping or Billing address is Empty");
             }
+
+            if (order.getOrderItems() == null || order.getOrderItems().isEmpty()) {
+                  throw new EmptyCartException("Cannot checkout with an empty cart");
+            }
+
             //Check to make sure that the Order has no OrderItems with a quantity greater than the Item's stock
             List<OrderItem> invalidOrderItems = findInvalidOrderItem(userId);
             if (invalidOrderItems.isEmpty()) {
