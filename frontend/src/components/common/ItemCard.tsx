@@ -28,7 +28,8 @@ function ItemCard(props : IItemCardProps ) {
     const plusQuantity = async (e:React.SyntheticEvent) => {
         e.preventDefault()
         try{
-            let response=await axios.patch(process.env.REACT_APP_API_URL + `/users/${user.userId}/orders/current`, 
+            const axiosMethod = user.cartItems.includes(props.item.itemId) ? axios.patch : axios.post;
+            let response=await axiosMethod(process.env.REACT_APP_API_URL + `/users/${user.userId}/orders/current`, 
              {stock: quantity + 1, itemId: props.item.itemId},
              {withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': user.userId}})
             if(response.status==403){
@@ -54,10 +55,15 @@ function ItemCard(props : IItemCardProps ) {
 
             }
             if(response.status==200){
-                setQuantity(quantity - 1)
+                
                 if (quantity - 1 === 0) {
                     setCart(false)
                     user.setCartItems(user.cartItems.filter((itemId) => itemId !== props.item.itemId))
+                    if (props.type === DisplayType.CART) {
+                        setQuantity(quantity - 1)
+                    }
+                } else {
+                    setQuantity(quantity - 1)
                 }
             }
         } catch(error){
