@@ -80,7 +80,7 @@ function CartPage() {
 
 
     {(cart?.orderItems != null && cart?.orderItems?.length != 0) ?
-    <div className="cart-page w-90 container" style={{backgroundColor: "#fcead6"}}>
+    <div className="cart-page w-90 container" style={{backgroundColor: "#fcead6", margin:'0 auto', paddingBottom: '16px'}}>
 
     <div  className="cart-container row row-cols-1" style={{ width: '80%'}}>
         

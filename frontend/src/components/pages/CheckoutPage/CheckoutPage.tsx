@@ -11,19 +11,22 @@ function CheckoutPage() {
     const [order, setOrder] = useState<IOrder>();
 
     useEffect(() => {
-        axios.get(`${process.env.REACT_APP_API_URL}/users/${userId}/orders/current`, {
+        let getOrder = async () => {
+          await axios.get(`${process.env.REACT_APP_API_URL}/users/${userId}/orders/current`, {
             withCredentials: true,
             headers: {
                 'Content-Type': 'application/json',
                 'userId': userId
             }
-        })
-        .then(response => {
+          })
+          .then(response => {
             setOrder(response.data);
-        })
-        .catch(error => {
+          })
+          .catch(error => {
             console.log(error);
-        })
+          })
+        }
+        getOrder();
     },[]);
   
     let setTotal = (order: IOrder) => {
