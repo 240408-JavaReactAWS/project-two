@@ -35,7 +35,7 @@ function ItemCard(props : IItemCardProps ) {
             if(response.status==403){
 
             }
-            if(response.status==200){
+            if(response.status==200 || response.status==201){
                 setQuantity(quantity + 1)
             }
             console.log('Item added to cart:', response)
