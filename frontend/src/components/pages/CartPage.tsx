@@ -78,12 +78,13 @@ function CartPage() {
       <h1 style={{fontSize:"5rem", textAlign:"center" }}>Your Cart</h1>
     </header>
 
-    {cart&& cart.orderItems&& cart?.orderItems.length !== 0 ?
+
+    {(cart?.orderItems != null && cart?.orderItems?.length != 0) ?
     <div className="cart-page w-90 container" style={{backgroundColor: "#fcead6"}}>
 
     <div  className="cart-container row row-cols-1" style={{ width: '80%'}}>
         
-        {cart?.orderItems.map((orderItemMap) => (
+        {cart?.orderItems?.map((orderItemMap) => (
             <>
             <div className="col cart-item" style={{backgroundColor:"aliceblue"}}>
               <ItemCard key={`item${orderItemMap.item.itemId}`} item={orderItemMap.item} type={DisplayType.CART} itemQuantity={orderItemMap.quantity} isInCart={true} orderId={orderItemMap.orderId}></ItemCard>

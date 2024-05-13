@@ -6,12 +6,10 @@ import { UserContext } from "../../../App";
 import { useNavigate } from "react-router-dom";
 
 interface IProps {
-    item: IOrderItem,
-    total: number,
-    setTotal: React.Dispatch<React.SetStateAction<number>>
+    item: IOrderItem
 }
 
-function SummaryRow({item, total, setTotal}: IProps) {
+function SummaryRow({item }: IProps) {
 
     const { userId } = useContext(UserContext);
     const [itemData, setItemData] = useState<IItem>(item.item);
@@ -23,8 +21,6 @@ function SummaryRow({item, total, setTotal}: IProps) {
             alert("Sorry, we don't have that many " + itemData.name + " in stock!");
             setTimeout(() => navigate('/CartPage'), 1000);
         }
-
-        setTotal(total + (itemData.price * item.quantity));
 
     },[]);
 
