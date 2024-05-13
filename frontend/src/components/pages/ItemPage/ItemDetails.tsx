@@ -37,7 +37,12 @@ const ItemDetails: React.FC<Props> = ( props ) => {
                 .then(response => {
                     // Handle success
                     console.log('Item added to cart:', response.data);
-                    setCartItems([...cartItems, props.item.itemId]);
+                    if (response.status === 201) {
+                      setCartItems([...cartItems, props.item.itemId]);
+                    }
+                    if(response.status === 200 && quantity === 0){
+                      setCartItems(cartItems.filter((itemId) => itemId !== props.item.itemId));
+                    }
                 })
                 .catch(error => {
                     // Handle error

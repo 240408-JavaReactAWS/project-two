@@ -54,10 +54,12 @@ function ItemCard(props : IItemCardProps ) {
 
             }
             if(response.status==200){
-                setQuantity(quantity - 1)
+                
                 if (quantity - 1 === 0) {
                     setCart(false)
                     user.setCartItems(user.cartItems.filter((itemId) => itemId !== props.item.itemId))
+                } else {
+                    setQuantity(quantity - 1)
                 }
             }
         } catch(error){
