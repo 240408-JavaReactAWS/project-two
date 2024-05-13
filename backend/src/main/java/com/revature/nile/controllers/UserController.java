@@ -7,6 +7,8 @@ import com.revature.nile.exceptions.OrderProcessingException;
 import com.revature.nile.exceptions.UserAlreadyExistsException;
 import com.revature.nile.models.*;
 import com.revature.nile.services.*;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -61,6 +63,13 @@ public class UserController  {
                 || newUser.getFirstName() == null || newUser.getFirstName().isEmpty()
                 || newUser.getLastName() == null ||  newUser.getLastName().isEmpty()) { //If any of the fields are empty, return a 400 (Bad Request) status
             return new ResponseEntity<>("Please fill out all fields", BAD_REQUEST);
+        }
+        // Check that the email address is valid
+        try {
+            InternetAddress emailAddr = new InternetAddress(newUser.getEmail());
+            emailAddr.validate();
+        } catch (AddressException ex) {
+            return new ResponseEntity<>("Invalid email address", BAD_REQUEST);
         }
         User registerUser;
         try {
