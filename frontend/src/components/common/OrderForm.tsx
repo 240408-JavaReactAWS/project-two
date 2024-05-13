@@ -162,7 +162,7 @@ return (
       <InputGroup className="mb-3">
         <FormControl
           required
-          placeholder="Card Number"
+          placeholder="Card Number (XXXX-XXXX-XXXX-XXXX) or (XXXXXXXXXXXXXXXX)"
           aria-label="Card Number"
           value={CardNumber}
           onChange={(e) => setCardNumber(e.target.value)}
