@@ -137,6 +137,7 @@ function BrowsingPage() {
         
         {items.sort(compare).map((itemMap) => (
             //<ItemCard key={`item${itemMap.id}`} item={itemMap}></ItemCard>
+            itemMap.stock > 0 &&
             <div className="col">
               <ItemCard key={`item${itemMap.itemId}`} item={itemMap} type={DisplayType.NONOWNED}></ItemCard>
             </div>))}

@@ -39,7 +39,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition="TEXT")
     private String address;
 
     @Column(nullable = false)
@@ -47,6 +47,9 @@ public class User {
 
     @Column(nullable = false)
     private String lastName;
+
+    @Column
+    private byte[] salt;
 
     //A user can have multiple orders (but only one pending at a given time!)
     @JsonIgnore

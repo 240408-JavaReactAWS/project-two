@@ -49,7 +49,7 @@ public class Item {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition="TEXT")
     private String description;
 
     @Column(nullable = false)
@@ -58,7 +58,7 @@ public class Item {
     @Column(nullable = false)
     private int stock;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition="TEXT")
     private String image;
 
     @Column

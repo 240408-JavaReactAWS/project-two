@@ -22,7 +22,9 @@ import javax.naming.AuthenticationException;
 
 @RestController
 @RequestMapping("items")
-@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.PATCH})
+@CrossOrigin(origins = "http://localhost:3000", 
+    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.PATCH},
+    allowCredentials = "true")
 public class ItemController {
     private final ItemService itemService;
     private final UserService userService;
@@ -108,7 +110,7 @@ public class ItemController {
             return new ResponseEntity<>(BAD_REQUEST);
         }
         try {
-            return ResponseEntity.ok(itemService.addReviewToItem(review, userId, itemId));
+            return new ResponseEntity<Review>(itemService.addReviewToItem(review, userId, itemId), CREATED);
         } catch (AuthenticationException e) {
             return new ResponseEntity<>(FORBIDDEN);
         } catch( EntityNotFoundException e) {

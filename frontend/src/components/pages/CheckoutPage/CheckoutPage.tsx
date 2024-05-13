@@ -9,8 +9,6 @@ function CheckoutPage() {
     
     const { userId } = useContext(UserContext);
     const [order, setOrder] = useState<IOrder>();
-    const [total, setTotal] = useState<number>(0);
-
 
     useEffect(() => {
         axios.get(`${process.env.REACT_APP_API_URL}/users/${userId}/orders/current`, {
@@ -28,14 +26,23 @@ function CheckoutPage() {
         })
     },[]);
   
-    
+    let setTotal = (order: IOrder) => {
+      let total = 0;
+      order.orderItems.forEach((orderItem) => {
+          let subtotal: number = orderItem.item.price * orderItem.quantity;
+          total += subtotal;
+      });
+      return total;
+    }
+
+    const total = order ? setTotal(order) : 0;
     return (
     <div>
       <h1>Checkout</h1>
       <OrderForm />
       <h1>Order Summary</h1>
-      {order?.orderItemsList.map((item, index) => (
-        <SummaryRow key={index} item={item} total={total} setTotal={setTotal}/>
+      {order?.orderItems.map((item, index) => (
+        <SummaryRow key={index} item={item}/>
       ))}
       <h1>Total: ${total}</h1>
     </div>

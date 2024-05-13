@@ -1,16 +1,15 @@
 import React, {useContext, useEffect, useState} from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { UserContext } from '../../App'
 import axios from 'axios'
 import OrderCard from '../common/OrderCard'
 import { IOrder } from '../../interfaces/IOrder'
 
-interface Props {
-    itemid?: number
-}
 
 
-function OrderHistoryPage(props: Props) {
+
+function OrderHistoryPage() {
+    const { itemId } = useParams();
     const context = useContext(UserContext)
     const navigate = useNavigate()
 
@@ -18,7 +17,7 @@ function OrderHistoryPage(props: Props) {
 
     let getRelatedOrders = async () => {
         try {
-            let response = await axios.get(`${process.env.REACT_APP_API_URL}/items/${props.itemid}/orders`, 
+            let response = await axios.get(`${process.env.REACT_APP_API_URL}/items/${itemId}/orders`, 
             {withCredentials: true, 
                 headers:{'userId': context.userId}
             })
@@ -46,7 +45,7 @@ function OrderHistoryPage(props: Props) {
         if (!context.userId) {
             navigate('/login')
         }   
-        if (props.itemid) {
+        if (itemId) {
             // if itemid exists show orders for that item
             // axios.get(`${process.env.REACT_APP_API_URL}/items/${itemid}/orders`)
             getRelatedOrders()
@@ -63,9 +62,10 @@ function OrderHistoryPage(props: Props) {
 return (
     <div>
             <h1>Order History</h1>
-            {orders.map((order: IOrder) => (
-                    <OrderCard {...order} />
-            ))}
+            {orders.map((order: IOrder) => 
+                {if (order.status === 'APPROVED') {return <OrderCard {...order} />}}
+                    
+            )}
             </div>
 )
 }

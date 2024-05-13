@@ -7,7 +7,7 @@ import './LoginPage.css';
 
 function LoginPage() {
     
-  const {userId, setUserId} = useContext(UserContext)
+  const {userId, setUserId, setCartItems} = useContext(UserContext)
 
   const navigate = useNavigate()
 
@@ -56,6 +56,17 @@ function LoginPage() {
       })
       if (res.status === 200) {
           console.log("Login Successful")
+          let getCart = async () => {
+            let response = await axios.get(`${process.env.REACT_APP_API_URL}/users/${userId}/orders/current`, {
+                withCredentials: true,
+                headers: { 'Content-Type': 'application/json', 'userId': userId }
+            }).then((response) => {
+                setCartItems(response.data);
+            }).catch((error) => {
+                console.error(error);
+                console.error('Error fetching items:', error);
+                // setError('Failed to fetch items.');
+            });}
           setUserId(res.data.userId)
           navigate('/')
       }
