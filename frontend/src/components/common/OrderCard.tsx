@@ -48,8 +48,10 @@ function OrderCard(props: IOrder) {
                         <Card.Body >
                             <Card.Title>Buyer's Info:</Card.Title>
                             <Card.Text>Shipping Address: {props.shipToAddress}</Card.Text>
+                            <Card.Text>Billing Address: {props.billAddress}</Card.Text>
                             <Card.Text>Order Status: {props.status}</Card.Text>
                             <Card.Text>Date Ordered: {props.dateOrdered}</Card.Text>
+                            <Card.Text>Total Price: {total}</Card.Text>
                         </Card.Body>
                     </Card>
                 </div>

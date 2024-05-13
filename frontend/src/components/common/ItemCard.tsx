@@ -155,16 +155,17 @@ function ItemCard(props : IItemCardProps ) {
             </Link>
             </div>
             :
-            <div style={{display:'flex', justifyContent:'space-evenly', width:'100%', height:'100%', alignItems:'center'}}>
-                <div><img  style={{height: "100px"}} src={props.item.image} alt="Card image cap"/></div>
-                <div>{props.item.name}</div>
-                <div>{props.item.price}</div>
-                <div>
+            <tr>
+                <td><img  style={{height: "100px"}} src={props.item.image} alt="Card image cap"/></td>
+                <td>{props.item.name}</td>
+                <td>{props.item.price}</td>
+                <td>{props.item.rating}</td>
+                <td>
                     <button className="btn btn-primary" onClick={minusQuantity}>-</button>
                     {quantity}
                     <button className="btn btn-primary" onClick={plusQuantity}>+</button>
-                </div>
-            </div>
+                </td>
+            </tr>
     )
 }
 
