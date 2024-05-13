@@ -6,6 +6,7 @@ import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { UserContext } from '../../App';
 import { Button, InputGroup, Form, FormControl, FormGroup, FormLabel } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 //import './OrderForm.css';
 
 const OrderForm: React.FC = () => {
@@ -26,7 +27,9 @@ const OrderForm: React.FC = () => {
   const [billingState, setBillingState] = useState('');
   const [billingZipCode, setBillingZipCode] = useState('');
   const [billingCountry, setBillingCountry] = useState('');
+  const navigate = useNavigate();
 
+  
   const handleCopyAddress = () => {
     setBillingStreetAddress(shippingStreetAddress);
     setBillingCity(shippingCity);
@@ -48,7 +51,15 @@ const OrderForm: React.FC = () => {
       return;
     }
 
-    axios.patch(`${process.env.REACT_APP_API_URL})/users/${userId}/orders/checkout`, {
+    let processChechout = async () => {
+    // console.log('Processing checkout');
+    // console.log('userId: ', userId);
+    // console.log(`${process.env.REACT_APP_API_URL}/users/${userId}/orders/checkout`);
+    // console.log('shipToAddress: ', {
+    //   shipToAddress,
+    //   billAddress
+    // });
+    await axios.patch(`${process.env.REACT_APP_API_URL}/users/${userId}/orders/checkout`, {
       shipToAddress,
       billAddress
     }, {
@@ -58,8 +69,16 @@ const OrderForm: React.FC = () => {
         'userId': userId
       }
     })
-      .then(response => { console.log('Completed order!'); })
-      .catch(error => { alert('Failed to complete order') });
+      .then(response => { 
+        console.log('Completed order!'); 
+        navigate('/');
+      })
+      .catch(error => { 
+        console.log(error);
+        alert('Failed to complete order'); });
+  }
+  processChechout();
+  
 }
 
 return (
@@ -68,12 +87,14 @@ return (
       <FormLabel>Shipping Information</FormLabel>
       <InputGroup className="mb-3">
         <FormControl
+          required
           placeholder="First Name"
           aria-label="First Name"
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
         />
         <FormControl
+          required
           placeholder="Last Name"
           aria-label="Last Name"
           value={lastName}
@@ -82,6 +103,7 @@ return (
       </InputGroup>
       <InputGroup className="mb-3">
         <FormControl
+          required
           placeholder="Street Address"
           aria-label="Street Address"
           value={shippingStreetAddress}
@@ -90,6 +112,7 @@ return (
       </InputGroup>
       <InputGroup className="mb-3">
         <FormControl
+          required
           placeholder="City"
           aria-label="City"
           value={shippingCity}
@@ -98,6 +121,7 @@ return (
       </InputGroup>
       <InputGroup className="mb-3">
         <FormControl
+          required
           placeholder="State"
           aria-label="State"
           value={shippingState}
@@ -106,6 +130,7 @@ return (
       </InputGroup>
       <InputGroup className="mb-3">
         <FormControl
+          required
           placeholder="Zip Code"
           aria-label="Zip Code"
           value={shippingZipCode}
@@ -114,6 +139,7 @@ return (
       </InputGroup>
       <InputGroup className="mb-3">
         <FormControl
+          required
           placeholder="Country"
           aria-label="Country"
           value={shippingCountry}
@@ -126,6 +152,7 @@ return (
       <FormLabel>Billing Information</FormLabel>
       <InputGroup className="mb-3">
         <FormControl
+          required
           placeholder="Name on Card"
           aria-label="Name on Card"
           value={CardName}
@@ -134,24 +161,28 @@ return (
       </InputGroup>
       <InputGroup className="mb-3">
         <FormControl
+          required
           placeholder="Card Number"
           aria-label="Card Number"
-          maxLength={16}
           value={CardNumber}
           onChange={(e) => setCardNumber(e.target.value)}
+          pattern="(\d{4}-){3}\d{4}|\d{16}"
         />
       </InputGroup>
       <InputGroup className="mb-3">
         <FormControl
-          placeholder="Expiration Date"
+          required
+          placeholder="Expiration Date (MM/YY)"
           aria-label="Expiration Date"
-          type="date"
+          type="text"
           value={CardExpiration}
           onChange={(e) => setCardExpiration(e.target.value)}
+          pattern="(0[1-9]|1[0-2])\/[0-9]{2}"
         />
       </InputGroup>
       <InputGroup className="mb-3">
         <FormControl
+          required
           placeholder="CVV"
           aria-label="CVV"
           type='password'
@@ -162,6 +193,7 @@ return (
       </InputGroup>
       <InputGroup className="mb-3">
         <FormControl
+          required
           placeholder="Street Address"
           aria-label="Street Address"
           value={billingStreetAddress}
@@ -170,6 +202,7 @@ return (
       </InputGroup>
       <InputGroup className="mb-3">
         <FormControl
+          required
           placeholder="City"
           aria-label="City"
           value={billingCity}
@@ -178,6 +211,7 @@ return (
       </InputGroup>
       <InputGroup className="mb-3">
         <FormControl
+          required
           placeholder="State"
           aria-label="State"
           value={billingState}
@@ -186,6 +220,7 @@ return (
       </InputGroup>
       <InputGroup className="mb-3">
         <FormControl
+          required
           placeholder="Zip Code"
           aria-label="Zip Code"
           value={billingZipCode}
@@ -194,6 +229,7 @@ return (
       </InputGroup>
       <InputGroup className="mb-3">
         <FormControl
+          required
           placeholder="Country"
           aria-label="Country"
           value={billingCountry}

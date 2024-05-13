@@ -56,8 +56,8 @@ const ItemPage: React.FC = () => {
         <Button onClick={toggleReviewForm} variant="secondary">
             {showReviewForm ? 'Hide Review Form' : 'Leave a Review'}
           </Button>
-          {showReviewForm && <ReviewForm
-              itemId={itemId ? parseInt(itemId) : null}
+          {showReviewForm && item && <ReviewForm
+              item={item}
               onClose={toggleReviewForm}
               reviews={reviews}
               setReviews={setReviews}

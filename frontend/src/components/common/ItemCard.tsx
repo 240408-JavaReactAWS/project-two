@@ -29,7 +29,7 @@ function ItemCard(props : IItemCardProps ) {
         e.preventDefault()
         try{
             let response=await axios.patch(process.env.REACT_APP_API_URL + `/users/${user.userId}/orders/current`, 
-             {quantity: quantity + 1, itemId: props.item.itemId},
+             {stock: quantity + 1, itemId: props.item.itemId},
              {withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': user.userId}})
             if(response.status==403){
 
@@ -47,7 +47,7 @@ function ItemCard(props : IItemCardProps ) {
         e.preventDefault()
         try{
             let response=await axios.patch(process.env.REACT_APP_API_URL + `/users/${user.userId}/orders/current`, 
-            {quantity: quantity - 1, itemId: props.item.itemId}, {
+            {stock: quantity - 1, itemId: props.item.itemId}, {
                 withCredentials: true, headers: { 'Content-Type': 'application/json', 'userId': user.userId} 
             })
             if(response.status==403){
