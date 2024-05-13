@@ -62,9 +62,10 @@ function OrderHistoryPage() {
 return (
     <div>
             <h1>Order History</h1>
-            {orders.map((order: IOrder) => (
-                    <OrderCard {...order} />
-            ))}
+            {orders.map((order: IOrder) => 
+                {if (order.status === 'completed') {return <OrderCard {...order} />}}
+                    
+            )}
             </div>
 )
 }
