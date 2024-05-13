@@ -1,9 +1,7 @@
-import React, {createContext, useContext, useState, useEffect} from 'react';
-import logo from './logo.svg';
+import React, { createContext, useState } from 'react';
 import './App.css';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import LoginPage from './components/pages/LoginPage';
-import { IUser } from './interfaces/IUser';
 import Nav from './components/common/Nav';
 import SellerItemsPage from './components/pages/SellerItemsPage';
 import BrowsingPage from './components/pages/BrowsingPage';
@@ -21,7 +19,7 @@ interface contextInterface {
 }
 
 export const UserContext = createContext<contextInterface>(
-  {userId: null, 
+  {userId: null,
   setUserId: () => {},
   cartItems: [],
   setCartItems: () => {}

@@ -1,12 +1,10 @@
 package com.revature.nile.controllers;
 
-import com.revature.nile.exceptions.ItemNotFoundExceptions;
-import com.revature.nile.exceptions.NullAddressException;
-import com.revature.nile.exceptions.UserNotFoundException;
-import com.revature.nile.exceptions.OrderProcessingException;
-import com.revature.nile.exceptions.UserAlreadyExistsException;
+import com.revature.nile.exceptions.*;
 import com.revature.nile.models.*;
 import com.revature.nile.services.*;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -61,6 +59,13 @@ public class UserController  {
                 || newUser.getFirstName() == null || newUser.getFirstName().isEmpty()
                 || newUser.getLastName() == null ||  newUser.getLastName().isEmpty()) { //If any of the fields are empty, return a 400 (Bad Request) status
             return new ResponseEntity<>("Please fill out all fields", BAD_REQUEST);
+        }
+        // Check that the email address is valid
+        try {
+            InternetAddress emailAddr = new InternetAddress(newUser.getEmail());
+            emailAddr.validate();
+        } catch (AddressException ex) {
+            return new ResponseEntity<>("Invalid email address", BAD_REQUEST);
         }
         User registerUser;
         try {
@@ -355,7 +360,9 @@ public class UserController  {
             Order order;
             try {
                 order = os.getCurrentOrderByUserId(user.getUserId());
-
+                if (order.getOrderItems() == null || order.getOrderItems().isEmpty()) {
+                    return new ResponseEntity<>("Cannot checkout with an empty cart", BAD_REQUEST);
+                }
                 //Update the ShipToAddress and BillAddress with the new values if they exist
                 if(!newShipToAddress.isEmpty()) {
                     order.setShipToAddress(newShipToAddress);
@@ -363,8 +370,24 @@ public class UserController  {
                 if(!newBillAddress.isEmpty()) {
                     order.setBillAddress(newBillAddress);
                 }
+
+                int zeroQuantityCount =0;
+                List<OrderItem> itemsToRemove = new ArrayList<>();
+                for (OrderItem orderItem : order.getOrderItems()) {
+                    if (orderItem.getQuantity() <= 0) {
+                        itemsToRemove.add(orderItem);
+                        zeroQuantityCount++;
+                    }
+                }
+                if (zeroQuantityCount == 1 && order.getOrderItems().size() == 1) {
+                    return new ResponseEntity<>("Can't checkout with item quantity 0", BAD_REQUEST);
+                }
+                // Remove the identified OrderItems from the Order
+                order.getOrderItems().removeAll(itemsToRemove);
             } catch (EntityNotFoundException e) {
                 return new ResponseEntity<>(NOT_FOUND);
+            }catch (EmptyCartException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot checkout with an empty cart");
             }
             //Make sure the user is checking out their own cart
             if(user.getUserId() != order.getUser().getUserId()) { // user cant check out anothers cart
