@@ -1,10 +1,6 @@
 package com.revature.nile.controllers;
 
-import com.revature.nile.exceptions.ItemNotFoundExceptions;
-import com.revature.nile.exceptions.NullAddressException;
-import com.revature.nile.exceptions.UserNotFoundException;
-import com.revature.nile.exceptions.OrderProcessingException;
-import com.revature.nile.exceptions.UserAlreadyExistsException;
+import com.revature.nile.exceptions.*;
 import com.revature.nile.models.*;
 import com.revature.nile.services.*;
 import jakarta.mail.internet.AddressException;
@@ -28,7 +24,7 @@ import java.util.ArrayList;
 @RestController
 @RequestMapping("users")
 //TO-DO: Update Cross-Origin to our S3 bucket before deploying!
-@CrossOrigin(origins = "http://localhost:3000", 
+@CrossOrigin(origins = "http://revshop-2024.s3-website.us-east-2.amazonaws.com/", 
     methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.PATCH},
     allowCredentials = "true")
 public class UserController  {
@@ -364,7 +360,9 @@ public class UserController  {
             Order order;
             try {
                 order = os.getCurrentOrderByUserId(user.getUserId());
-
+                if (order.getOrderItems() == null || order.getOrderItems().isEmpty()) {
+                    return new ResponseEntity<>("Cannot checkout with an empty cart", BAD_REQUEST);
+                }
                 //Update the ShipToAddress and BillAddress with the new values if they exist
                 if(!newShipToAddress.isEmpty()) {
                     order.setShipToAddress(newShipToAddress);
@@ -372,8 +370,24 @@ public class UserController  {
                 if(!newBillAddress.isEmpty()) {
                     order.setBillAddress(newBillAddress);
                 }
+
+                int zeroQuantityCount =0;
+                List<OrderItem> itemsToRemove = new ArrayList<>();
+                for (OrderItem orderItem : order.getOrderItems()) {
+                    if (orderItem.getQuantity() <= 0) {
+                        itemsToRemove.add(orderItem);
+                        zeroQuantityCount++;
+                    }
+                }
+                if (zeroQuantityCount == 1 && order.getOrderItems().size() == 1) {
+                    return new ResponseEntity<>("Can't checkout with item quantity 0", BAD_REQUEST);
+                }
+                // Remove the identified OrderItems from the Order
+                order.getOrderItems().removeAll(itemsToRemove);
             } catch (EntityNotFoundException e) {
                 return new ResponseEntity<>(NOT_FOUND);
+            }catch (EmptyCartException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot checkout with an empty cart");
             }
             //Make sure the user is checking out their own cart
             if(user.getUserId() != order.getUser().getUserId()) { // user cant check out anothers cart

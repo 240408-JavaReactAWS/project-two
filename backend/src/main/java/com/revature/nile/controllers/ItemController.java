@@ -22,7 +22,7 @@ import javax.naming.AuthenticationException;
 
 @RestController
 @RequestMapping("items")
-@CrossOrigin(origins = "http://localhost:3000", 
+@CrossOrigin(origins = "http://revshop-2024.s3-website.us-east-2.amazonaws.com/", 
     methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.PATCH},
     allowCredentials = "true")
 public class ItemController {
