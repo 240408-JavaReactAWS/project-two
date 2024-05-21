@@ -17,18 +17,22 @@ import org.springframework.web.bind.annotation.*;
 import static org.springframework.http.HttpStatus.*;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 import javax.naming.AuthenticationException;
+
 
 @RestController
 @RequestMapping("items")
-@CrossOrigin(origins = "http://revshop-2024.s3-website.us-east-2.amazonaws.com/", 
+@CrossOrigin(origins = {"http://revshop-2024.s3-website.us-east-2.amazonaws.com/",
+                        "http://frontend-app-dk.s3-website-us-east-1.amazonaws.com/"},
+
     methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.PATCH},
     allowCredentials = "true")
 public class ItemController {
+
     private final ItemService itemService;
     private final UserService userService;
     private final ReviewService reviewService;
+
 
     @Autowired
     public ItemController(ItemService itemService, UserService userService, ReviewService reviewService) {
@@ -36,6 +40,7 @@ public class ItemController {
         this.userService = userService;
         this.reviewService = reviewService;
     }
+
 
     /*
      * Story ID 15: User adds a new item for sale

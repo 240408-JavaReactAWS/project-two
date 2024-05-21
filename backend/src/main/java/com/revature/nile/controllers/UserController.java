@@ -24,7 +24,8 @@ import java.util.ArrayList;
 @RestController
 @RequestMapping("users")
 //TO-DO: Update Cross-Origin to our S3 bucket before deploying!
-@CrossOrigin(origins = "http://revshop-2024.s3-website.us-east-2.amazonaws.com/", 
+@CrossOrigin(origins = {"http://revshop-2024.s3-website.us-east-2.amazonaws.com/",
+                        "http://frontend-app-dk.s3-website-us-east-1.amazonaws.com/"},
     methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.PATCH},
     allowCredentials = "true")
 public class UserController  {
